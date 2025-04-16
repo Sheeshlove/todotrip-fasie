@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -125,7 +126,7 @@ export default {
 				'fadeInOut': 'fadeInOut 15s ease-in-out infinite'
 			},
 			fontFamily: {
-				unbounded: ['Unbounded', 'sans-serif']
+				unbounded: ['Unbounded', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', 'sans-serif']
 			}
 		}
 	},
