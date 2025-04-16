@@ -77,7 +77,7 @@ const TripPlanner: React.FC = () => {
   };
   
   return (
-    <div className="fixed inset-0 bg-todoBlack z-10 overflow-y-auto font-unbounded">
+    <div className="font-unbounded">
       {/* Header */}
       <div className="px-5 py-5 flex justify-between items-center border-b border-gray-800">
         <div className="w-10"></div>
@@ -86,7 +86,7 @@ const TripPlanner: React.FC = () => {
       </div>
       
       {/* Main Content */}
-      <div className="h-[calc(100%-160px)] flex flex-col justify-center items-center p-5 text-center">
+      <div className="h-[calc(100vh-160px)] flex flex-col justify-center items-center p-5 text-center">
         {isGenerating ? (
           <div className="flex flex-col items-center justify-center gap-4">
             <Loader2 className="h-10 w-10 animate-spin text-todoYellow" />
@@ -108,12 +108,12 @@ const TripPlanner: React.FC = () => {
             <h2 className="text-xl md:text-2xl mb-8">Куда вы хотели бы отправиться?</h2>
             
             {/* Scrollable Suggestions */}
-            <div className="horizontal-scroll">
+            <div className="horizontal-scroll overflow-x-auto w-full">
               <div className="inline-flex gap-2.5 px-5">
                 {suggestedDestinations.map((destination, index) => (
                   <div 
                     key={index}
-                    className="suggestion-pill"
+                    className="suggestion-pill bg-todoDarkGray px-4 py-2 rounded-full cursor-pointer transition-colors hover:bg-gray-700 whitespace-nowrap"
                     onClick={() => handleSuggestionClick(destination)}
                     tabIndex={0}
                     onKeyDown={(e) => {
@@ -134,7 +134,7 @@ const TripPlanner: React.FC = () => {
       </div>
       
       {/* Footer with Input */}
-      <div className="absolute bottom-0 left-0 w-full p-5 border-t border-gray-800">
+      <div className="fixed bottom-16 left-0 w-full p-5 border-t border-gray-800 bg-todoBlack">
         <div className="bg-todoDarkGray rounded-[20px] py-2.5 px-5 flex items-center">
           <input
             ref={inputRef}
