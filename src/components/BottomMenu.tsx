@@ -1,13 +1,13 @@
 
 import { useLocation, Link } from 'react-router-dom';
-import { Map, Robot, Heart, User, Settings } from 'lucide-react';
+import { Map, Bot, Heart, User, Settings } from 'lucide-react';
 
 const BottomMenu = () => {
   const location = useLocation();
   
   const menuItems = [
     { path: '/', name: 'Карта', icon: Map },
-    { path: '/ai-trip', name: 'Нейросеть', icon: Robot },
+    { path: '/ai-trip', name: 'Нейросеть', icon: Bot },
     { path: '/dating', name: 'Общение', icon: Heart },
     { path: '/profile', name: 'Профиль', icon: User },
     { path: '/settings', name: 'Настройки', icon: Settings },
