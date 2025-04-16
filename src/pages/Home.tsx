@@ -10,10 +10,18 @@ const Home = () => {
   
   useEffect(() => {
     preloadImages();
+    
+    // Check if user has already completed onboarding
+    const hasCompletedOnboarding = localStorage.getItem('hasCompletedOnboarding');
+    if (hasCompletedOnboarding === 'true') {
+      setShowOnboarding(false);
+    }
   }, []);
   
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
+    // Store in localStorage that user has completed onboarding
+    localStorage.setItem('hasCompletedOnboarding', 'true');
   };
   
   return (
