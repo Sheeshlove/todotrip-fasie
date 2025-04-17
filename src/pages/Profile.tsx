@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -7,6 +6,7 @@ import PageLayout from '@/components/PageLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { HobbiesDialog } from '@/components/HobbiesDialog';
 import { Link } from 'react-router-dom';
 
 const formSchema = z.object({
@@ -15,7 +15,7 @@ const formSchema = z.object({
     message: "Возраст должен быть от 18 до 100 лет",
   }),
   city: z.string().min(2, { message: "Укажите ваш город" }),
-  hobbies: z.string().min(2, { message: "Укажите ваши хобби" }),
+  hobbies: z.string().optional(),
   email: z.string().email({ message: "Некорректный email" }),
   phone: z.string().min(10, { message: "Некорректный номер телефона" }),
   password: z.string().min(8, { message: "Пароль должен содержать минимум 8 символов" }),
@@ -28,6 +28,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const Profile = () => {
+  const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,8 +45,11 @@ const Profile = () => {
   });
   
   const onSubmit = (values: FormValues) => {
-    console.log(values);
-    // Here you would handle the registration process
+    const dataWithHobbies = {
+      ...values,
+      hobbies: selectedHobbies.join(', ')
+    };
+    console.log(dataWithHobbies);
   };
   
   return (
@@ -103,7 +108,18 @@ const Profile = () => {
                 <FormItem>
                   <FormLabel>Хобби</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ваши хобби и интересы" {...field} />
+                    <div className="space-y-2">
+                      <Input 
+                        placeholder="Ваши хобби и интересы" 
+                        {...field} 
+                        value={selectedHobbies.join(', ')}
+                        readOnly
+                      />
+                      <HobbiesDialog
+                        selectedHobbies={selectedHobbies}
+                        onHobbiesChange={setSelectedHobbies}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
