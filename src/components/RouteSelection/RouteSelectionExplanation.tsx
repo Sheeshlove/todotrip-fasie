@@ -39,7 +39,7 @@ const RouteSelectionExplanation: FC<RouteSelectionExplanationProps> = ({ onConti
             onClick={onContinue}
             className="bg-todoYellow hover:bg-todoYellow/90 text-black font-bold py-3 px-8 rounded-xl text-lg"
           >
-            Понятно
+            Вперёд!
           </Button>
         </div>
       </div>
