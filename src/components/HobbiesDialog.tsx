@@ -6,10 +6,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { hobbiesData } from "@/data/hobbies";
+import { useState } from "react";
 
 interface HobbiesDialogProps {
   selectedHobbies: string[];
@@ -17,12 +20,19 @@ interface HobbiesDialogProps {
 }
 
 export function HobbiesDialog({ selectedHobbies, onHobbiesChange }: HobbiesDialogProps) {
+  // Create a local state to manage hobbies within the dialog
+  const [localSelectedHobbies, setLocalSelectedHobbies] = useState<string[]>(selectedHobbies);
+
   const toggleHobby = (hobby: string) => {
-    if (selectedHobbies.includes(hobby)) {
-      onHobbiesChange(selectedHobbies.filter(h => h !== hobby));
-    } else {
-      onHobbiesChange([...selectedHobbies, hobby]);
-    }
+    setLocalSelectedHobbies(current => 
+      current.includes(hobby) 
+        ? current.filter(h => h !== hobby)
+        : [...current, hobby]
+    );
+  };
+
+  const handleSave = () => {
+    onHobbiesChange(localSelectedHobbies);
   };
 
   return (
@@ -46,7 +56,7 @@ export function HobbiesDialog({ selectedHobbies, onHobbiesChange }: HobbiesDialo
                     <div key={hobby} className="flex items-center space-x-2">
                       <Checkbox 
                         id={hobby}
-                        checked={selectedHobbies.includes(hobby)}
+                        checked={localSelectedHobbies.includes(hobby)}
                         onCheckedChange={() => toggleHobby(hobby)}
                       />
                       <label
@@ -62,6 +72,17 @@ export function HobbiesDialog({ selectedHobbies, onHobbiesChange }: HobbiesDialo
             ))}
           </div>
         </ScrollArea>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button 
+              type="button" 
+              variant="default" 
+              onClick={handleSave}
+            >
+              Сохранить
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
