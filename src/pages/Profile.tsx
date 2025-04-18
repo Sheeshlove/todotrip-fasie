@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,7 +11,27 @@ const Profile = () => {
   const navigate = useNavigate();
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
   
-  // Simulated user data - in a real app this would come from your auth/user context
+  // Simulated isLoggedIn state - in a real app this would come from your auth context
+  const isLoggedIn = false; // This should be replaced with actual auth check
+  
+  // Logged out view
+  if (!isLoggedIn) {
+    return (
+      <PageLayout title="ТуДуТрип - Профиль" description="Создайте профиль">
+        <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 py-8 text-center">
+          <h1 className="text-2xl font-bold mb-4">Сохраняй свои маршруты</h1>
+          <p className="mb-6">
+            Уже есть аккаунт?{' '}
+            <Link to="/login" className="text-todoYellow hover:underline">
+              Войти
+            </Link>
+          </p>
+        </div>
+      </PageLayout>
+    );
+  }
+
+  // Logged in view - keeping the existing profile UI
   const userData = {
     name: "User_name",
     age: "user_age",
