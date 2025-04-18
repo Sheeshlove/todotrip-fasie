@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -56,6 +57,12 @@ const Profile = () => {
     <PageLayout title="ToDoTrip - Register Profile" description="Сохраняй свои маршруты">
       <div className="max-w-md mx-auto py-8">
         <h1 className="text-2xl font-bold mb-6 text-center">Сохраняй свои маршруты</h1>
+        
+        <div className="mb-6 text-center">
+          <p className="text-sm text-todoMediumGray">
+            Уже есть аккаунт? <Link to="/login" className="text-todoYellow hover:underline">Войти</Link>
+          </p>
+        </div>
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
