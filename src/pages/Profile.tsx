@@ -1,209 +1,96 @@
 
 import { useState } from 'react';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Card } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { HobbiesDialog } from '@/components/HobbiesDialog';
-import { Link } from 'react-router-dom';
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: "Имя должно содержать минимум 2 символа" }),
-  age: z.string().refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 18 && parseInt(val) <= 100, {
-    message: "Возраст должен быть от 18 до 100 лет",
-  }),
-  city: z.string().min(2, { message: "Укажите ваш город" }),
-  hobbies: z.string().optional(),
-  email: z.string().email({ message: "Некорректный email" }),
-  phone: z.string().min(10, { message: "Некорректный номер телефона" }),
-  password: z.string().min(8, { message: "Пароль должен содержать минимум 8 символов" }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Пароли не совпадают",
-  path: ["confirmPassword"],
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { User, ImagePlus } from 'lucide-react';
 
 const Profile = () => {
+  const navigate = useNavigate();
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
   
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      age: "",
-      city: "",
-      hobbies: "",
-      email: "",
-      phone: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
-  
-  const onSubmit = (values: FormValues) => {
-    const dataWithHobbies = {
-      ...values,
-      hobbies: selectedHobbies.join(', ')
-    };
-    console.log(dataWithHobbies);
+  // Simulated user data - in a real app this would come from your auth/user context
+  const userData = {
+    name: "User_name",
+    age: "user_age",
+    description: "Profile description",
   };
-  
+
   return (
-    <PageLayout title="ToDoTrip - Register Profile" description="Сохраняй свои маршруты">
-      <div className="max-w-md mx-auto py-8">
-        <h1 className="text-2xl font-bold mb-6 text-center">Сохраняй свои маршруты</h1>
+    <PageLayout title="ТуДуТрип - Профиль" description="Ваш профиль">
+      <div className="flex flex-col items-center gap-6 py-8 px-4">
+        {/* Logo */}
+        <h1 className="text-4xl font-bold text-todoYellow">ТуДуТрип</h1>
         
-        <div className="mb-6 text-center">
-          <p className="text-sm text-todoMediumGray">
-            Уже есть аккаунт? <Link to="/login" className="text-todoYellow hover:underline">Войти</Link>
-          </p>
+        {/* Main Profile Picture */}
+        <div className="relative w-full max-w-[300px] aspect-square">
+          <Card className="w-full h-full flex items-center justify-center bg-todoDarkGray">
+            <Avatar className="w-full h-full rounded-lg">
+              <AvatarFallback className="w-full h-full bg-todoBlack text-todoYellow">
+                <User className="w-1/3 h-1/3" />
+              </AvatarFallback>
+            </Avatar>
+            <button className="absolute bottom-4 right-4 bg-todoYellow p-2 rounded-full">
+              <ImagePlus className="w-6 h-6 text-black" />
+            </button>
+          </Card>
         </div>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Имя</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ваше имя" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="age"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Возраст</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ваш возраст" {...field} type="number" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Город</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ваш город" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="hobbies"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Хобби</FormLabel>
-                  <FormControl>
-                    <div className="space-y-2">
-                      <Input 
-                        placeholder="Ваши хобби и интересы" 
-                        {...field} 
-                        value={selectedHobbies.join(', ')}
-                        readOnly
-                      />
-                      <HobbiesDialog
-                        selectedHobbies={selectedHobbies}
-                        onHobbiesChange={setSelectedHobbies}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ваш email" {...field} type="email" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Телефон</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ваш номер телефона" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Пароль</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Введите пароль" {...field} type="password" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Подтверждение пароля</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Введите пароль ещё раз" {...field} type="password" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <Button type="submit" className="w-full">Регистрация</Button>
-            
-            <p className="text-sm text-center mt-4">
-              Регистрируясь, вы принимаете нашу {' '}
-              <a 
-                href="http://todotrip.pro/privacy-policy" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="underline text-todoYellow hover:text-yellow-300"
-              >
-                политику конфиденциальности
-              </a>
-            </p>
-          </form>
-        </Form>
+
+        {/* User Info */}
+        <div className="text-xl">
+          <span className="text-todoYellow">{userData.name}</span>
+          <span>, {userData.age}</span>
+        </div>
+
+        {/* Photo Gallery */}
+        <div className="w-full grid grid-cols-4 gap-2">
+          {[1, 2, 3, 4].map((num) => (
+            <Card key={num} className="aspect-square flex items-center justify-center bg-todoDarkGray">
+              <span className="text-todoMediumGray">pic {num}</span>
+            </Card>
+          ))}
+        </div>
+
+        {/* Profile Description */}
+        <Card className="w-full p-4 bg-todoDarkGray">
+          <p className="text-white">{userData.description}</p>
+        </Card>
+
+        {/* Hobbies Section */}
+        <Card className="w-full p-4 bg-todoDarkGray">
+          <h3 className="text-white text-center mb-2">Hobbies</h3>
+          <HobbiesDialog
+            selectedHobbies={selectedHobbies}
+            onHobbiesChange={setSelectedHobbies}
+          />
+        </Card>
+
+        {/* Upcoming Trips */}
+        <Card className="w-full p-4 bg-todoDarkGray">
+          <h3 className="text-white text-center mb-2">Ближайшие поездки</h3>
+          <Button variant="outline" className="w-full">
+            Добавить из сохранённого
+          </Button>
+        </Card>
+
+        {/* Account Settings */}
+        <Button 
+          variant="outline" 
+          className="w-full bg-todoDarkGray text-white hover:bg-todoDarkGray/80"
+        >
+          Поменять пароль, почту или номер телефона
+        </Button>
+
+        {/* Forward Button */}
+        <Button 
+          className="w-full bg-todoYellow text-black hover:bg-yellow-400 text-xl py-6"
+          onClick={() => navigate('/ai-trip')}
+        >
+          Вперёд!
+        </Button>
       </div>
     </PageLayout>
   );
