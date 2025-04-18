@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
@@ -18,14 +19,22 @@ const Profile = () => {
   if (!isLoggedIn) {
     return (
       <PageLayout title="ТуДуТрип - Профиль" description="Создайте профиль">
-        <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 py-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">Сохраняй свои маршруты</h1>
-          <p className="mb-6">
-            Уже есть аккаунт?{' '}
-            <Link to="/login" className="text-todoYellow hover:underline">
-              Войти
-            </Link>
-          </p>
+        <div className="flex flex-col items-center justify-center min-h-[80vh]">
+          <div className="max-w-md w-full p-8 rounded-lg bg-todoDarkGray">
+            <h1 className="text-3xl font-bold mb-6 text-todoYellow">Сохраняй свои маршруты</h1>
+            <p className="text-lg mb-8 text-white">
+              Уже есть аккаунт?{' '}
+              <Link to="/login" className="text-todoYellow hover:underline font-medium">
+                Войти
+              </Link>
+            </p>
+            <Button 
+              onClick={() => navigate('/login')}
+              className="w-full bg-todoYellow text-black hover:bg-yellow-400 text-lg py-6"
+            >
+              Создать аккаунт
+            </Button>
+          </div>
         </div>
       </PageLayout>
     );
