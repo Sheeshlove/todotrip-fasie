@@ -80,3 +80,4 @@ const AITrip = () => {
 };
 
 export default AITrip;
+// check if the new lines are added correctly
