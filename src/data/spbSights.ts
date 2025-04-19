@@ -91,3 +91,21 @@ export const spbSights: Sight[] = [
     imageUrl: '/placeholder.svg'
   }
 ];
+
+import { Sight } from '@/components/RouteSelection/SightCard';
+
+export const spbSights: Sight[] = [
+  // ...existing sights...
+];
+
+export function preloadSightImages() {
+  spbSights.forEach((sight) => {
+    if (sight.imageUrl) {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = sight.imageUrl;
+      document.head.appendChild(link);
+    }
+  });
+}
