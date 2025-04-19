@@ -29,7 +29,7 @@ const Profile = () => {
               </Link>
             </p>
             <Button 
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/register')}
               className="w-full bg-todoYellow text-black hover:bg-yellow-400 text-lg py-6"
             >
               Создать аккаунт
