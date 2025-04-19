@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
@@ -12,8 +11,14 @@ const Profile = () => {
   const navigate = useNavigate();
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
   
-  // Simulated isLoggedIn state - in a real app this would come from your auth context
-  const isLoggedIn = false; // This should be replaced with actual auth check
+  // Test account validation
+  const testEmail = "login_admin";
+  const testPassword = "password_admin";
+  
+  // Simulated isLoggedIn state with test account check
+  const isLoggedIn = 
+    localStorage.getItem('testEmail') === testEmail && 
+    localStorage.getItem('testPassword') === testPassword;
   
   // Logged out view
   if (!isLoggedIn) {
@@ -28,6 +33,17 @@ const Profile = () => {
                 Войти
               </Link>
             </p>
+            <Button 
+              onClick={() => {
+                // Set test account credentials for demo purposes
+                localStorage.setItem('testEmail', testEmail);
+                localStorage.setItem('testPassword', testPassword);
+                window.location.reload(); // Refresh to update login state
+              }}
+              className="w-full bg-todoYellow text-black hover:bg-yellow-400 text-lg py-6 mb-4"
+            >
+              Тестовый вход
+            </Button>
             <Button 
               onClick={() => navigate('/register')}
               className="w-full bg-todoYellow text-black hover:bg-yellow-400 text-lg py-6"
