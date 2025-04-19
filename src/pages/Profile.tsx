@@ -100,7 +100,7 @@ const Profile = () => {
   };
 
   return (
-    <PageLayout title="ToDoTrip - Профиль" description="Ваш профиль">
+    <PageLayout title="ТуДуТрип - Профиль" description="Ваш профиль">
       <div className="flex flex-col items-center gap-6 py-8 px-4">
         <h1 className="text-4xl font-bold text-todoYellow">ТуДуТрип</h1>
         
