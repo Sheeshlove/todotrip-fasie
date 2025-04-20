@@ -91,3 +91,15 @@ export const spbSights: Sight[] = [
     imageUrl: '/placeholder.svg'
   }
 ];
+
+export function preloadSightImages() {
+  spbSights.forEach((sight) => {
+    if (sight.imageUrl) {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = sight.imageUrl;
+      document.head.appendChild(link);
+    }
+  });
+}
