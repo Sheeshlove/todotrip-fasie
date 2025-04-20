@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
@@ -6,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { HobbiesDialog } from '@/components/HobbiesDialog';
+import { SavedRoutesDialog } from '@/components/SavedRoutesDialog';
 import { User, ImagePlus } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -26,11 +26,9 @@ const Profile = () => {
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   
-  // Test account validation
   const testEmail = "login_admin";
   const testPassword = "password_admin";
   
-  // Simulated isLoggedIn state with test account check
   const isLoggedIn = 
     localStorage.getItem('testEmail') === testEmail && 
     localStorage.getItem('testPassword') === testPassword;
@@ -57,7 +55,6 @@ const Profile = () => {
     }
   };
 
-  // Logged out view
   if (!isLoggedIn) {
     return (
       <PageLayout title="ТуДуТрип - Профиль" description="Создайте профиль">
@@ -72,10 +69,9 @@ const Profile = () => {
             </p>
             <Button 
               onClick={() => {
-                // Set test account credentials for demo purposes
                 localStorage.setItem('testEmail', testEmail);
                 localStorage.setItem('testPassword', testPassword);
-                window.location.reload(); // Refresh to update login state
+                window.location.reload();
               }}
               className="w-full bg-todoYellow text-black hover:bg-yellow-400 text-lg py-6 mb-4"
             >
@@ -93,7 +89,6 @@ const Profile = () => {
     );
   }
 
-  // Logged in view
   const userData = {
     name: "User_name",
     age: "user_age",
@@ -104,7 +99,6 @@ const Profile = () => {
       <div className="flex flex-col items-center gap-6 py-8 px-4">
         <h1 className="text-4xl font-bold text-todoYellow">ТуДуТрип</h1>
         
-        {/* Main Profile Picture */}
         <div className="relative w-full max-w-[300px] aspect-square">
           <Card className="w-full h-full flex items-center justify-center bg-todoDarkGray">
             <Avatar className="w-full h-full rounded-lg">
@@ -132,13 +126,11 @@ const Profile = () => {
           </Card>
         </div>
 
-        {/* User Info */}
         <div className="text-xl">
           <span className="text-todoYellow">{userData.name}</span>
           <span>, {userData.age}</span>
         </div>
 
-        {/* Photo Gallery */}
         <div className="w-full">
           <Carousel className="w-full">
             <CarouselContent>
@@ -169,7 +161,6 @@ const Profile = () => {
           />
         </div>
 
-        {/* Profile Description */}
         <Card className="w-full p-4 bg-todoDarkGray">
           <h3 className="text-white mb-2">Описание профиля</h3>
           <Textarea
@@ -180,7 +171,6 @@ const Profile = () => {
           />
         </Card>
 
-        {/* Hobbies Section */}
         <Card className="w-full p-4 bg-todoDarkGray">
           <Input
             value={selectedHobbies.join(', ')}
@@ -194,15 +184,11 @@ const Profile = () => {
           />
         </Card>
 
-        {/* Upcoming Trips */}
         <Card className="w-full p-4 bg-todoDarkGray">
           <h3 className="text-white text-center mb-2">Ближайшие поездки</h3>
-          <Button variant="outline" className="w-full">
-            Добавить из сохранённого
-          </Button>
+          <SavedRoutesDialog />
         </Card>
 
-        {/* Account Settings */}
         <Button 
           variant="outline" 
           className="w-full bg-todoDarkGray text-white hover:bg-todoDarkGray/80"
@@ -211,7 +197,6 @@ const Profile = () => {
           Поменять пароль, почту или номер телефона
         </Button>
 
-        {/* Forward Button */}
         <Button 
           className="w-full bg-todoYellow text-black hover:bg-yellow-400 text-xl py-6"
           onClick={() => navigate('/ai-trip')}
