@@ -10,6 +10,7 @@ import OnboardingScreen from "./components/OnboardingScreen";
 import Home from "./pages/Home";
 import AITrip from "./pages/AITrip";
 import Dating from "./pages/Dating";
+import Partners from "./pages/Partners";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -57,6 +58,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/ai-trip" element={<AITrip />} />
+              <Route path="/partners" element={<Partners />} />
               <Route path="/dating" element={<Dating />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/login" element={<Login />} />
@@ -72,4 +74,3 @@ const App = () => {
 };
 
 export default App;
-
