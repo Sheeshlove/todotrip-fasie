@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -57,6 +58,7 @@ const App = () => {
     setShowOnboarding(false);
   };
 
+  // Render app without BrowserRouter during onboarding
   if (showOnboarding) {
     return (
       <QueryClientProvider client={queryClient}>
@@ -74,6 +76,7 @@ const App = () => {
     );
   }
 
+  // Render app with BrowserRouter after onboarding
   return (
     <QueryClientProvider client={queryClient}>
       <HelmetProvider>
