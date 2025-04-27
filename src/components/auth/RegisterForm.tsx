@@ -10,9 +10,10 @@ import { AccountInfoFields } from "./AccountInfoFields";
 
 interface RegisterFormProps {
   onSubmit: (values: RegisterFormValues) => Promise<void>;
+  isLoading?: boolean;
 }
 
-export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
+export const RegisterForm = ({ onSubmit, isLoading }: RegisterFormProps) => {
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
 
   const form = useForm<RegisterFormValues>({
@@ -44,8 +45,9 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
         <Button 
           type="submit" 
           className="w-full bg-todoYellow text-black hover:bg-yellow-400"
+          disabled={isLoading}
         >
-          Создать аккаунт
+          {isLoading ? 'Создание...' : 'Создать аккаунт'}
         </Button>
       </form>
     </Form>

@@ -11,9 +11,11 @@ const Register = () => {
   const navigate = useNavigate();
   const { signUp } = useAuth();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (values: RegisterFormValues) => {
     try {
+      setIsLoading(true);
       await signUp(values.email, values.password, {
         name: values.name,
         hobbies: values.hobbies,
@@ -21,8 +23,13 @@ const Register = () => {
         age: values.age
       });
       navigate('/create-profile');
-    } catch (error) {
-      setShowLoginDialog(true);
+    } catch (error: any) {
+      // Check if the error is due to user already registered
+      if (error.message?.toLowerCase().includes('already registered')) {
+        setShowLoginDialog(true);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -33,7 +40,7 @@ const Register = () => {
           <div className="bg-todoDarkGray rounded-lg p-8">
             <h1 className="text-3xl font-bold mb-6 text-todoYellow">Создание аккаунта</h1>
             
-            <RegisterForm onSubmit={onSubmit} />
+            <RegisterForm onSubmit={onSubmit} isLoading={isLoading} />
 
             <p className="text-sm text-center text-white mt-4">
               Уже есть аккаунт?{" "}

@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { AuthState, UserProfile } from '@/lib/types/auth';
 import { toast } from 'sonner';
@@ -19,7 +18,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     profile: null,
     loading: true,
   });
-  const navigate = useNavigate();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -70,7 +68,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       if (error) throw error;
       toast.success('Успешный вход');
-      navigate('/profile');
     } catch (error) {
       toast.error('Ошибка входа: ' + (error as Error).message);
       throw error;
@@ -88,7 +85,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       if (error) throw error;
       toast.success('Регистрация успешна!');
-      navigate('/create-profile');
     } catch (error) {
       toast.error('Ошибка регистрации: ' + (error as Error).message);
       throw error;
@@ -100,7 +96,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       setState({ user: null, profile: null, loading: false });
-      navigate('/login');
     } catch (error) {
       toast.error('Ошибка выхода: ' + (error as Error).message);
       throw error;
