@@ -26,9 +26,9 @@ interface PartnersFiltersProps {
 }
 
 export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
-  const [priceRange, setPriceRange] = useState<number[]>([0, 99999999]);
+  const [priceRange, setPriceRange] = useState<number[]>([0, 350000]);
   const [minPrice, setMinPrice] = useState("0");
-  const [maxPrice, setMaxPrice] = useState("99999999");
+  const [maxPrice, setMaxPrice] = useState("350000");
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [allInclusive, setAllInclusive] = useState(false);
   const [hotOffers, setHotOffers] = useState(false);
@@ -57,9 +57,9 @@ export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
   };
 
   const handleReset = () => {
-    setPriceRange([0, 99999999]);
+    setPriceRange([0, 350000]);
     setMinPrice("0");
-    setMaxPrice("99999999");
+    setMaxPrice("350000");
     setSortBy(null);
     setAllInclusive(false);
     setHotOffers(false);
@@ -105,7 +105,7 @@ export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
         <Slider
           value={priceRange}
           min={0}
-          max={99999999}
+          max={350000}
           step={1000}
           onValueChange={handlePriceRangeChange}
           className="py-4"

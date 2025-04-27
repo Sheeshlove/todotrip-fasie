@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 
 interface Offer {
@@ -14,6 +15,8 @@ interface FilterState {
   allInclusive: boolean;
   hotOffers: boolean;
   aiRecommended: boolean;
+  dateRange?: [Date | null, Date | null];
+  searchQuery?: string;
 }
 
 interface OffersResponse {
@@ -33,6 +36,9 @@ const fetchOffers = async (page: number, filters: FilterState): Promise<OffersRe
     allInclusive: filters.allInclusive.toString(),
     hotOffers: filters.hotOffers.toString(),
     aiRecommended: filters.aiRecommended.toString(),
+    search: filters.searchQuery || '',
+    startDate: filters.dateRange?.[0]?.toISOString() || '',
+    endDate: filters.dateRange?.[1]?.toISOString() || '',
   });
 
   const response = await fetch(`/api/offers?${queryParams}`);
@@ -46,8 +52,5 @@ export const useOffers = (page: number, filters: FilterState) => {
   return useQuery({
     queryKey: ['offers', page, filters],
     queryFn: () => fetchOffers(page, filters),
-    keepPreviousData: true,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 30 * 60 * 1000, // 30 minutes
   });
-}; 
+};
