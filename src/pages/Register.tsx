@@ -35,7 +35,12 @@ const Register = () => {
 
   const onSubmit = async (values: RegisterFormValues) => {
     try {
-      await signUp(values.email, values.password);
+      await signUp(values.email, values.password, {
+        name: values.name,
+        hobbies: values.hobbies,
+        description: values.description,
+        age: values.age
+      });
     } catch (error) {
       setShowLoginDialog(true);
     }
@@ -174,7 +179,7 @@ const Register = () => {
                   type="submit" 
                   className="w-full bg-todoYellow text-black hover:bg-yellow-400"
                 >
-                  Создать аккаунт
+                  ��оздать аккаунт
                 </Button>
 
                 <p className="text-sm text-center text-white mt-4">
