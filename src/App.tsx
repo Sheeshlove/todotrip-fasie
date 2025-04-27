@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { AuthProvider } from './context/AuthContext';
 import OnboardingScreen from "./components/OnboardingScreen";
 import Home from "./pages/Home";
 import AITrip from "./pages/AITrip";
@@ -39,7 +40,6 @@ const App = () => {
       setShowOnboarding(false);
     }
 
-    // Check if device is desktop
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
     };
@@ -81,22 +81,24 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <ErrorBoundary>
-              {isDesktop && <CustomCursor />}
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/ai-trip" element={<AITrip />} />
-                <Route path="/partners" element={<Partners />} />
-                <Route path="/partners/:id" element={<PartnerDetails />} />
-                <Route path="/dating" element={<Dating />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </ErrorBoundary>
+            <AuthProvider>
+              <ErrorBoundary>
+                {isDesktop && <CustomCursor />}
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/ai-trip" element={<AITrip />} />
+                  <Route path="/partners" element={<Partners />} />
+                  <Route path="/partners/:id" element={<PartnerDetails />} />
+                  <Route path="/dating" element={<Dating />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ErrorBoundary>
+            </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
       </HelmetProvider>

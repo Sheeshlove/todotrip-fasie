@@ -2,6 +2,7 @@ import PageLayout from '@/components/PageLayout';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,15 +17,8 @@ import {
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   
-  const handleLogout = () => {
-    // Clear test account credentials
-    localStorage.removeItem('testEmail');
-    localStorage.removeItem('testPassword');
-    // Navigate to profile page which will show login screen
-    navigate('/profile');
-  };
-
   return (
     <PageLayout title="ТуДуТрип - Настройки" description="Настройки профиля">
       <div className="flex flex-col items-center justify-center min-h-[80vh] p-4">
@@ -85,7 +79,7 @@ const Settings = () => {
                   Нет
                 </AlertDialogCancel>
                 <AlertDialogAction 
-                  onClick={handleLogout}
+                  onClick={signOut}
                   className="bg-[#ea384c] text-white hover:bg-[#ea384c]/80"
                 >
                   Да

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,9 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { HobbiesDialog } from "@/components/HobbiesDialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useAuth } from '@/context/AuthContext';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { signUp } = useAuth();
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
 
@@ -33,23 +34,11 @@ const Register = () => {
   });
 
   const onSubmit = async (values: RegisterFormValues) => {
-    // Simulate checking if email/phone exists
-    const emailExists = false; // This would be a real API check
-    const phoneExists = false; // This would be a real API check
-
-    if (emailExists || phoneExists) {
+    try {
+      await signUp(values.email, values.password);
+    } catch (error) {
       setShowLoginDialog(true);
-      return;
     }
-
-    // Here you would normally make an API call to register the user
-    toast.success("Регистрация завершена!", {
-      duration: 3000,
-    });
-    
-    setTimeout(() => {
-      navigate("/profile");
-    }, 1000);
   };
 
   return (

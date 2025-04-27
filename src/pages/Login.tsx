@@ -1,17 +1,16 @@
-
 import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Mail, Lock, Phone } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import PageLayout from '@/components/PageLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-// Login form schema with email/phone validation
 const loginSchema = z.object({
   identifier: z.string().min(1, { message: "Введите email или телефон" }),
   password: z.string().min(1, { message: "Введите пароль" }),
@@ -20,9 +19,9 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
-  const navigate = useNavigate();
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
+  const { signIn } = useAuth();
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -32,33 +31,17 @@ const Login = () => {
     },
   });
   
-  const onSubmit = (values: LoginFormValues) => {
+  const onSubmit = async (values: LoginFormValues) => {
     setLoginError(null);
-    
-    // Simulate login validation
-    const isEmail = values.identifier.includes('@');
-    const isValidPhone = /^\d{10,11}$/.test(values.identifier.replace(/\D/g, ''));
-    
-    if ((loginMethod === 'email' && !isEmail) || (loginMethod === 'phone' && !isValidPhone)) {
-      setLoginError(`Неверный ${loginMethod === 'email' ? 'email' : 'номер телефона'}`);
-      return;
+    try {
+      await signIn(values.identifier, values.password);
+    } catch (error) {
+      setLoginError(`Неверный ${loginMethod === 'email' ? 'email' : 'номер телефона'} или пароль`);
     }
-    
-    if (values.password !== "password123") { // Simulated password check
-      if (loginError) {
-        setLoginError(`Неверный ${loginMethod === 'email' ? 'email' : 'номер телефона'} и пароль`);
-      } else {
-        setLoginError("Неверный пароль");
-      }
-      return;
-    }
-    
-    // Successful login
-    navigate('/profile');
   };
   
   return (
-    <PageLayout title="ToDoTrip - Вход" description="Вход в аккаунт">
+    <PageLayout title="ТуДуТрип - Вход" description="Вход в аккаунт">
       <div className="max-w-md mx-auto py-8">
         <h1 className="text-2xl font-bold mb-6 text-center">Вход в аккаунт</h1>
         
