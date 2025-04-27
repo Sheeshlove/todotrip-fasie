@@ -17,6 +17,7 @@ import Register from "./pages/Register";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
+import CustomCursor from "./components/CustomCursor";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,12 +30,25 @@ const queryClient = new QueryClient({
 
 const App = () => {
   const [showOnboarding, setShowOnboarding] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
     const hasCompletedOnboarding = localStorage.getItem('hasCompletedOnboarding');
     if (hasCompletedOnboarding) {
       setShowOnboarding(false);
     }
+
+    // Check if device is desktop
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+
+    return () => {
+      window.removeEventListener('resize', checkDesktop);
+    };
   }, []);
 
   const handleOnboardingComplete = () => {
@@ -50,6 +64,7 @@ const App = () => {
             <Toaster />
             <Sonner />
             <ErrorBoundary>
+              {isDesktop && <CustomCursor />}
               <OnboardingScreen onComplete={handleOnboardingComplete} />
             </ErrorBoundary>
           </TooltipProvider>
@@ -66,6 +81,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <ErrorBoundary>
+              {isDesktop && <CustomCursor />}
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/ai-trip" element={<AITrip />} />

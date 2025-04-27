@@ -5,6 +5,9 @@
 /* Import Unbounded font with correct format and preload strategy */
 @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@200;400;700;900&display=swap');
 
+/* Import custom cursor styles */
+@import './styles/cursor.css';
+
 @layer base {
   :root {
     --background: 0 0% 0%; /* Black */
