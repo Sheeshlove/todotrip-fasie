@@ -15,19 +15,28 @@ const Register = () => {
   const onSubmit = async (values: RegisterFormValues) => {
     try {
       setIsLoading(true);
+      console.log('Starting registration with values:', {
+        email: values.email,
+        name: values.name,
+        age: values.age,
+        // Don't log password for security reasons
+      });
+      
       await signUp(values.email, values.password, {
         name: values.name,
         hobbies: values.hobbies,
         description: values.description,
         age: values.age
       });
+      
+      console.log('Registration completed without errors');
+      // Navigation is handled by AuthContext's onAuthStateChange
     } catch (error: any) {
+      console.error('Registration error caught in Register component:', error);
       if (error.message?.toLowerCase().includes('already registered')) {
         setShowLoginDialog(true);
-      } else {
-        // Let the toast in AuthContext handle the error message
-        console.error('Registration error:', error);
       }
+      // Let the toast in AuthContext handle other error messages
     } finally {
       setIsLoading(false);
     }

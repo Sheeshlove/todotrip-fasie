@@ -7,6 +7,7 @@ import { registerSchema, type RegisterFormValues } from "@/lib/validations/regis
 import { useState } from "react";
 import { PersonalInfoFields } from "./PersonalInfoFields";
 import { AccountInfoFields } from "./AccountInfoFields";
+import { Loader2 } from "lucide-react";
 
 interface RegisterFormProps {
   onSubmit: (values: RegisterFormValues) => Promise<void>;
@@ -47,7 +48,14 @@ export const RegisterForm = ({ onSubmit, isLoading }: RegisterFormProps) => {
           className="w-full bg-todoYellow text-black hover:bg-yellow-400"
           disabled={isLoading}
         >
-          {isLoading ? 'Создание...' : 'Создать аккаунт'}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Создание...
+            </>
+          ) : (
+            'Создать аккаунт'
+          )}
         </Button>
       </form>
     </Form>

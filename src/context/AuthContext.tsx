@@ -22,30 +22,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
   const navigate = useNavigate();
 
+  // This function handles profile fetching and navigation based on profile existence
+  const handleProfileAndNavigation = async (userId: string, event?: string) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching profile:', error);
+        // If there's an error fetching the profile, assume profile doesn't exist
+        if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
+          console.log('No profile found, redirecting to create-profile');
+          navigate('/create-profile');
+          return;
+        }
+      }
+
+      setState(s => ({ ...s, profile: profile as UserProfile }));
+      
+      // Handle navigation based on profile existence and event
+      if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
+        if (!profile) {
+          console.log('No profile found, redirecting to create-profile');
+          navigate('/create-profile');
+        } else {
+          console.log('Profile found, redirecting to profile page');
+          navigate('/profile');
+        }
+      }
+    } catch (error) {
+      console.error('Error in handleProfileAndNavigation:', error);
+    }
+  };
+
   useEffect(() => {
+    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
+        
         setState(s => ({ ...s, user: session?.user ?? null }));
         
         if (session?.user) {
-          try {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-              
-            setState(s => ({ ...s, profile: profile as UserProfile }));
-            
-            // If user just signed up and has no profile, redirect to create-profile
-            if (event === 'SIGNED_IN' && !profile) {
-              navigate('/create-profile');
-            } else if (event === 'SIGNED_IN') {
-              navigate('/profile');
-            }
-          } catch (error) {
-            console.error('Error fetching profile:', error);
-          }
+          await handleProfileAndNavigation(session.user.id, event);
         } else {
           setState(s => ({ ...s, profile: null }));
           if (event === 'SIGNED_OUT') {
@@ -59,17 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setState(s => ({ ...s, user: session?.user ?? null, loading: false }));
       if (session?.user) {
-        supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data: profile }) => {
-            setState(s => ({ ...s, profile: profile as UserProfile }));
-            if (!profile) {
-              navigate('/create-profile');
-            }
-          });
+        handleProfileAndNavigation(session.user.id);
       }
     });
 
@@ -94,16 +106,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, metadata?: { [key: string]: any }) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: metadata
         }
       });
+      
       if (error) throw error;
+      
+      console.log('Signup successful:', data);
       toast.success('Регистрация успешна!');
+      
+      // We don't need to navigate here, the onAuthStateChange will handle it
     } catch (error) {
+      console.error('Registration error:', error);
       toast.error('Ошибка регистрации: ' + (error as Error).message);
       throw error;
     }
