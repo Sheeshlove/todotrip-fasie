@@ -7,6 +7,9 @@ export interface UserProfile {
   avatar_url: string | null;
   created_at: string | null;
   updated_at: string | null;
+  description: string | null;
+  hobbies: string[] | null;
+  age: string | null;
 }
 
 export interface AuthState {
