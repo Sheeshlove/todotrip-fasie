@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -14,7 +13,19 @@ import {
   Bot,
 } from 'lucide-react';
 
-export function PartnersFilters() {
+interface FilterState {
+  priceRange: [number, number];
+  sortBy: string | null;
+  allInclusive: boolean;
+  hotOffers: boolean;
+  aiRecommended: boolean;
+}
+
+interface PartnersFiltersProps {
+  onFilterChange: (filters: FilterState) => void;
+}
+
+export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
   const [priceRange, setPriceRange] = useState<number[]>([0, 99999999]);
   const [minPrice, setMinPrice] = useState("0");
   const [maxPrice, setMaxPrice] = useState("99999999");
@@ -56,9 +67,8 @@ export function PartnersFilters() {
   };
 
   const handleApplyFilters = () => {
-    // In a real app, this would apply the filters to the offers
-    console.log({
-      priceRange,
+    onFilterChange({
+      priceRange: [priceRange[0], priceRange[1]],
       sortBy,
       allInclusive,
       hotOffers,

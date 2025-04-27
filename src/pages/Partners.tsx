@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonVariant } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Filter } from 'lucide-react';
 import { PartnersFilters } from '@/components/PartnersFilters';
@@ -14,7 +14,6 @@ interface Offer {
   description: string;
   price: number;
   image?: string;
-  // Add other relevant fields
 }
 
 interface FilterState {
@@ -23,6 +22,10 @@ interface FilterState {
   allInclusive: boolean;
   hotOffers: boolean;
   aiRecommended: boolean;
+}
+
+interface PartnersFiltersProps {
+  onFilterChange: (filters: FilterState) => void;
 }
 
 const Partners = () => {
@@ -94,6 +97,21 @@ const Partners = () => {
           <PartnersFilters onFilterChange={handleFilterChange} />
         </Card>
       )}
+
+      <div className="w-full h-[1200px]">
+        <object 
+          data="https://scantour.ru/testtest.html?my_module=todotrip.work@gmail.com" 
+          width="100%" 
+          height="1200"
+        >
+          <embed 
+            src="https://scantour.ru/testtest.html?my_module=321" 
+            width="100%" 
+            height="1200"
+          />
+          Error: Embedded data could not be displayed.
+        </object>
+      </div>
 
       <ScrollArea className="flex-1 p-4">
         {isLoading ? (
