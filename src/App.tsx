@@ -15,9 +15,8 @@ import PartnerDetails from "./pages/PartnerDetails";
 import CreateProfile from "./pages/CreateProfile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Settings from "./pages/Settings";
-import NotFound from "./pages/NotFound";
 import Contact from "./pages/Contact";
+import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CustomCursor from "./components/CustomCursor";
 
@@ -57,7 +56,6 @@ const App = () => {
     setShowOnboarding(false);
   };
 
-  // Render app without BrowserRouter during onboarding
   if (showOnboarding) {
     return (
       <QueryClientProvider client={queryClient}>
@@ -75,7 +73,6 @@ const App = () => {
     );
   }
 
-  // Render app with BrowserRouter after onboarding
   return (
     <QueryClientProvider client={queryClient}>
       <HelmetProvider>
@@ -95,7 +92,6 @@ const App = () => {
                   <Route path="/create-profile" element={<CreateProfile />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
-                  <Route path="/settings" element={<Settings />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
