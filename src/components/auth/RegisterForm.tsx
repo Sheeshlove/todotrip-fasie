@@ -1,13 +1,12 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { HobbiesDialog } from "@/components/HobbiesDialog";
 import { registerSchema, type RegisterFormValues } from "@/lib/validations/register";
 import { useState } from "react";
+import { PersonalInfoFields } from "./PersonalInfoFields";
+import { AccountInfoFields } from "./AccountInfoFields";
 
 interface RegisterFormProps {
   onSubmit: (values: RegisterFormValues) => Promise<void>;
@@ -33,125 +32,14 @@ export const RegisterForm = ({ onSubmit }: RegisterFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">Имя</FormLabel>
-              <FormControl>
-                <Input placeholder="Ваше имя" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="age"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">Возраст</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="Ваш возраст" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="hobbies"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">Хобби (необязательно)</FormLabel>
-              <HobbiesDialog
-                selectedHobbies={selectedHobbies}
-                onHobbiesChange={(hobbies) => {
-                  setSelectedHobbies(hobbies);
-                  field.onChange(hobbies);
-                }}
-              />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">Описание (необязательно)</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Расскажите о себе"
-                  className="resize-none"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">Телефон</FormLabel>
-              <FormControl>
-                <Input placeholder="+7" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">Email</FormLabel>
-              <FormControl>
-                <Input type="email" placeholder="your@email.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">Пароль</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="Минимум 8 символов" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white">Подтвердите пароль</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="Повторите пароль" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="space-y-8">
+          <PersonalInfoFields
+            form={form}
+            selectedHobbies={selectedHobbies}
+            onHobbiesChange={setSelectedHobbies}
+          />
+          <AccountInfoFields form={form} />
+        </div>
 
         <Button 
           type="submit" 
