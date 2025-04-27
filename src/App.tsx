@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -11,13 +10,22 @@ import Home from "./pages/Home";
 import AITrip from "./pages/AITrip";
 import Dating from "./pages/Dating";
 import Partners from "./pages/Partners";
+import PartnerDetails from "./pages/PartnerDetails";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import ErrorBoundary from "./components/ErrorBoundary";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => {
   const [showOnboarding, setShowOnboarding] = useState(true);
@@ -41,7 +49,9 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <OnboardingScreen onComplete={handleOnboardingComplete} />
+            <ErrorBoundary>
+              <OnboardingScreen onComplete={handleOnboardingComplete} />
+            </ErrorBoundary>
           </TooltipProvider>
         </HelmetProvider>
       </QueryClientProvider>
@@ -55,17 +65,20 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/ai-trip" element={<AITrip />} />
-              <Route path="/partners" element={<Partners />} />
-              <Route path="/dating" element={<Dating />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/ai-trip" element={<AITrip />} />
+                <Route path="/partners" element={<Partners />} />
+                <Route path="/partners/:id" element={<PartnerDetails />} />
+                <Route path="/dating" element={<Dating />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </ErrorBoundary>
           </BrowserRouter>
         </TooltipProvider>
       </HelmetProvider>
