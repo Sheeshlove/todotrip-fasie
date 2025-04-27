@@ -88,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       if (error) throw error;
       toast.success('Регистрация успешна!');
-      navigate('/profile');
+      navigate('/create-profile');
     } catch (error) {
       toast.error('Ошибка регистрации: ' + (error as Error).message);
       throw error;

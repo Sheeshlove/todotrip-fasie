@@ -94,6 +94,7 @@ const App = () => {
                   <Route path="/partners/:id" element={<PartnerDetails />} />
                   <Route path="/dating" element={<Dating />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/create-profile" element={<CreateProfile />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/settings" element={<Settings />} />
