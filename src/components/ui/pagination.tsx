@@ -1,18 +1,67 @@
 import * as React from "react"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
+import { Button } from '@/components/ui/button'
 
 import { cn } from "@/lib/utils"
 import { ButtonProps, buttonVariants } from "@/components/ui/button"
 
-const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
-  <nav
-    role="navigation"
-    aria-label="pagination"
-    className={cn("mx-auto flex w-full justify-center", className)}
-    {...props}
-  />
-)
-Pagination.displayName = "Pagination"
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
+const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const maxVisiblePages = 5;
+  const halfVisiblePages = Math.floor(maxVisiblePages / 2);
+
+  let visiblePages = pages;
+  if (totalPages > maxVisiblePages) {
+    const start = Math.max(1, currentPage - halfVisiblePages);
+    const end = Math.min(totalPages, start + maxVisiblePages - 1);
+    visiblePages = pages.slice(start - 1, end);
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-2 mt-8 font-unbounded">
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="border-todoYellow text-todoYellow hover:bg-todoBlack/20"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
+
+      {visiblePages.map((page) => (
+        <Button
+          key={page}
+          variant={currentPage === page ? "default" : "outline"}
+          onClick={() => onPageChange(page)}
+          className={
+            currentPage === page
+              ? "bg-todoYellow text-black hover:bg-yellow-400"
+              : "border-todoYellow text-todoYellow hover:bg-todoBlack/20"
+          }
+        >
+          {page}
+        </Button>
+      ))}
+
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="border-todoYellow text-todoYellow hover:bg-todoBlack/20"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+};
 
 const PaginationContent = React.forwardRef<
   HTMLUListElement,
