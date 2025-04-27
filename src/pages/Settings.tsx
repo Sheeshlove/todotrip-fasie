@@ -1,4 +1,3 @@
-
 import PageLayout from '@/components/PageLayout';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -56,6 +55,14 @@ const Settings = () => {
             Поменять пароль
           </Button>
 
+          <Button 
+            variant="outline" 
+            className="w-full bg-todoBlack text-white hover:bg-todoBlack/80"
+            onClick={() => navigate('/contact')}
+          >
+            Связаться с нами
+          </Button>
+
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button 
@@ -93,4 +100,3 @@ const Settings = () => {
 };
 
 export default Settings;
-
