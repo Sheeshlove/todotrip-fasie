@@ -5,12 +5,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import PageLayout from '@/components/PageLayout';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { HobbiesDialog } from '@/components/HobbiesDialog';
-import { SavedRoutesDialog } from '@/components/SavedRoutesDialog';
-import { ProfileImageUpload } from '@/components/ProfileImageUpload';
+import { ProfileHeader } from '@/components/profile/ProfileHeader';
+import { ProfileInfo } from '@/components/profile/ProfileInfo';
+import { ProfileHobbies } from '@/components/profile/ProfileHobbies';
+import { ProfileTrips } from '@/components/profile/ProfileTrips';
 import { toast } from 'sonner';
 
 const Profile = () => {
@@ -60,73 +58,32 @@ const Profile = () => {
   return (
     <PageLayout title="ТуДуТрип - Профиль" description="Ваш профиль">
       <div className="flex flex-col items-center gap-6 py-8 px-4">
-        <h1 className="text-4xl font-bold text-todoYellow">ТуДуТрип</h1>
-        
-        <ProfileImageUpload 
+        <ProfileHeader
           userId={user.id}
-          currentImage={profile?.avatar_url}
+          email={user.email}
+          age={profile?.age}
+          avatarUrl={profile?.avatar_url}
           onImageUpdate={(url) => handleProfileUpdate(url)}
         />
 
-        <div className="text-xl">
-          <span className="text-todoYellow">{user.email}</span>
-          {age && <span>, {age}</span>}
-        </div>
+        <ProfileInfo
+          age={age}
+          description={description}
+          onAgeChange={setAge}
+          onDescriptionChange={setDescription}
+          onSave={() => handleProfileUpdate()}
+          saving={saving}
+        />
 
-        <Card className="w-full p-4 bg-todoDarkGray">
-          <h3 className="text-white mb-2">Возраст</h3>
-          <Input
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-            placeholder="Ваш возраст"
-            className="bg-todoBlack text-white border-none mb-4"
-          />
-          <Button 
-            onClick={() => handleProfileUpdate()}
-            disabled={saving}
-            className="w-full"
-          >
-            Сохранить
-          </Button>
-        </Card>
+        <ProfileHobbies
+          selectedHobbies={selectedHobbies}
+          onHobbiesChange={(hobbies) => {
+            setSelectedHobbies(hobbies);
+            handleProfileUpdate();
+          }}
+        />
 
-        <Card className="w-full p-4 bg-todoDarkGray">
-          <h3 className="text-white mb-2">Описание профиля</h3>
-          <Textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="в начале было слово..."
-            className="bg-todoBlack text-white border-none mb-4"
-          />
-          <Button 
-            onClick={() => handleProfileUpdate()}
-            disabled={saving}
-            className="w-full"
-          >
-            Сохранить
-          </Button>
-        </Card>
-
-        <Card className="w-full p-4 bg-todoDarkGray">
-          <Input
-            value={selectedHobbies.join(', ')}
-            readOnly
-            placeholder="Хобби"
-            className="bg-todoBlack text-white border-none mb-2"
-          />
-          <HobbiesDialog
-            selectedHobbies={selectedHobbies}
-            onHobbiesChange={(hobbies) => {
-              setSelectedHobbies(hobbies);
-              handleProfileUpdate();
-            }}
-          />
-        </Card>
-
-        <Card className="w-full p-4 bg-todoDarkGray">
-          <h3 className="text-white text-center mb-2">Ближайшие поездки</h3>
-          <SavedRoutesDialog />
-        </Card>
+        <ProfileTrips />
 
         <Button 
           variant="outline" 
