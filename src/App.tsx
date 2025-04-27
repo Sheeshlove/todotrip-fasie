@@ -14,6 +14,7 @@ import Dating from "./pages/Dating";
 import Partners from "./pages/Partners";
 import PartnerDetails from "./pages/PartnerDetails";
 import Profile from "./pages/Profile";
+import CreateProfile from "./pages/CreateProfile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Settings from "./pages/Settings";
