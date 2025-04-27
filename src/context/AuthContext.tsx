@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,7 +21,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
   const navigate = useNavigate();
 
-  // This function handles profile fetching and navigation based on profile existence
   const handleProfileAndNavigation = async (userId: string, event?: string) => {
     try {
       const { data: profile, error } = await supabase
@@ -33,7 +31,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         console.error('Error fetching profile:', error);
-        // If there's an error fetching the profile, assume profile doesn't exist
         if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
           console.log('No profile found, redirecting to create-profile');
           navigate('/create-profile');
@@ -43,7 +40,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setState(s => ({ ...s, profile: profile as UserProfile }));
       
-      // Handle navigation based on profile existence and event
       if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
         if (!profile) {
           console.log('No profile found, redirecting to create-profile');
@@ -59,7 +55,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
@@ -77,7 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
-    // Initial session check
     supabase.auth.getSession().then(({ data: { session } }) => {
       setState(s => ({ ...s, user: session?.user ?? null, loading: false }));
       if (session?.user) {
@@ -118,8 +112,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       console.log('Signup successful:', data);
       toast.success('Регистрация успешна!');
-      
-      // We don't need to navigate here, the onAuthStateChange will handle it
     } catch (error) {
       console.error('Registration error:', error);
       toast.error('Ошибка регистрации: ' + (error as Error).message);
@@ -131,7 +123,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
       setState({ user: null, profile: null, loading: false });
+      
+      navigate('/login');
+      
+      toast.success('Вы успешно вышли из системы');
     } catch (error) {
       toast.error('Ошибка выхода: ' + (error as Error).message);
       throw error;
