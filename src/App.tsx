@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +22,7 @@ import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CustomCursor from "./components/CustomCursor";
 
+// Create the queryClient outside of the component
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -30,11 +32,11 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => {
-  const [showOnboarding, setShowOnboarding] = useState(true);
-  const [isDesktop, setIsDesktop] = useState(false);
+const App: React.FC = () => {
+  const [showOnboarding, setShowOnboarding] = React.useState(true);
+  const [isDesktop, setIsDesktop] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const hasCompletedOnboarding = localStorage.getItem('hasCompletedOnboarding');
     if (hasCompletedOnboarding) {
       setShowOnboarding(false);
