@@ -1,13 +1,13 @@
+
 import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 const EmbeddedContent = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Preload the content
     const preloadContent = async () => {
       try {
-        // Preload the main content
         await fetch('https://scantour.ru/testtest.html?my_module=todotrip.work@gmail.com', {
           mode: 'no-cors',
           cache: 'force-cache'
@@ -22,24 +22,28 @@ const EmbeddedContent = () => {
     preloadContent();
   }, []);
 
-  if (!isLoaded) {
-    return null;
-  }
-
   return (
-    <object 
-      data="https://scantour.ru/testtest.html?my_module=todotrip.work@gmail.com" 
-      width="100%" 
-      height="1200"
-    >
-      <embed 
-        src="https://scantour.ru/testtest.html?my_module=321" 
-        width="100%" 
-        height="1200"
+    <div className="relative w-full h-[1200px] bg-todoDarkGray rounded-lg overflow-hidden font-unbounded">
+      {!isLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center bg-todoBlack/80 z-10">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="w-8 h-8 text-todoYellow animate-spin" />
+            <p className="text-todoMediumGray">Загрузка предложений партнёров...</p>
+          </div>
+        </div>
+      )}
+      
+      <iframe
+        src="https://scantour.ru/testtest.html?my_module=todotrip.work@gmail.com"
+        className={`w-full h-full border-0 transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        style={{
+          colorScheme: 'dark',
+          fontFamily: 'Unbounded, system-ui, sans-serif'
+        }}
+        loading="lazy"
       />
-      Error: Embedded data could not be displayed.
-    </object>
+    </div>
   );
 };
 
-export default EmbeddedContent; 
+export default EmbeddedContent;

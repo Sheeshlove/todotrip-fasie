@@ -81,9 +81,9 @@ const Partners = () => {
         </Card>
       )}
 
-      <div className="w-full h-[1200px] bg-todoBlack">
+      <div className="max-w-[1400px] mx-auto w-full px-4 py-6">
         <Suspense fallback={
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center justify-center h-[1200px] bg-todoDarkGray rounded-lg">
             <Loader2 className="w-8 h-8 text-todoYellow animate-spin" />
           </div>
         }>
