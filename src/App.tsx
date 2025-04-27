@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -13,7 +12,6 @@ import AITrip from "./pages/AITrip";
 import Dating from "./pages/Dating";
 import Partners from "./pages/Partners";
 import PartnerDetails from "./pages/PartnerDetails";
-import Profile from "./pages/Profile";
 import CreateProfile from "./pages/CreateProfile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -94,7 +92,6 @@ const App = () => {
                   <Route path="/partners" element={<Partners />} />
                   <Route path="/partners/:id" element={<PartnerDetails />} />
                   <Route path="/dating" element={<Dating />} />
-                  <Route path="/profile" element={<Profile />} />
                   <Route path="/create-profile" element={<CreateProfile />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />

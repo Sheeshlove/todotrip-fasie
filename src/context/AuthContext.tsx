@@ -45,8 +45,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log('No profile found, redirecting to create-profile');
           navigate('/create-profile');
         } else {
-          console.log('Profile found, redirecting to profile page');
-          navigate('/profile');
+          console.log('Profile found, redirecting to home');
+          navigate('/');
         }
       }
     } catch (error) {
