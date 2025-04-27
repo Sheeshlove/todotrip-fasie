@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +16,17 @@ import { ProfileImageUpload } from '@/components/ProfileImageUpload';
 import { Loader2 } from 'lucide-react';
 import { profileSchema, passwordChangeSchema, emailChangeSchema } from '@/lib/validations/profile';
 import type { ProfileFormValues, PasswordChangeValues, EmailChangeValues } from '@/lib/validations/profile';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const ProfileEditor = () => {
   const { user, profile, signOut } = useAuth();
@@ -356,6 +366,40 @@ export const ProfileEditor = () => {
                 </Button>
               </form>
             </Form>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-todoDarkGray border-todoBlack mt-6">
+          <CardContent className="pt-6">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="destructive" 
+                  className="w-full"
+                >
+                  Выйти из аккаунта
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-todoDarkGray border-todoBlack">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-white">Выход из аккаунта</AlertDialogTitle>
+                  <AlertDialogDescription className="text-todoMediumGray">
+                    Вы уверены, что хотите выйти из аккаунта?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="bg-transparent text-white hover:bg-transparent hover:text-white/80 border-todoBlack">
+                    Нет
+                  </AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={signOut}
+                    className="bg-[#ea384c] text-white hover:bg-[#ea384c]/80"
+                  >
+                    Да
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </CardContent>
         </Card>
       </TabsContent>
