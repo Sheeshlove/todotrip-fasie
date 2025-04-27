@@ -1,165 +1,94 @@
-import { useState, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
 import PageLayout from '@/components/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { HobbiesDialog } from '@/components/HobbiesDialog';
-import { SavedRoutesDialog } from '@/components/SavedRoutesDialog';
-import { User, ImagePlus } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import { HobbiesDialog } from '@/components/HobbiesDialog';
+import { SavedRoutesDialog } from '@/components/SavedRoutesDialog';
+import { ProfileImageUpload } from '@/components/ProfileImageUpload';
+import { toast } from 'sonner';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
-  const [description, setDescription] = useState('');
-  const [mainImage, setMainImage] = useState<string | null>(null);
-  const [galleryImages, setGalleryImages] = useState<string[]>([]);
-  const mainImageInputRef = useRef<HTMLInputElement>(null);
-  const galleryInputRef = useRef<HTMLInputElement>(null);
-  
-  const testEmail = "login_admin";
-  const testPassword = "password_admin";
-  
-  const isLoggedIn = 
-    localStorage.getItem('testEmail') === testEmail && 
-    localStorage.getItem('testPassword') === testPassword;
-  
-  const handleMainImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setMainImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  const { user, profile } = useAuth();
+  const [selectedHobbies, setSelectedHobbies] = useState<string[]>(profile?.hobbies || []);
+  const [description, setDescription] = useState(profile?.description || '');
+  const [age, setAge] = useState(profile?.age || '');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
+  const handleProfileUpdate = async (avatarUrl?: string) => {
+    if (!user) return;
+
+    try {
+      setSaving(true);
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          hobbies: selectedHobbies,
+          description,
+          age,
+          ...(avatarUrl && { avatar_url: avatarUrl }),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      toast.success('Profile updated successfully');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error('Error updating profile');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleGalleryImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && galleryImages.length < 10) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setGalleryImages(prev => [...prev, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  if (!isLoggedIn) {
-    return (
-      <PageLayout title="ТуДуТрип - Профиль" description="Создайте профиль">
-        <div className="flex flex-col items-center justify-center min-h-[80vh]">
-          <div className="max-w-md w-full p-8 rounded-lg bg-todoDarkGray">
-            <h1 className="text-3xl font-bold mb-6 text-todoYellow">Сохраняй свои маршруты</h1>
-            <p className="text-lg mb-8 text-white">
-              Уже есть аккаунт?{' '}
-              <Link to="/login" className="text-todoYellow hover:underline font-medium">
-                Войти
-              </Link>
-            </p>
-            <Button 
-              onClick={() => {
-                localStorage.setItem('testEmail', testEmail);
-                localStorage.setItem('testPassword', testPassword);
-                window.location.reload();
-              }}
-              className="w-full bg-todoYellow text-black hover:bg-yellow-400 text-lg py-6 mb-4"
-            >
-              Тестовый вход
-            </Button>
-            <Button 
-              onClick={() => navigate('/register')}
-              className="w-full bg-todoYellow text-black hover:bg-yellow-400 text-lg py-6"
-            >
-              Создать аккаунт
-            </Button>
-          </div>
-        </div>
-      </PageLayout>
-    );
+  if (!user) {
+    return null;
   }
-
-  const userData = {
-    name: "User_name",
-    age: "user_age",
-  };
 
   return (
     <PageLayout title="ТуДуТрип - Профиль" description="Ваш профиль">
       <div className="flex flex-col items-center gap-6 py-8 px-4">
         <h1 className="text-4xl font-bold text-todoYellow">ТуДуТрип</h1>
         
-        <div className="relative w-full max-w-[300px] aspect-square">
-          <Card className="w-full h-full flex items-center justify-center bg-todoDarkGray">
-            <Avatar className="w-full h-full rounded-lg">
-              {mainImage ? (
-                <AvatarImage src={mainImage} className="object-cover" />
-              ) : (
-                <AvatarFallback className="w-full h-full bg-todoBlack text-todoYellow">
-                  <User className="w-1/3 h-1/3" />
-                </AvatarFallback>
-              )}
-            </Avatar>
-            <button 
-              className="absolute bottom-4 right-4 bg-todoYellow p-2 rounded-full"
-              onClick={() => mainImageInputRef.current?.click()}
-            >
-              <ImagePlus className="w-6 h-6 text-black" />
-            </button>
-            <input
-              ref={mainImageInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleMainImageUpload}
-            />
-          </Card>
-        </div>
+        <ProfileImageUpload 
+          userId={user.id}
+          currentImage={profile?.avatar_url}
+          onImageUpdate={(url) => handleProfileUpdate(url)}
+        />
 
         <div className="text-xl">
-          <span className="text-todoYellow">{userData.name}</span>
-          <span>, {userData.age}</span>
+          <span className="text-todoYellow">{user.email}</span>
+          {age && <span>, {age}</span>}
         </div>
 
-        <div className="w-full">
-          <Carousel className="w-full">
-            <CarouselContent>
-              {[...galleryImages, null].slice(0, 10).map((image, index) => (
-                <CarouselItem key={index} className="basis-1/4">
-                  <Card 
-                    className="aspect-square flex items-center justify-center bg-todoDarkGray cursor-pointer"
-                    onClick={() => image === null && galleryImages.length < 10 && galleryInputRef.current?.click()}
-                  >
-                    {image ? (
-                      <img src={image} alt={`Gallery ${index + 1}`} className="w-full h-full object-cover" />
-                    ) : (
-                      <ImagePlus className="w-6 h-6 text-todoMediumGray" />
-                    )}
-                  </Card>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-          <input
-            ref={galleryInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleGalleryImageUpload}
+        <Card className="w-full p-4 bg-todoDarkGray">
+          <h3 className="text-white mb-2">Возраст</h3>
+          <Input
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+            placeholder="Ваш возраст"
+            className="bg-todoBlack text-white border-none mb-4"
           />
-        </div>
+          <Button 
+            onClick={() => handleProfileUpdate()}
+            disabled={saving}
+            className="w-full"
+          >
+            Сохранить
+          </Button>
+        </Card>
 
         <Card className="w-full p-4 bg-todoDarkGray">
           <h3 className="text-white mb-2">Описание профиля</h3>
@@ -167,8 +96,15 @@ const Profile = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="в начале было слово..."
-            className="bg-todoBlack text-white border-none"
+            className="bg-todoBlack text-white border-none mb-4"
           />
+          <Button 
+            onClick={() => handleProfileUpdate()}
+            disabled={saving}
+            className="w-full"
+          >
+            Сохранить
+          </Button>
         </Card>
 
         <Card className="w-full p-4 bg-todoDarkGray">
@@ -180,7 +116,10 @@ const Profile = () => {
           />
           <HobbiesDialog
             selectedHobbies={selectedHobbies}
-            onHobbiesChange={setSelectedHobbies}
+            onHobbiesChange={(hobbies) => {
+              setSelectedHobbies(hobbies);
+              handleProfileUpdate();
+            }}
           />
         </Card>
 
@@ -194,7 +133,7 @@ const Profile = () => {
           className="w-full bg-todoDarkGray text-white hover:bg-todoDarkGray/80"
           onClick={() => navigate('/settings')}
         >
-          Поменять пароль, почту или номер телефона
+          Настройки
         </Button>
 
         <Button 
