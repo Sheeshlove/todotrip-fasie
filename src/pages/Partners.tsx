@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { Button, ButtonVariant } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -7,6 +7,9 @@ import { PartnersFilters } from '@/components/PartnersFilters';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+// Lazy load the embedded content
+const EmbeddedContent = lazy(() => import('@/components/EmbeddedContent'));
 
 interface Offer {
   id: string;
@@ -99,18 +102,13 @@ const Partners = () => {
       )}
 
       <div className="w-full h-[1200px]">
-        <object 
-          data="https://scantour.ru/testtest.html?my_module=todotrip.work@gmail.com" 
-          width="100%" 
-          height="1200"
-        >
-          <embed 
-            src="https://scantour.ru/testtest.html?my_module=321" 
-            width="100%" 
-            height="1200"
-          />
-          Error: Embedded data could not be displayed.
-        </object>
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-full">
+            <Loader2 className="w-8 h-8 text-todoYellow animate-spin" />
+          </div>
+        }>
+          <EmbeddedContent />
+        </Suspense>
       </div>
 
       <ScrollArea className="flex-1 p-4">
@@ -149,6 +147,7 @@ const Partners = () => {
                     src={offer.image} 
                     alt={offer.title}
                     className="w-full h-48 object-cover rounded-lg mb-4"
+                    loading="lazy"
                   />
                 )}
                 <h3 className="text-lg font-semibold text-white mb-2">{offer.title}</h3>
