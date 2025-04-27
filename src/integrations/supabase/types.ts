@@ -9,6 +9,60 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      offers: {
+        Row: {
+          ai_recommended: boolean | null
+          all_inclusive: boolean | null
+          created_at: string | null
+          description: string
+          details: string | null
+          duration: string | null
+          hot_offer: boolean | null
+          id: string
+          image: string | null
+          included: string[] | null
+          location: string | null
+          price: number
+          title: string
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          ai_recommended?: boolean | null
+          all_inclusive?: boolean | null
+          created_at?: string | null
+          description: string
+          details?: string | null
+          duration?: string | null
+          hot_offer?: boolean | null
+          id?: string
+          image?: string | null
+          included?: string[] | null
+          location?: string | null
+          price: number
+          title: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          ai_recommended?: boolean | null
+          all_inclusive?: boolean | null
+          created_at?: string | null
+          description?: string
+          details?: string | null
+          duration?: string | null
+          hot_offer?: boolean | null
+          id?: string
+          image?: string | null
+          included?: string[] | null
+          location?: string | null
+          price?: number
+          title?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: string | null
