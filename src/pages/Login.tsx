@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -114,7 +115,7 @@ const Login = () => {
             </Button>
             
             <p className="text-sm text-center mt-4">
-              Ещё нет аккаунта? <Link to="/profile" className="text-todoYellow hover:underline">Создать</Link>
+              Ещё нет аккаунта? <Link to="/register" className="text-todoYellow hover:underline">Создать</Link>
             </p>
           </form>
         </Form>

@@ -1,7 +1,7 @@
 
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Map, Bot, Heart, LogOut, ShoppingBag } from 'lucide-react';
+import { Map, Bot, Heart, LogOut, ShoppingBag, User } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import {
   AlertDialog,
@@ -24,6 +24,7 @@ const BottomMenu = () => {
     { path: '/ai-trip', name: 'Нейросеть', icon: Bot },
     { path: '/partners', name: 'Партнёры', icon: ShoppingBag },
     { path: '/dating', name: 'Общение', icon: Heart },
+    { path: '/profile', name: 'Профиль', icon: User },
   ];
   
   return (

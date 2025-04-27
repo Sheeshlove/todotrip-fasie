@@ -16,6 +16,7 @@ import CreateProfile from "./pages/CreateProfile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Contact from "./pages/Contact";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CustomCursor from "./components/CustomCursor";
@@ -92,6 +93,7 @@ const App = () => {
                   <Route path="/create-profile" element={<CreateProfile />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
