@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { LoginDialog } from "@/components/auth/LoginDialog";
@@ -8,7 +8,6 @@ import PageLayout from "@/components/PageLayout";
 import type { RegisterFormValues } from "@/lib/validations/register";
 
 const Register = () => {
-  const navigate = useNavigate();
   const { signUp } = useAuth();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,11 +21,12 @@ const Register = () => {
         description: values.description,
         age: values.age
       });
-      navigate('/create-profile');
     } catch (error: any) {
-      // Check if the error is due to user already registered
       if (error.message?.toLowerCase().includes('already registered')) {
         setShowLoginDialog(true);
+      } else {
+        // Let the toast in AuthContext handle the error message
+        console.error('Registration error:', error);
       }
     } finally {
       setIsLoading(false);

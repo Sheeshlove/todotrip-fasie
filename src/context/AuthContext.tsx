@@ -1,8 +1,10 @@
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import type { AuthState, UserProfile } from '@/lib/types/auth';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType extends AuthState {
   signIn: (email: string, password: string) => Promise<void>;
@@ -18,6 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     profile: null,
     loading: true,
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -31,16 +34,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .select('*')
               .eq('id', session.user.id)
               .single();
+              
             setState(s => ({ ...s, profile: profile as UserProfile }));
+            
+            // If user just signed up and has no profile, redirect to create-profile
+            if (event === 'SIGNED_IN' && !profile) {
+              navigate('/create-profile');
+            } else if (event === 'SIGNED_IN') {
+              navigate('/profile');
+            }
           } catch (error) {
             console.error('Error fetching profile:', error);
           }
         } else {
           setState(s => ({ ...s, profile: null }));
+          if (event === 'SIGNED_OUT') {
+            navigate('/login');
+          }
         }
       }
     );
 
+    // Initial session check
     supabase.auth.getSession().then(({ data: { session } }) => {
       setState(s => ({ ...s, user: session?.user ?? null, loading: false }));
       if (session?.user) {
@@ -51,6 +66,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .single()
           .then(({ data: profile }) => {
             setState(s => ({ ...s, profile: profile as UserProfile }));
+            if (!profile) {
+              navigate('/create-profile');
+            }
           });
       }
     });
@@ -58,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   const signIn = async (email: string, password: string) => {
     try {
