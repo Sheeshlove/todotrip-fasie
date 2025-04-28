@@ -1,4 +1,3 @@
-
 import * as z from "zod";
 
 export const profileSchema = z.object({
@@ -12,8 +11,9 @@ export const passwordChangeSchema = z.object({
   currentPassword: z.string().min(1, { message: "Введите текущий пароль" }),
   newPassword: z.string()
     .min(8, { message: "Пароль должен быть не менее 8 символов" })
-    .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, {
-      message: "Пароль должен содержать буквы и цифры"
+    .max(128, { message: "Пароль не должен превышать 128 символов" })
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
+      message: "Пароль должен содержать минимум одну заглавную букву, одну строчную букву, одну цифру и один специальный символ"
     }),
   confirmPassword: z.string(),
 }).refine((data) => data.newPassword === data.confirmPassword, {

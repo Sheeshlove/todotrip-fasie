@@ -1,14 +1,16 @@
-
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { RegisterFormValues } from "@/lib/validations/register";
+import { PasswordStrength } from "@/components/ui/password-strength";
 
 interface AccountInfoFieldsProps {
   form: UseFormReturn<RegisterFormValues>;
 }
 
 export const AccountInfoFields = ({ form }: AccountInfoFieldsProps) => {
+  const password = form.watch("password");
+
   return (
     <div className="space-y-6">
       <FormField
@@ -48,6 +50,7 @@ export const AccountInfoFields = ({ form }: AccountInfoFieldsProps) => {
             <FormControl>
               <Input type="password" placeholder="Минимум 8 символов" {...field} />
             </FormControl>
+            <PasswordStrength password={password} />
             <FormMessage />
           </FormItem>
         )}

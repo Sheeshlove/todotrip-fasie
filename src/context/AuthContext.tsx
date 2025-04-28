@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { AuthState, UserProfile } from '@/lib/types/auth';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useRateLimit } from '@/hooks/useRateLimit';
 
 interface AuthContextType extends AuthState {
   signIn: (email: string, password: string) => Promise<void>;
@@ -20,6 +21,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: true,
   });
   const navigate = useNavigate();
+
+  // Rate limiting configuration
+  const { checkRateLimit, isLocked, remainingAttempts } = useRateLimit({
+    maxAttempts: 5,
+    timeWindow: 5 * 60 * 1000, // 5 minutes
+    lockoutDuration: 15 * 60 * 1000, // 15 minutes
+  });
 
   const handleProfileAndNavigation = async (userId: string, event?: string) => {
     try {
@@ -86,20 +94,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
+      // Check rate limit before attempting sign in
+      checkRateLimit();
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (error) throw error;
+
+      if (error) {
+        // Handle specific error cases
+        if (error.message.includes('Invalid login credentials')) {
+          toast.error('Неверный email или пароль');
+        } else {
+          toast.error('Ошибка входа. Пожалуйста, попробуйте позже.');
+        }
+        throw error;
+      }
+
       toast.success('Успешный вход');
     } catch (error) {
-      toast.error('Ошибка входа: ' + (error as Error).message);
+      if (error instanceof Error) {
+        if (error.message.includes('Too many attempts')) {
+          toast.error(error.message);
+        } else {
+          toast.error('Ошибка входа: ' + error.message);
+        }
+      }
       throw error;
     }
   };
 
   const signUp = async (email: string, password: string, metadata?: { [key: string]: any }) => {
     try {
+      // Check rate limit before attempting sign up
+      checkRateLimit();
+
       const { error, data } = await supabase.auth.signUp({
         email,
         password,
@@ -108,13 +138,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       });
       
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('User already registered')) {
+          toast.error('Пользователь с таким email уже зарегистрирован');
+        } else {
+          toast.error('Ошибка регистрации. Пожалуйста, попробуйте позже.');
+        }
+        throw error;
+      }
       
       console.log('Signup successful:', data);
       toast.success('Регистрация успешна!');
     } catch (error) {
-      console.error('Registration error:', error);
-      toast.error('Ошибка регистрации: ' + (error as Error).message);
+      if (error instanceof Error) {
+        if (error.message.includes('Too many attempts')) {
+          toast.error(error.message);
+        } else {
+          toast.error('Ошибка регистрации: ' + error.message);
+        }
+      }
       throw error;
     }
   };
