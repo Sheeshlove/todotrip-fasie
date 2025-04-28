@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -104,14 +103,16 @@ const CreateProfile = () => {
                   name="hobbies"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">Хобби (необязательно)</FormLabel>
-                      <HobbiesDialog
-                        selectedHobbies={selectedHobbies}
-                        onHobbiesChange={(hobbies) => {
-                          setSelectedHobbies(hobbies);
-                          field.onChange(hobbies);
-                        }}
-                      />
+                      <FormLabel className="text-white">Хобби</FormLabel>
+                      <div className="bg-todoBlack rounded-lg p-4">
+                        <HobbiesDialog
+                          selectedHobbies={selectedHobbies}
+                          onHobbiesChange={(hobbies) => {
+                            setSelectedHobbies(hobbies);
+                            field.onChange(hobbies);
+                          }}
+                        />
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}

@@ -6,11 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Toggle } from "@/components/ui/toggle";
 import { hobbiesData } from "@/data/hobbies";
 import { useState } from "react";
 
@@ -20,8 +19,8 @@ interface HobbiesDialogProps {
 }
 
 export function HobbiesDialog({ selectedHobbies, onHobbiesChange }: HobbiesDialogProps) {
-  // Create a local state to manage hobbies within the dialog
   const [localSelectedHobbies, setLocalSelectedHobbies] = useState<string[]>(selectedHobbies);
+  const allHobbies = hobbiesData.flatMap(category => category.hobbies);
 
   const toggleHobby = (hobby: string) => {
     setLocalSelectedHobbies(current => 
@@ -31,58 +30,61 @@ export function HobbiesDialog({ selectedHobbies, onHobbiesChange }: HobbiesDialo
     );
   };
 
-  const handleSave = () => {
+  const handleDone = () => {
     onHobbiesChange(localSelectedHobbies);
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" type="button" className="w-full">
-          Выбрать хобби
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          {selectedHobbies.length > 0 ? (
+            selectedHobbies.map((hobby) => (
+              <Badge
+                key={hobby}
+                variant="outline"
+                className="bg-todoLightGray text-todoBlack hover:bg-todoLightGray/80 rounded-full px-4 py-1 text-sm"
+              >
+                {hobby}
+              </Badge>
+            ))
+          ) : (
+            <Button variant="outline" type="button" className="w-full">
+              Выбрать хобби
+            </Button>
+          )}
+        </div>
       </DialogTrigger>
-      <DialogContent className="max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Выберите ваши хобби</DialogTitle>
+
+      <DialogContent className="max-w-md">
+        <DialogHeader className="flex justify-between items-center flex-row border-b pb-4">
+          <DialogTitle className="text-xl">Выберите хобби</DialogTitle>
+          <Button 
+            onClick={handleDone}
+            className="bg-todoYellow text-black hover:bg-todoYellow/90"
+          >
+            Готово
+          </Button>
         </DialogHeader>
-        <ScrollArea className="h-[60vh] pr-4">
-          <div className="space-y-4">
-            {hobbiesData.map((category) => (
-              <div key={category.title} className="space-y-2">
-                <h3 className="font-medium">{category.title}</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {category.hobbies.map((hobby) => (
-                    <div key={hobby} className="flex items-center space-x-2">
-                      <Checkbox 
-                        id={hobby}
-                        checked={localSelectedHobbies.includes(hobby)}
-                        onCheckedChange={() => toggleHobby(hobby)}
-                      />
-                      <label
-                        htmlFor={hobby}
-                        className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {hobby}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
+
+        <ScrollArea className="h-[60vh] px-1 -mx-1">
+          <div className="flex flex-wrap gap-2 py-4">
+            {allHobbies.map((hobby) => (
+              <Toggle
+                key={hobby}
+                pressed={localSelectedHobbies.includes(hobby)}
+                onPressedChange={() => toggleHobby(hobby)}
+                className={`rounded-full border px-4 py-1 text-sm transition-colors
+                  ${localSelectedHobbies.includes(hobby)
+                    ? 'bg-todoYellow text-black border-todoYellow hover:bg-todoYellow/90'
+                    : 'bg-transparent hover:bg-gray-100 border-gray-300'
+                  }`}
+              >
+                {hobby}
+              </Toggle>
             ))}
           </div>
         </ScrollArea>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button 
-              type="button" 
-              variant="default" 
-              onClick={handleSave}
-            >
-              Сохранить
-            </Button>
-          </DialogClose>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
