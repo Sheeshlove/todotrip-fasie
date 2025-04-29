@@ -11,43 +11,48 @@ import { Progress } from '@/components/ui/progress';
 import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
-// Define the personality questions
+// Define the personality questions (IPIP-NEO-120 for travelers)
 const questions = [
   // Openness questions
-  { id: 'O1', text: 'Я часто пробую новые необычные блюда', trait: 'openness', direction: 'positive' },
-  { id: 'O2', text: 'Мне нравится узнавать о других культурах и их ценностях', trait: 'openness', direction: 'positive' },
-  { id: 'O3', text: 'Я предпочитаю знакомые и привычные вещи', trait: 'openness', direction: 'negative' },
-  { id: 'O4', text: 'Я люблю искусство и красоту', trait: 'openness', direction: 'positive' },
+  { id: 'O1', text: 'Мне нравится исследовать неизвестные места в поездках.', trait: 'openness', direction: 'positive' },
+  { id: 'O2', text: 'Я часто выбираю маршруты, которые ведут вне туристических троп.', trait: 'openness', direction: 'positive' },
+  { id: 'O3', text: 'Посещение музеев, галерей или природных заповедников входит в список моих приоритетов.', trait: 'openness', direction: 'positive' },
+  { id: 'O4', text: 'Я охотно пробую новые виды активностей в путешествиях.', trait: 'openness', direction: 'positive' },
+  { id: 'O5', text: 'Я ищу уникальные культурные впечатления, даже если это требует усилий.', trait: 'openness', direction: 'positive' },
   
   // Conscientiousness questions
-  { id: 'C1', text: 'Я всегда довожу работу до конца', trait: 'conscientiousness', direction: 'positive' },
-  { id: 'C2', text: 'Я очень организованный человек', trait: 'conscientiousness', direction: 'positive' },
-  { id: 'C3', text: 'Иногда я действую импульсивно, не просчитывая последствия', trait: 'conscientiousness', direction: 'negative' },
-  { id: 'C4', text: 'Я уделяю внимание мельчайшим деталям', trait: 'conscientiousness', direction: 'positive' },
+  { id: 'C1', text: 'Я всегда бронирую жильё и билеты заранее.', trait: 'conscientiousness', direction: 'positive' },
+  { id: 'C2', text: 'Я люблю, когда программа дня расписана чётко.', trait: 'conscientiousness', direction: 'positive' },
+  { id: 'C3', text: 'Я редко откладываю подготовку к поездке на последний момент.', trait: 'conscientiousness', direction: 'positive' },
+  { id: 'C4', text: 'Я тщательно проверяю визовые требования и страховку перед поездкой.', trait: 'conscientiousness', direction: 'positive' },
+  { id: 'C5', text: 'Я предпочитаю иметь чёткий список вещей, которые нужно взять с собой.', trait: 'conscientiousness', direction: 'positive' },
   
   // Extraversion questions
-  { id: 'E1', text: 'Мне нравится быть в центре внимания', trait: 'extraversion', direction: 'positive' },
-  { id: 'E2', text: 'Я предпочитаю проводить время с друзьями, а не в одиночестве', trait: 'extraversion', direction: 'positive' },
-  { id: 'E3', text: 'Я чувствую себя комфортнее наедине с собой', trait: 'extraversion', direction: 'negative' },
-  { id: 'E4', text: 'Я легко знакомлюсь с новыми людьми', trait: 'extraversion', direction: 'positive' },
+  { id: 'E1', text: 'Я люблю общаться с местными жителями во время поездок.', trait: 'extraversion', direction: 'positive' },
+  { id: 'E2', text: 'Я получаю удовольствие от участия в туристических группах.', trait: 'extraversion', direction: 'positive' },
+  { id: 'E3', text: 'Я чувствую прилив энергии, посещая шумные рынки и площади.', trait: 'extraversion', direction: 'positive' },
+  { id: 'E4', text: 'Мне нравится проводить вечера в барах и клубах за границей.', trait: 'extraversion', direction: 'positive' },
+  { id: 'E5', text: 'Я часто завожу новые знакомства в поездках.', trait: 'extraversion', direction: 'positive' },
   
   // Agreeableness questions
-  { id: 'A1', text: 'Я всегда готов помочь другим', trait: 'agreeableness', direction: 'positive' },
-  { id: 'A2', text: 'Я стараюсь избегать споров', trait: 'agreeableness', direction: 'positive' },
-  { id: 'A3', text: 'Иногда я могу быть груб с людьми', trait: 'agreeableness', direction: 'negative' },
-  { id: 'A4', text: 'Я легко сопереживаю чужим проблемам', trait: 'agreeableness', direction: 'positive' },
+  { id: 'A1', text: 'Я всегда стараюсь уважать местные обычаи и традиции.', trait: 'agreeableness', direction: 'positive' },
+  { id: 'A2', text: 'Я терпелив к людям, которые говорят на другом языке.', trait: 'agreeableness', direction: 'positive' },
+  { id: 'A3', text: 'Я охотно помогаю другим туристам в пути.', trait: 'agreeableness', direction: 'positive' },
+  { id: 'A4', text: 'Я легко иду на компромиссы с попутчиками.', trait: 'agreeableness', direction: 'positive' },
+  { id: 'A5', text: 'Я стараюсь избегать конфликтов в поездках.', trait: 'agreeableness', direction: 'positive' },
   
   // Neuroticism questions
-  { id: 'N1', text: 'Я часто волнуюсь о мелочах', trait: 'neuroticism', direction: 'positive' },
-  { id: 'N2', text: 'Я редко испытываю стресс', trait: 'neuroticism', direction: 'negative' },
-  { id: 'N3', text: 'Мои настроения могут быстро меняться', trait: 'neuroticism', direction: 'positive' },
-  { id: 'N4', text: 'Меня легко расстроить', trait: 'neuroticism', direction: 'positive' },
+  { id: 'N1', text: 'Я легко начинаю беспокоиться, если что-то идёт не по плану.', trait: 'neuroticism', direction: 'positive' },
+  { id: 'N2', text: 'Я сильно нервничаю при задержках рейсов.', trait: 'neuroticism', direction: 'positive' },
+  { id: 'N3', text: 'Я переживаю, если теряю ориентиры в незнакомом городе.', trait: 'neuroticism', direction: 'positive' },
+  { id: 'N4', text: 'Я тревожусь о сохранности своих вещей в поездке.', trait: 'neuroticism', direction: 'positive' },
+  { id: 'N5', text: 'Я склонен волноваться при пересечении границ.', trait: 'neuroticism', direction: 'positive' },
 ];
 
 const options = [
-  { value: '1', label: 'Полностью не согласен' },
+  { value: '1', label: 'Совсем не согласен' },
   { value: '2', label: 'Скорее не согласен' },
-  { value: '3', label: 'Нейтрально' },
+  { value: '3', label: 'Нейтрален' },
   { value: '4', label: 'Скорее согласен' },
   { value: '5', label: 'Полностью согласен' },
 ];
@@ -179,11 +184,11 @@ export const PersonalityTest = () => {
   };
 
   const traitDescriptions: {[key: string]: string} = {
-    openness: 'Открытость новому опыту: интерес к новым идеям, творчеству, искусству.',
-    conscientiousness: 'Сознательность: организованность, ответственность, самодисциплина.',
-    extraversion: 'Экстраверсия: общительность, энергичность, позитивность.',
-    agreeableness: 'Доброжелательность: эмпатия, сотрудничество, доверие к другим.',
-    neuroticism: 'Нейротизм: тенденция испытывать негативные эмоции, тревожность.'
+    openness: 'Открытость новому опыту: Вы любите исследовать незнакомые места, пробовать новые активности и знакомиться с разными культурами.',
+    conscientiousness: 'Сознательность: Вы тщательно планируете поездки, любите чёткий распорядок и заранее продумываете детали путешествия.',
+    extraversion: 'Экстраверсия: Вам нравится общаться с местными жителями, участвовать в групповых активностях и находиться в центре событий.',
+    agreeableness: 'Доброжелательность: Вы проявляете уважение к местным традициям, легко находите общий язык с другими и избегаете конфликтов.',
+    neuroticism: 'Нейротизм: Вы склонны беспокоиться о деталях путешествия, испытываете стресс при неожиданных изменениях планов и переживаете о безопасности.'
   };
 
   const renderTraitResult = (trait: string, score: number) => {
@@ -208,9 +213,9 @@ export const PersonalityTest = () => {
     return (
       <Card className="bg-todoDarkGray border-todoBlack mb-6">
         <CardHeader>
-          <CardTitle className="text-white">Результаты теста OCEAN</CardTitle>
+          <CardTitle className="text-white">Результаты теста OCEAN для путешественников</CardTitle>
           <CardDescription className="text-todoMediumGray">
-            Модель личности "Большая пятерка"
+            Оценка ваших туристических предпочтений
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -235,9 +240,9 @@ export const PersonalityTest = () => {
   return (
     <Card className="bg-todoDarkGray border-todoBlack mb-6">
       <CardHeader>
-        <CardTitle className="text-white">Тест OCEAN</CardTitle>
+        <CardTitle className="text-white">Тест OCEAN для путешественников</CardTitle>
         <CardDescription className="text-todoMediumGray">
-          Тест "Большая пятерка" для определения личностных черт
+          Оцените каждое утверждение по шкале от 1 до 5
         </CardDescription>
       </CardHeader>
       <CardContent>

@@ -52,11 +52,11 @@ export const TestResultsDisplay = ({ onTakeTest }: { onTakeTest: () => void }) =
   };
 
   const traitDescriptions: {[key: string]: string} = {
-    openness: 'Открытость новому опыту: интерес к новым идеям, творчеству, искусству.',
-    conscientiousness: 'Сознательность: организованность, ответственность, самодисциплина.',
-    extraversion: 'Экстраверсия: общительность, энергичность, позитивность.',
-    agreeableness: 'Доброжелательность: эмпатия, сотрудничество, доверие к другим.',
-    neuroticism: 'Нейротизм: тенденция испытывать негативные эмоции, тревожность.'
+    openness: 'Открытость новому опыту: Склонность к исследованию новых мест, маршрутов вне туристических троп и интерес к разным культурам в путешествиях.',
+    conscientiousness: 'Сознательность: Тщательное планирование поездок, внимание к деталям и соблюдение чётко структурированного плана путешествия.',
+    extraversion: 'Экстраверсия: Стремление к общению с местными жителями, участию в групповых активностях и публичных мероприятиях во время путешествий.',
+    agreeableness: 'Доброжелательность: Уважение к местным традициям, готовность помогать другим туристам и избегать конфликтов в поездках.',
+    neuroticism: 'Нейротизм: Склонность беспокоиться о деталях путешествия, испытывать стресс при изменениях планов и тревожиться о безопасности.'
   };
 
   const renderTraitResult = (trait: string, score: number) => {
@@ -93,14 +93,14 @@ export const TestResultsDisplay = ({ onTakeTest }: { onTakeTest: () => void }) =
     return (
       <Card className="bg-todoDarkGray border-todoBlack mb-6">
         <CardHeader>
-          <CardTitle className="text-white">Тест личности</CardTitle>
+          <CardTitle className="text-white">Тест личности путешественника</CardTitle>
           <CardDescription className="text-todoMediumGray">
-            Узнайте свой тип личности по модели "Большая пятерка"
+            Узнайте свой тип личности для путешествий по модели OCEAN
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-white mb-4">
-            У вас еще нет результатов OCEAN теста. Пройдите короткий тест, чтобы узнать больше о своей личности.
+            У вас еще нет результатов теста OCEAN для путешественников. Пройдите короткий тест, чтобы узнать больше о своих туристических предпочтениях.
           </p>
           <Button 
             onClick={onTakeTest}
@@ -122,7 +122,7 @@ export const TestResultsDisplay = ({ onTakeTest }: { onTakeTest: () => void }) =
   return (
     <Card className="bg-todoDarkGray border-todoBlack mb-6">
       <CardHeader>
-        <CardTitle className="text-white">Результаты теста OCEAN</CardTitle>
+        <CardTitle className="text-white">Результаты теста OCEAN для путешественников</CardTitle>
         <CardDescription className="text-todoMediumGray">
           Тест пройден {formattedDate}
         </CardDescription>
