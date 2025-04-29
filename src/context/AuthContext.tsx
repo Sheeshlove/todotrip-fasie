@@ -14,6 +14,10 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// In-memory cache with expiration
+const profileCache = new Map<string, {data: UserProfile, expiry: number}>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({
     user: null,
@@ -31,22 +35,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const handleProfileAndNavigation = async (userId: string, event?: string) => {
     try {
-      // Use localStorage to check if we've recently fetched this profile
-      const cachedProfileData = localStorage.getItem(`profile_${userId}`);
-      const cachedProfileTime = localStorage.getItem(`profile_${userId}_time`);
+      // Check in-memory cache first
+      const now = Date.now();
+      const cachedProfile = profileCache.get(userId);
       
-      // If we have a cached profile and it's less than 5 minutes old, use it
-      if (cachedProfileData && cachedProfileTime) {
-        const cacheAge = Date.now() - parseInt(cachedProfileTime);
-        if (cacheAge < 5 * 60 * 1000) { // 5 minutes
-          const profile = JSON.parse(cachedProfileData);
-          setState(s => ({ ...s, profile: profile as UserProfile }));
-          
-          if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
-            navigate('/');
-          }
-          return;
+      if (cachedProfile && now < cachedProfile.expiry) {
+        setState(s => ({ ...s, profile: cachedProfile.data }));
+        
+        if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
+          navigate('/');
         }
+        return;
       }
       
       // Otherwise fetch from API
@@ -66,9 +65,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (profile) {
-        // Cache the profile in localStorage
-        localStorage.setItem(`profile_${userId}`, JSON.stringify(profile));
-        localStorage.setItem(`profile_${userId}_time`, Date.now().toString());
+        // Store in in-memory cache
+        profileCache.set(userId, {
+          data: profile as UserProfile,
+          expiry: now + CACHE_TTL
+        });
         
         setState(s => ({ ...s, profile: profile as UserProfile }));
       }
@@ -198,6 +199,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
+      // Clear profile cache
+      if (state.user?.id) {
+        profileCache.delete(state.user.id);
+      }
       
       setState({ user: null, profile: null, loading: false });
       

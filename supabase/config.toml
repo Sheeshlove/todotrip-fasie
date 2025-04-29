@@ -1,1 +1,30 @@
+[project]
 project_id = "hqrqmfejinsqisnjcrls"
+
+[api]
+# Port to use for the API URL
+port = 54321
+# Enable additional security headers
+enabled_headers = ["Strict-Transport-Security", "X-Frame-Options", "X-Content-Type-Options", "X-XSS-Protection"]
+
+[db]
+# Apply Row Level Security (RLS) by default
+enable_rls = true  
+
+[auth]
+# Disable signup by default so new users can only be added by admins
+disable_signup = false
+# Increase password strength requirements
+min_password_length = 10
+# Enable email confirmations for signup
+enable_confirmations = true
+# JWT expiry time in seconds
+jwt_expiry = 3600
+# Refresh token expiry time in seconds
+refresh_token_expiry = 86400
+
+[storage]
+# Set file upload size limit to 5MB 
+file_size_limit = "5242880"  # 5MB in bytes
+# Set allowed MIME types for file uploads
+allowed_mime_types = ["image/jpeg", "image/png", "image/webp", "image/gif"]
