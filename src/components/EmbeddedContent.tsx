@@ -10,30 +10,41 @@ const EmbeddedContent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const partnerUrl = 'https://scantour.ru/testtest.html?my_module=todotrip.work@gmail.com';
 
-  const loadContent = async () => {
+  const loadContent = () => {
     setIsLoading(true);
     setHasError(false);
     
-    try {
-      await fetch(partnerUrl, {
-        mode: 'no-cors',
-        cache: 'force-cache'
-      });
-      setIsLoaded(true);
-    } catch (error) {
-      console.error('Failed to load partner content:', error);
-      setHasError(true);
-    } finally {
-      setIsLoading(false);
-    }
+    // Use a timeout to simulate loading and handle possible issues
+    const timeoutId = setTimeout(() => {
+      if (!isLoaded) {
+        setIsLoading(false);
+      }
+    }, 5000);
+    
+    return () => clearTimeout(timeoutId);
   };
 
   useEffect(() => {
-    loadContent();
+    const handler = loadContent();
+    return handler;
   }, []);
 
   const handleRetry = () => {
     loadContent();
+    setIsLoaded(false);
+    // Force iframe reload by creating a new key
+    setTimeout(() => setIsLoaded(true), 100);
+  };
+
+  const handleIframeLoad = () => {
+    setIsLoaded(true);
+    setIsLoading(false);
+  };
+
+  const handleIframeError = () => {
+    console.error('Failed to load embedded content');
+    setHasError(true);
+    setIsLoading(false);
   };
 
   if (hasError) {
@@ -58,7 +69,7 @@ const EmbeddedContent = () => {
   }
 
   return (
-    <div className="relative w-full h-[1200px] bg-todoDarkGray rounded-lg overflow-hidden font-unbounded">
+    <div className="relative w-full h-[600px] bg-todoDarkGray rounded-lg overflow-hidden font-unbounded">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-todoBlack/80 z-10">
           <div className="flex flex-col items-center gap-4">
@@ -68,17 +79,19 @@ const EmbeddedContent = () => {
         </div>
       )}
       
-      <iframe
-        src={partnerUrl}
-        className={`w-full h-full border-0 transition-opacity duration-300 ${isLoaded && !isLoading ? 'opacity-100' : 'opacity-0'}`}
-        style={{
-          colorScheme: 'dark',
-          fontFamily: 'Unbounded, system-ui, sans-serif'
-        }}
-        loading="lazy"
-        onLoad={() => setIsLoaded(true)}
-        onError={() => setHasError(true)}
-      />
+      {!hasError && (
+        <iframe
+          src={partnerUrl}
+          className={`w-full h-full border-0 transition-opacity duration-300 ${isLoaded && !isLoading ? 'opacity-100' : 'opacity-0'}`}
+          style={{
+            colorScheme: 'dark',
+            fontFamily: 'Unbounded, system-ui, sans-serif'
+          }}
+          onLoad={handleIframeLoad}
+          onError={handleIframeError}
+          loading="lazy"
+        />
+      )}
     </div>
   );
 };

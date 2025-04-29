@@ -1,6 +1,7 @@
-import { useState, lazy, Suspense } from 'react';
+
+import { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Filter, Loader2, AlertCircle } from 'lucide-react';
+import { Filter, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -10,11 +11,11 @@ import { useOffers } from '@/hooks/useOffers';
 import { SearchBar } from '@/components/partners/SearchBar';
 import { DateRangeSelector } from '@/components/partners/DateRangeSelector';
 import { OfferGrid } from '@/components/partners/OfferGrid';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
-// Use regular import instead of lazy loading to avoid potential issues
+// Use regular import for EmbeddedContent
 import EmbeddedContent from '@/components/EmbeddedContent';
+import { toast } from '@/hooks/use-toast';
 
 const Partners = () => {
   const navigate = useNavigate();
@@ -22,7 +23,6 @@ const Partners = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [date, setDate] = useState<[Date | null, Date | null]>([null, null]);
-  const [embeddedContentError, setEmbeddedContentError] = useState(false);
   const [filters, setFilters] = useState({
     priceRange: [0, 100000] as [number, number],
     sortBy: null as string | null,
@@ -38,8 +38,24 @@ const Partners = () => {
   const toggleFilters = () => setShowFilters(!showFilters);
 
   const handleFilterChange = (newFilters: typeof filters) => {
-    setFilters({ ...newFilters, searchQuery, dateRange: date });
-    setCurrentPage(1);
+    try {
+      console.log("Applying new filters:", newFilters);
+      setFilters({ ...newFilters, searchQuery, dateRange: date });
+      setCurrentPage(1);
+      // Show toast when filters are applied
+      toast({
+        title: "Фильтры применены",
+        description: "Результаты обновлены с новыми фильтрами",
+        duration: 3000,
+      });
+    } catch (err) {
+      console.error("Error applying filters:", err);
+      toast({
+        title: "Ошибка применения фильтров",
+        description: "Пожалуйста, попробуйте снова",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +102,9 @@ const Partners = () => {
 
       <div className="max-w-[1400px] mx-auto w-full px-4 py-6">
         <ErrorBoundary>
-          <EmbeddedContent />
+          <Suspense fallback={<Loader2 className="w-8 h-8 text-todoYellow animate-spin" />}>
+            <EmbeddedContent />
+          </Suspense>
         </ErrorBoundary>
       </div>
 

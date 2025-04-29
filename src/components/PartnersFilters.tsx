@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
@@ -34,10 +35,16 @@ export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
   const [hotOffers, setHotOffers] = useState(false);
   const [aiRecommended, setAiRecommended] = useState(false);
 
+  // Sync slider and input fields
+  useEffect(() => {
+    setMinPrice(priceRange[0].toString());
+    setMaxPrice(priceRange[1].toString());
+  }, [priceRange]);
+
   const handlePriceRangeChange = (values: number[]) => {
-    setPriceRange([values[0], values[1]]);
-    setMinPrice(values[0].toString());
-    setMaxPrice(values[1].toString());
+    if (values.length === 2) {
+      setPriceRange([values[0], values[1]]);
+    }
   };
 
   const handleMinPriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,7 +83,7 @@ export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
 
   const handleApplyFilters = () => {
     onFilterChange({
-      priceRange: [priceRange[0], priceRange[1]],
+      priceRange,
       sortBy,
       allInclusive,
       hotOffers,
