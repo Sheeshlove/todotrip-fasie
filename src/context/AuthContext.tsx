@@ -107,28 +107,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const setupAuth = async () => {
       try {
         // Set up auth state listener and capture session in parallel
-        const [authListener, sessionResponse] = await Promise.all([
-          Promise.resolve(
-            supabase.auth.onAuthStateChange((event, session) => {
-              if (!isMounted) return;
-              
-              setState(s => ({ ...s, user: session?.user ?? null }));
-              
-              if (session?.user) {
-                handleProfileAndNavigation(session.user.id, event);
-              } else {
-                setState(s => ({ ...s, profile: null }));
-                if (event === 'SIGNED_OUT') {
-                  navigate('/login');
-                }
-              }
-            })
-          ),
-          supabase.auth.getSession()
-        ]);
+        const authListener = supabase.auth.onAuthStateChange((event, session) => {
+          if (!isMounted) return;
+          
+          setState(s => ({ ...s, user: session?.user ?? null }));
+          
+          if (session?.user) {
+            handleProfileAndNavigation(session.user.id, event);
+          } else {
+            setState(s => ({ ...s, profile: null }));
+            if (event === 'SIGNED_OUT') {
+              navigate('/login');
+            }
+          }
+        });
         
         // Process initial session
-        const { data: { session } } = sessionResponse;
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (isMounted) {
           setState(s => ({ 
@@ -158,8 +153,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Cleanup
     return () => {
       isMounted = false;
-      authPromise.then(({ data: { subscription } }) => {
-        subscription.unsubscribe();
+      authPromise.then(subscription => {
+        subscription.subscription.unsubscribe();
       });
     };
   }, [navigate, handleProfileAndNavigation]);
@@ -247,7 +242,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       navigate('/login');
       
-      toast.success('Вы успешно вышли из системы');
+      toast.success('Вы успешно вышли ��з системы');
     } catch (error) {
       toast.error('Ошибка выхода: ' + (error as Error).message);
       throw error;
