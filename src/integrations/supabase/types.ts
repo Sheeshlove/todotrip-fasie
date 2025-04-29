@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ocean_test_results: {
+        Row: {
+          agreeableness: number
+          conscientiousness: number
+          created_at: string
+          extraversion: number
+          id: string
+          neuroticism: number
+          openness: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agreeableness: number
+          conscientiousness: number
+          created_at?: string
+          extraversion: number
+          id?: string
+          neuroticism: number
+          openness: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agreeableness?: number
+          conscientiousness?: number
+          created_at?: string
+          extraversion?: number
+          id?: string
+          neuroticism?: number
+          openness?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       offers: {
         Row: {
           ai_recommended: boolean | null

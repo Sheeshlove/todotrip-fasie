@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { ProfileEditor } from '@/components/profile/ProfileEditor';
+import { PersonalityTest } from '@/components/profile/PersonalityTest';
+import { TestResultsDisplay } from '@/components/profile/TestResultsDisplay';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PageLayout from '@/components/PageLayout';
@@ -13,6 +15,7 @@ const ProfilePage = () => {
   const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('login');
+  const [showTest, setShowTest] = useState(false);
 
   if (loading) {
     return (
@@ -84,7 +87,29 @@ const ProfilePage = () => {
         <div className="max-w-md mx-auto py-8 px-4">
           <h1 className="text-3xl font-bold mb-6 text-todoYellow text-center">Мой профиль</h1>
           
-          <ProfileEditor />
+          <Tabs defaultValue="profile" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="profile">Профиль</TabsTrigger>
+              <TabsTrigger value="account">Аккаунт</TabsTrigger>
+              <TabsTrigger value="personality">Личность</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="profile">
+              <ProfileEditor />
+            </TabsContent>
+
+            <TabsContent value="account">
+              <ProfileEditor />
+            </TabsContent>
+
+            <TabsContent value="personality">
+              {showTest ? (
+                <PersonalityTest />
+              ) : (
+                <TestResultsDisplay onTakeTest={() => setShowTest(true)} />
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
       <BottomMenu />
