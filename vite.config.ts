@@ -1,4 +1,3 @@
-
 import { defineConfig, ConfigEnv, UserConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -10,8 +9,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     server: {
       host: "::",
       port: 8080,
-      middlewareMode: false, // Changed from string to boolean
-      proxy: {},
       fs: {
         strict: true,
       }
@@ -82,11 +79,10 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
 
   // Add server middleware configuration through the correct property
   if (mode === 'development') {
-    // Use the correct server options property for middlewares
     config.server = {
       ...config.server,
       middlewares: [
-        (req, res, next) => {
+        (req: any, res: any, next: () => void) => {
           // Security headers
           res.setHeader('Content-Security-Policy', 
             "default-src 'self'; " +
@@ -108,10 +104,10 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           // Add cache control headers for better performance
           const url = req.url;
           
-          if (url.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+          if (url && typeof url === 'string' && url.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
             // Static assets cache: 7 days
             res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
-          } else if (url.includes('assets/')) {
+          } else if (url && typeof url === 'string' && url.includes('assets/')) {
             // Hashed assets cache: 1 year
             res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
           } else {

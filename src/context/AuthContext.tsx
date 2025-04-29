@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +10,7 @@ interface AuthContextType extends AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, metadata?: { [key: string]: any }) => Promise<void>;
   signOut: () => Promise<void>;
+  updateProfile: (userId: string, updatedProfile: UserProfile) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,6 +33,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     timeWindow: 5 * 60 * 1000, // 5 minutes
     lockoutDuration: 15 * 60 * 1000, // 15 minutes
   });
+
+  // Update profile in cache and state
+  const updateProfile = useCallback((userId: string, updatedProfile: UserProfile) => {
+    // Update in-memory cache
+    profileCache.set(userId, {
+      data: updatedProfile,
+      expiry: Date.now() + CACHE_TTL
+    });
+    
+    // Update component state
+    setState(s => ({ ...s, profile: updatedProfile }));
+  }, []);
+  
+  // Make the updateProfile function available globally
+  useEffect(() => {
+    window.updateProfileCache = updateProfile;
+    
+    return () => {
+      delete window.updateProfileCache;
+    };
+  }, [updateProfile]);
 
   // Memoize the profile fetch function to avoid recreating it on every render
   const fetchUserProfile = useCallback(async (userId: string): Promise<UserProfile | null> => {
@@ -107,7 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Setup auth state listener
     const setupAuth = async () => {
       try {
-        // Set up auth state listener and capture session in parallel
+        // Set up auth state listener first
         const authListener = supabase.auth.onAuthStateChange((event, session) => {
           if (!isMounted) return;
           
@@ -123,7 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         });
         
-        // Process initial session
+        // Then get initial session
         const { data: { session } } = await supabase.auth.getSession();
         
         if (isMounted) {
@@ -248,7 +269,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       navigate('/login');
       
-      toast.success('Вы успешно вышли ��з системы');
+      toast.success('Вы успешно вышли из системы');
     } catch (error) {
       toast.error('Ошибка выхода: ' + (error as Error).message);
       throw error;
@@ -256,7 +277,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ ...state, signIn, signUp, signOut, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

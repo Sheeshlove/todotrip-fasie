@@ -1,4 +1,3 @@
-
 import React, { useState, lazy, Suspense } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,7 +15,7 @@ import { PersonalInfoForm } from './PersonalInfoForm';
 // Dynamically import heavier components that aren't needed immediately
 const LocationSelector = lazy(() => import('./LocationSelector').then(mod => ({ default: mod.LocationSelector })));
 const HobbiesSelector = lazy(() => import('./HobbiesSelector').then(mod => ({ default: mod.HobbiesSelector })));
-const ProfileImageUpload = lazy(() => import('@/components/ProfileImageUpload').then(mod => ({ default: mod.default })));
+const ProfileImageUpload = lazy(() => import('@/components/ProfileImageUpload'));
 
 // Simple loading component for Suspense fallbacks
 const LoadingField = () => (
@@ -86,12 +85,22 @@ export const ProfileForm = () => {
 
       if (error) throw error;
       
-      toast.success('Фото профиля обновлено');
+      // Update profile in context instead of reloading the page
+      if (profile) {
+        // Create an updated profile
+        const updatedProfile = {
+          ...profile,
+          avatar_url: url,
+          updated_at: new Date().toISOString()
+        };
+        
+        // Update the cache directly if cache mechanism is used in AuthContext
+        if (window.updateProfileCache && typeof window.updateProfileCache === 'function') {
+          window.updateProfileCache(user.id, updatedProfile);
+        }
+      }
       
-      // Use a more efficient approach than full page reload
-      window.setTimeout(() => {
-        window.location.reload();
-      }, 1500); // Give time for the toast to show
+      toast.success('Фото профиля обновлено');
     } catch (error: any) {
       console.error('Error updating profile image:', error);
       toast.error('Ошибка обновления фото профиля');

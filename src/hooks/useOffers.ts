@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 export interface Offer {
   id: string;
@@ -54,8 +54,6 @@ const CACHE_TIME = 10 * 60 * 1000; // 10 minutes
 
 // Memoized fetch function to avoid recreation
 const fetchOffers = async (page: number, filters: FilterState): Promise<OffersResponse> => {
-  console.log("Fetching offers with filters:", filters);
-  
   try {
     let query = supabase
       .from('offers')
@@ -113,7 +111,6 @@ const fetchOffers = async (page: number, filters: FilterState): Promise<OffersRe
     const { data, error, count } = await query;
 
     if (error) {
-      console.error("Supabase error:", error);
       throw new Error(error.message || 'Failed to fetch offers');
     }
 
@@ -129,33 +126,69 @@ const fetchOffers = async (page: number, filters: FilterState): Promise<OffersRe
   }
 };
 
-// Generates a query key from filters for caching
-const getOffersQueryKey = (page: number, filters: FilterState) => 
-  ['offers', page, JSON.stringify(filters)];
+// Stable key generation that avoids unnecessary stringification
+const getOffersQueryKey = (page: number, filters: FilterState) => {
+  // Create a stable array key using individual filter properties
+  return [
+    'offers', 
+    page, 
+    filters.priceRange[0], 
+    filters.priceRange[1],
+    filters.dateRange[0]?.toISOString() || null,
+    filters.dateRange[1]?.toISOString() || null,
+    filters.allInclusive,
+    filters.hotOffers,
+    filters.aiRecommended,
+    filters.searchQuery,
+    filters.sortBy
+  ];
+};
 
 export const useOffers = (page: number, filters: FilterState = defaultFilters) => {
   const queryClient = useQueryClient();
+  
+  // Memoize filters to prevent unnecessary re-renders
+  const stableFilters = useMemo(() => ({
+    ...defaultFilters,
+    ...filters
+  }), [
+    filters.priceRange?.[0],
+    filters.priceRange?.[1],
+    filters.dateRange?.[0],
+    filters.dateRange?.[1],
+    filters.allInclusive,
+    filters.hotOffers,
+    filters.aiRecommended,
+    filters.searchQuery,
+    filters.sortBy
+  ]);
+  
+  // Get a stable query key
+  const queryKey = useMemo(() => 
+    getOffersQueryKey(page, stableFilters), 
+    [page, stableFilters]
+  );
   
   // Prefetch next page when current page changes
   useEffect(() => {
     // Don't prefetch if we're at the last known page
     const currentData = queryClient.getQueryData<OffersResponse>(
-      getOffersQueryKey(page, filters)
+      getOffersQueryKey(page, stableFilters)
     );
     
     if (currentData && currentData.page * currentData.pageSize < currentData.total) {
       // Prefetch next page
       queryClient.prefetchQuery({
-        queryKey: getOffersQueryKey(page + 1, filters),
-        queryFn: () => fetchOffers(page + 1, filters),
+        queryKey: getOffersQueryKey(page + 1, stableFilters),
+        queryFn: () => fetchOffers(page + 1, stableFilters),
         staleTime: STALE_TIME
       });
     }
-  }, [page, filters, queryClient]);
+  }, [page, stableFilters, queryClient]);
 
   return useQuery({
-    queryKey: getOffersQueryKey(page, filters),
-    queryFn: () => fetchOffers(page, filters),
+    queryKey,
+    queryFn: () => fetchOffers(page, stableFilters),
     staleTime: STALE_TIME,
     gcTime: CACHE_TIME,
     placeholderData: (previousData) => previousData,
