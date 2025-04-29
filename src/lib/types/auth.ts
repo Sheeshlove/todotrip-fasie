@@ -10,6 +10,7 @@ export interface UserProfile {
   description: string | null;
   hobbies: string[] | null;
   age: string | null;
+  city: string | null;
 }
 
 export interface AuthState {
