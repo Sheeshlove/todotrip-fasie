@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { preloadImages } from '@/data/placeholderImages';
@@ -5,8 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ChevronRight, Map, Info, Camera } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 const Home = () => {
+  const { profile } = useAuth();
+  const userCity = profile?.city || 'Санкт-Петербург';
+  
   useEffect(() => {
     preloadImages();
   }, []);
@@ -32,7 +37,7 @@ const Home = () => {
             </div>
             
             <div className="space-y-3">
-              <DestinationButton city="Санкт-Петербург" />
+              <DestinationButton city={userCity} />
               <DestinationButton city="Москва" disabled />
               <DestinationButton city="Сочи" disabled />
             </div>

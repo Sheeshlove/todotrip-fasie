@@ -2,12 +2,16 @@
 import { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mail } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 interface CitySelectionProps {
   onCitySelect: () => void;
 }
 
 const CitySelection: FC<CitySelectionProps> = ({ onCitySelect }) => {
+  const { profile } = useAuth();
+  const userCity = profile?.city || 'Санкт-Петербург';
+  
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] px-6 py-10">
       <div className="bg-todoDarkGray rounded-xl p-6 max-w-2xl w-full">
@@ -20,7 +24,7 @@ const CitySelection: FC<CitySelectionProps> = ({ onCitySelect }) => {
             variant="link" 
             className="text-todoYellow hover:text-todoYellow/80 p-0 text-lg"
           >
-            Санкт-Петербург
+            {userCity}
           </Button>
         </p>
         
