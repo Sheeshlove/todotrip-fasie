@@ -1,5 +1,5 @@
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { User, ImagePlus } from 'lucide-react';
@@ -14,6 +14,8 @@ interface ProfileImageUploadProps {
 export const ProfileImageUpload = ({ userId, currentImage, onImageUpdate }: ProfileImageUploadProps) => {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const { uploadImage, uploading } = useProfileImages(userId);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -25,12 +27,33 @@ export const ProfileImageUpload = ({ userId, currentImage, onImageUpdate }: Prof
     }
   };
 
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <div className="relative w-full max-w-[300px] aspect-square mx-auto">
       <Card className="w-full h-full flex items-center justify-center bg-todoDarkGray">
         <Avatar className="w-full h-full rounded-lg">
-          {currentImage ? (
-            <AvatarImage src={currentImage} className="object-cover" />
+          {currentImage && !imageError ? (
+            <>
+              {!imageLoaded && (
+                <AvatarFallback className="w-full h-full bg-todoBlack text-todoYellow">
+                  <User className="w-1/3 h-1/3" />
+                </AvatarFallback>
+              )}
+              <AvatarImage 
+                src={currentImage} 
+                className={`object-cover ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                loading="lazy"
+                onLoad={handleImageLoad}
+                onError={handleImageError}
+              />
+            </>
           ) : (
             <AvatarFallback className="w-full h-full bg-todoBlack text-todoYellow">
               <User className="w-1/3 h-1/3" />

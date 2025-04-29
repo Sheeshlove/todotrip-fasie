@@ -95,16 +95,16 @@ const ProfilePage = () => {
             </TabsList>
 
             <TabsContent value="profile">
-              <ProfileEditor />
+              <ProfileEditor activeTab="profile" />
             </TabsContent>
 
             <TabsContent value="account">
-              <ProfileEditor />
+              <ProfileEditor activeTab="account" />
             </TabsContent>
 
             <TabsContent value="personality">
               {showTest ? (
-                <PersonalityTest />
+                <PersonalityTest onComplete={() => setShowTest(false)} />
               ) : (
                 <TestResultsDisplay onTakeTest={() => setShowTest(true)} />
               )}

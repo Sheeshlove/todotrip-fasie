@@ -31,11 +31,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const handleProfileAndNavigation = async (userId: string, event?: string) => {
     try {
+      // Use localStorage to check if we've recently fetched this profile
+      const cachedProfileData = localStorage.getItem(`profile_${userId}`);
+      const cachedProfileTime = localStorage.getItem(`profile_${userId}_time`);
+      
+      // If we have a cached profile and it's less than 5 minutes old, use it
+      if (cachedProfileData && cachedProfileTime) {
+        const cacheAge = Date.now() - parseInt(cachedProfileTime);
+        if (cacheAge < 5 * 60 * 1000) { // 5 minutes
+          const profile = JSON.parse(cachedProfileData);
+          setState(s => ({ ...s, profile: profile as UserProfile }));
+          
+          if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
+            navigate('/');
+          }
+          return;
+        }
+      }
+      
+      // Otherwise fetch from API
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
       if (error) {
         console.error('Error fetching profile:', error);
@@ -46,7 +65,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      setState(s => ({ ...s, profile: profile as UserProfile }));
+      if (profile) {
+        // Cache the profile in localStorage
+        localStorage.setItem(`profile_${userId}`, JSON.stringify(profile));
+        localStorage.setItem(`profile_${userId}_time`, Date.now().toString());
+        
+        setState(s => ({ ...s, profile: profile as UserProfile }));
+      }
       
       if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
         if (!profile) {
@@ -63,14 +88,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
         
         setState(s => ({ ...s, user: session?.user ?? null }));
         
         if (session?.user) {
-          await handleProfileAndNavigation(session.user.id, event);
+          // Defer Supabase calls with setTimeout to prevent deadlocks
+          setTimeout(() => {
+            handleProfileAndNavigation(session.user.id, event);
+          }, 0);
         } else {
           setState(s => ({ ...s, profile: null }));
           if (event === 'SIGNED_OUT') {
@@ -80,10 +109,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
+    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setState(s => ({ ...s, user: session?.user ?? null, loading: false }));
       if (session?.user) {
-        handleProfileAndNavigation(session.user.id);
+        // Defer Supabase calls with setTimeout
+        setTimeout(() => {
+          handleProfileAndNavigation(session.user.id);
+        }, 0);
       }
     });
 

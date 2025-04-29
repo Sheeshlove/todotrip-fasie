@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 interface TestResults {
   id: string;
@@ -19,37 +20,29 @@ interface TestResults {
 
 export const TestResultsDisplay = ({ onTakeTest }: { onTakeTest: () => void }) => {
   const { user } = useAuth();
-  const [results, setResults] = useState<TestResults | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (user) {
-      fetchResults();
-    }
-  }, [user]);
-
-  const fetchResults = async () => {
-    setLoading(true);
-    try {
+  
+  const { data: results, isLoading, error } = useQuery({
+    queryKey: ['personalityTest', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
       const { data, error } = await supabase
         .from('ocean_test_results')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching results:', error);
+      if (error) {
+        console.error('Error fetching test results:', error);
+        throw error;
       }
 
-      setResults(data);
-    } catch (error) {
-      console.error('Error in fetchResults:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data as TestResults | null;
+    },
+    enabled: !!user?.id,
+  });
 
   const traitDescriptions: {[key: string]: string} = {
     openness: 'Открытость новому опыту: Склонность к исследованию новых мест, маршрутов вне туристических троп и интерес к разным культурам в путешествиях.',
@@ -77,13 +70,29 @@ export const TestResultsDisplay = ({ onTakeTest }: { onTakeTest: () => void }) =
     );
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Card className="bg-todoDarkGray border-todoBlack mb-6">
         <CardContent className="py-6">
           <div className="flex justify-center items-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-todoYellow" />
           </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="bg-todoDarkGray border-todoBlack mb-6">
+        <CardContent className="py-6">
+          <p className="text-white text-center">Ошибка загрузки результатов теста</p>
+          <Button 
+            onClick={onTakeTest}
+            className="w-full mt-4 bg-todoYellow text-black hover:bg-yellow-400"
+          >
+            Пройти тест заново
+          </Button>
         </CardContent>
       </Card>
     );

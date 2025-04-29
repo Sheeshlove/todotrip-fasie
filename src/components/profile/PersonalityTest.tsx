@@ -1,107 +1,113 @@
 
-import { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { TestQuestionView } from './TestQuestionView';
-import { TestResultsView } from './TestResultsView';
-import { questions } from '@/data/personalityTestQuestions';
-import { calculateResults, saveTestResults, Answer } from '@/services/personalityTestService';
+import { personalityTestQuestions } from '@/data/personalityTestQuestions';
+import { saveTestResults } from '@/services/personalityTestService';
 
-export const PersonalityTest = () => {
+// Lazy load the results view component
+const TestResultsView = lazy(() => import('./TestResultsView').then(module => ({ default: module.TestResultsView })));
+
+interface PersonalityTestProps {
+  onComplete?: () => void;
+}
+
+export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
   const { user } = useAuth();
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Answer[]>([]);
-  const [currentAnswer, setCurrentAnswer] = useState<string>('');
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [results, setResults] = useState<Record<string, number> | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [results, setResults] = useState<{[key: string]: number}>({
-    openness: 0,
-    conscientiousness: 0,
-    extraversion: 0,
-    agreeableness: 0,
-    neuroticism: 0
-  });
 
-  const currentQuestion = questions[currentQuestionIndex];
+  const totalQuestions = personalityTestQuestions.length;
+  const isLastQuestion = currentQuestion === totalQuestions - 1;
 
-  const handleNext = () => {
-    if (!currentAnswer) return;
-
-    const newAnswers = [...answers, {
-      questionId: currentQuestion.id,
-      value: currentAnswer,
-      trait: currentQuestion.trait,
-      direction: currentQuestion.direction
-    }];
+  const handleAnswer = (questionKey: string, value: number) => {
+    setAnswers(prev => ({ ...prev, [questionKey]: value }));
     
-    setAnswers(newAnswers);
-    setCurrentAnswer('');
-    
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    if (isLastQuestion) {
+      calculateResults();
     } else {
-      handleTestCompletion(newAnswers);
+      setCurrentQuestion(prev => prev + 1);
     }
   };
 
-  const handlePrevious = () => {
-    if (currentQuestionIndex > 0) {
-      const newAnswers = [...answers];
-      newAnswers.pop();
-      setAnswers(newAnswers);
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setCurrentAnswer('');
-    }
-  };
-
-  const handleTestCompletion = async (finalAnswers: Answer[]) => {
+  const calculateResults = async () => {
     setIsSubmitting(true);
     
-    // Calculate results
-    const calculatedResults = calculateResults(finalAnswers);
-    setResults(calculatedResults);
+    // Group answers by trait and calculate averages
+    const traits: Record<string, number[]> = {};
+    
+    // Group the answers by their corresponding trait
+    Object.entries(answers).forEach(([key, value]) => {
+      const [trait] = key.split('_');
+      if (!traits[trait]) traits[trait] = [];
+      traits[trait].push(value);
+    });
+    
+    // Calculate the average score for each trait (as a percentage)
+    const calculatedResults: Record<string, number> = {};
+    Object.entries(traits).forEach(([trait, values]) => {
+      // Convert from 1-5 scale to 0-100%
+      const average = values.reduce((sum, val) => sum + val, 0) / values.length;
+      calculatedResults[trait] = Math.round((average - 1) / 4 * 100);
+    });
     
     if (user) {
-      await saveTestResults(user.id, calculatedResults);
+      try {
+        await saveTestResults(user.id, calculatedResults);
+      } catch (error) {
+        console.error('Error saving test results:', error);
+      }
     }
     
-    setShowResults(true);
+    setResults(calculatedResults);
     setIsSubmitting(false);
   };
 
   const handleRestartTest = () => {
-    setShowResults(false);
-    setCurrentQuestionIndex(0);
-    setAnswers([]);
-    setCurrentAnswer('');
+    setCurrentQuestion(0);
+    setAnswers({});
+    setResults(null);
   };
 
+  if (results) {
+    return (
+      <Card className="bg-todoDarkGray border-todoBlack mb-6">
+        <CardContent className="pt-6">
+          <Suspense fallback={
+            <div className="flex justify-center items-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-todoYellow" />
+            </div>
+          }>
+            <TestResultsView 
+              results={results} 
+              onRestartTest={handleRestartTest} 
+            />
+          </Suspense>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const question = personalityTestQuestions[currentQuestion];
+  
   return (
     <Card className="bg-todoDarkGray border-todoBlack mb-6">
-      <CardHeader>
-        <CardTitle className="text-white">Тест OCEAN для путешественников</CardTitle>
-        <CardDescription className="text-todoMediumGray">
-          {showResults 
-            ? "Оценка ваших туристических предпочтений"
-            : "Оцените каждое утверждение по шкале от 1 до 5"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {showResults ? (
-          <TestResultsView 
-            results={results} 
-            onRestartTest={handleRestartTest} 
-          />
+      <CardContent className="pt-6">
+        {isSubmitting ? (
+          <div className="flex flex-col items-center justify-center py-8">
+            <Loader2 className="h-10 w-10 animate-spin text-todoYellow mb-4" />
+            <p className="text-white">Обработка результатов...</p>
+          </div>
         ) : (
           <TestQuestionView
+            question={question}
             currentQuestion={currentQuestion}
-            currentQuestionIndex={currentQuestionIndex}
-            totalQuestions={questions.length}
-            currentAnswer={currentAnswer}
-            setCurrentAnswer={setCurrentAnswer}
-            handlePrevious={handlePrevious}
-            handleNext={handleNext}
-            isSubmitting={isSubmitting}
+            totalQuestions={totalQuestions}
+            onAnswer={handleAnswer}
           />
         )}
       </CardContent>
