@@ -8,7 +8,7 @@ const BottomMenu = () => {
   const location = useLocation();
   
   const menuItems = [
-    { path: '/', name: 'Подбор пути', icon: Map },
+    { path: '/', name: 'Главная', icon: Map },
     { path: '/partners', name: 'Партнёры', icon: ShoppingBag },
     { path: '/dating', name: 'Общение', icon: Heart },
     { path: '/profile', name: 'Профиль', icon: User },

@@ -13,7 +13,7 @@ const Home = () => {
   }, []);
   
   return (
-    <PageLayout title="ToDoTrip - Подбор пути" description="AI-powered travel route planner">
+    <PageLayout title="ToDoTrip - Главная" description="AI-powered travel route planner">
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] px-4 py-8">
         <div className="max-w-md w-full space-y-6">
           <div className="text-center mb-8">
