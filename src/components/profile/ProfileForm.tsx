@@ -9,10 +9,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { HobbiesDialog } from '@/components/HobbiesDialog';
 import { ProfileImageUpload } from '@/components/ProfileImageUpload';
-import { Loader2 } from 'lucide-react';
+import { Loader2, MapPin } from 'lucide-react';
 import { profileSchema, ProfileFormValues } from '@/lib/validations/profile';
+import { russianCities } from '@/data/cities';
 
 export const ProfileForm = () => {
   const { user, profile } = useAuth();
@@ -26,6 +28,7 @@ export const ProfileForm = () => {
       age: profile?.age || '',
       description: profile?.description || '',
       hobbies: profile?.hobbies || [],
+      city: profile?.city || '',
     },
   });
 
@@ -41,6 +44,7 @@ export const ProfileForm = () => {
           age: values.age,
           description: values.description,
           hobbies: values.hobbies,
+          city: values.city,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
@@ -112,6 +116,35 @@ export const ProfileForm = () => {
                 <FormControl>
                   <Input type="text" placeholder="Ваш возраст" {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white">Город</FormLabel>
+                <Select 
+                  onValueChange={field.onChange} 
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full flex items-center">
+                      <MapPin className="mr-2 h-4 w-4 text-todoMediumGray" />
+                      <SelectValue placeholder="Выберите город" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="max-h-80">
+                    {russianCities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

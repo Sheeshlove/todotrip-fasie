@@ -1,3 +1,4 @@
+
 import * as z from "zod";
 
 export const profileSchema = z.object({
@@ -5,6 +6,7 @@ export const profileSchema = z.object({
   age: z.string().optional(),
   hobbies: z.array(z.string()).optional(),
   description: z.string().optional(),
+  city: z.string().optional(),
 });
 
 export const passwordChangeSchema = z.object({
