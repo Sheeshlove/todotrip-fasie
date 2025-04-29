@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -26,7 +27,7 @@ interface PartnersFiltersProps {
 }
 
 export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
-  const [priceRange, setPriceRange] = useState<number[]>([0, 350000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 350000]);
   const [minPrice, setMinPrice] = useState("0");
   const [maxPrice, setMaxPrice] = useState("350000");
   const [sortBy, setSortBy] = useState<string | null>(null);
@@ -35,7 +36,7 @@ export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
   const [aiRecommended, setAiRecommended] = useState(false);
 
   const handlePriceRangeChange = (values: number[]) => {
-    setPriceRange(values);
+    setPriceRange([values[0], values[1]]);
     setMinPrice(values[0].toString());
     setMaxPrice(values[1].toString());
   };
@@ -44,7 +45,11 @@ export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
     const value = event.target.value;
     setMinPrice(value);
     if (value && !isNaN(Number(value))) {
-      setPriceRange([Number(value), priceRange[1]]);
+      const numValue = Number(value);
+      // Ensure min doesn't exceed max
+      if (numValue <= priceRange[1]) {
+        setPriceRange([numValue, priceRange[1]]);
+      }
     }
   };
 
@@ -52,7 +57,11 @@ export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
     const value = event.target.value;
     setMaxPrice(value);
     if (value && !isNaN(Number(value))) {
-      setPriceRange([priceRange[0], Number(value)]);
+      const numValue = Number(value);
+      // Ensure max doesn't fall below min
+      if (numValue >= priceRange[0]) {
+        setPriceRange([priceRange[0], numValue]);
+      }
     }
   };
 
