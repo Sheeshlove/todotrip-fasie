@@ -1,11 +1,22 @@
 
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, Suspense, lazy, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { TestQuestionView } from './TestQuestionView';
 import { questions } from '@/data/personalityTestQuestions';
 import { saveTestResults } from '@/services/personalityTestService';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from 'sonner';
 
 // Lazy load the results view component
 const TestResultsView = lazy(() => import('./TestResultsView').then(module => ({ default: module.TestResultsView })));
@@ -20,6 +31,8 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [results, setResults] = useState<Record<string, number> | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDialog, setShowDialog] = useState(true);
+  const [currentAnswer, setCurrentAnswer] = useState<string>('');
 
   const totalQuestions = questions.length;
   const isLastQuestion = currentQuestion === totalQuestions - 1;
@@ -31,6 +44,20 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
       calculateResults();
     } else {
       setCurrentQuestion(prev => prev + 1);
+      setCurrentAnswer('');
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(prev => prev - 1);
+      setCurrentAnswer('');
+    }
+  };
+
+  const handleNext = () => {
+    if (currentAnswer) {
+      handleAnswer(questions[currentQuestion].id, parseInt(currentAnswer));
     }
   };
 
@@ -42,9 +69,12 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
     
     // Group the answers by their corresponding trait
     Object.entries(answers).forEach(([key, value]) => {
-      const [trait] = key.split('_');
-      if (!traits[trait]) traits[trait] = [];
-      traits[trait].push(value);
+      const question = questions.find(q => q.id === key);
+      if (question) {
+        const { trait } = question;
+        if (!traits[trait]) traits[trait] = [];
+        traits[trait].push(value);
+      }
     });
     
     // Calculate the average score for each trait (as a percentage)
@@ -58,19 +88,31 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
     if (user) {
       try {
         await saveTestResults(user.id, calculatedResults);
+        toast.success("Результаты теста успешно сохранены!");
       } catch (error) {
         console.error('Error saving test results:', error);
+        toast.error("Ошибка при сохранении результатов теста");
       }
     }
     
     setResults(calculatedResults);
     setIsSubmitting(false);
+    
+    if (onComplete) {
+      onComplete();
+    }
   };
 
   const handleRestartTest = () => {
     setCurrentQuestion(0);
     setAnswers({});
     setResults(null);
+    setCurrentAnswer('');
+    setShowDialog(true);
+  };
+
+  const handleStartTest = () => {
+    setShowDialog(false);
   };
 
   if (results) {
@@ -92,29 +134,62 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
     );
   }
 
-  const question = questions[currentQuestion];
-  
   return (
-    <Card className="bg-todoDarkGray border-todoBlack mb-6">
-      <CardContent className="pt-6">
-        {isSubmitting ? (
-          <div className="flex flex-col items-center justify-center py-8">
-            <Loader2 className="h-10 w-10 animate-spin text-todoYellow mb-4" />
-            <p className="text-white">Обработка результатов...</p>
-          </div>
-        ) : (
-          <TestQuestionView
-            currentQuestion={question}
-            currentQuestionIndex={currentQuestion}
-            totalQuestions={totalQuestions}
-            currentAnswer=""
-            setCurrentAnswer={() => {}}
-            handlePrevious={() => {}}
-            handleNext={() => {}}
-            isSubmitting={false}
-          />
-        )}
-      </CardContent>
-    </Card>
+    <>
+      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+        <AlertDialogContent className="bg-todoDarkGray border-todoBlack text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-todoYellow">
+              Тест личности для путешественников
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-white">
+              <p>Этот тест займет около 15 минут вашего времени.</p>
+              <p className="mt-2">Вам предстоит ответить на 120 вопросов, чтобы определить ваш психологический профиль путешественника.</p>
+              <p className="mt-2">Оцените каждое утверждение по шкале от 1 до 5:</p>
+              <ul className="mt-2 ml-4 list-disc">
+                <li>1 — Совсем не согласен</li>
+                <li>2 — Скорее не согласен</li>
+                <li>3 — Нейтрален</li>
+                <li>4 — Скорее согласен</li>
+                <li>5 — Полностью согласен</li>
+              </ul>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent border-todoMediumGray text-todoMediumGray hover:bg-todoMediumGray hover:text-todoDarkGray">
+              Отмена
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleStartTest}
+              className="bg-todoYellow text-black hover:bg-yellow-400"
+            >
+              Начать тест
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Card className="bg-todoDarkGray border-todoBlack mb-6">
+        <CardContent className="pt-6">
+          {isSubmitting ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <Loader2 className="h-10 w-10 animate-spin text-todoYellow mb-4" />
+              <p className="text-white">Обработка результатов...</p>
+            </div>
+          ) : (
+            <TestQuestionView
+              currentQuestion={questions[currentQuestion]}
+              currentQuestionIndex={currentQuestion}
+              totalQuestions={totalQuestions}
+              currentAnswer={currentAnswer}
+              setCurrentAnswer={setCurrentAnswer}
+              handlePrevious={handlePrevious}
+              handleNext={handleNext}
+              isSubmitting={isSubmitting}
+            />
+          )}
+        </CardContent>
+      </Card>
+    </>
   );
 };

@@ -27,15 +27,29 @@ export const TestQuestionView = ({
   handleNext,
   isSubmitting
 }: TestQuestionViewProps) => {
-  const progress = (currentQuestionIndex / totalQuestions) * 100;
+  const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+  
+  // Get the trait category of the current question
+  const getTrait = (questionIndex: number): string => {
+    if (questionIndex < 24) return "Открытость опыту";
+    if (questionIndex < 48) return "Добросовестность";
+    if (questionIndex < 72) return "Экстраверсия";
+    if (questionIndex < 96) return "Доброжелательность";
+    return "Нейротизм";
+  };
   
   return (
     <>
       <div className="mb-6">
         <Progress value={progress} className="h-2" />
-        <p className="text-sm text-right mt-1 text-todoMediumGray">
-          Вопрос {currentQuestionIndex + 1} из {totalQuestions}
-        </p>
+        <div className="flex justify-between mt-1">
+          <p className="text-sm text-todoMediumGray">
+            {getTrait(currentQuestionIndex)}
+          </p>
+          <p className="text-sm text-todoMediumGray">
+            Вопрос {currentQuestionIndex + 1} из {totalQuestions}
+          </p>
+        </div>
       </div>
       
       <div className="mb-6">
@@ -68,7 +82,7 @@ export const TestQuestionView = ({
         <Button
           variant="outline"
           onClick={handlePrevious}
-          disabled={currentQuestionIndex === 0}
+          disabled={currentQuestionIndex === 0 || isSubmitting}
           className="border-todoMediumGray text-todoMediumGray"
         >
           <ChevronLeft className="mr-2 h-4 w-4" />
@@ -87,7 +101,7 @@ export const TestQuestionView = ({
             </>
           ) : currentQuestionIndex === totalQuestions - 1 ? (
             <>
-              Завершить
+              Завершить тест
             </>
           ) : (
             <>
