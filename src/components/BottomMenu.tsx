@@ -1,7 +1,7 @@
 
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Map, Bot, Heart, ShoppingBag, User } from 'lucide-react';
+import { Map, ShoppingBag, Heart, User } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 const BottomMenu = () => {
@@ -9,7 +9,6 @@ const BottomMenu = () => {
   
   const menuItems = [
     { path: '/', name: 'Подбор пути', icon: Map },
-    { path: '/ai-trip', name: 'Нейросеть', icon: Bot },
     { path: '/partners', name: 'Партнёры', icon: ShoppingBag },
     { path: '/dating', name: 'Общение', icon: Heart },
     { path: '/profile', name: 'Профиль', icon: User },

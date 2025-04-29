@@ -9,7 +9,6 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from './context/AuthContext';
 import OnboardingScreen from "./components/OnboardingScreen";
 import Home from "./pages/Home";
-import AITrip from "./pages/AITrip";
 import Dating from "./pages/Dating";
 import Partners from "./pages/Partners";
 import PartnerDetails from "./pages/PartnerDetails";
@@ -88,7 +87,6 @@ const App: React.FC = () => {
                 {isDesktop && <CustomCursor />}
                 <Routes>
                   <Route path="/" element={<Home />} />
-                  <Route path="/ai-trip" element={<AITrip />} />
                   <Route path="/partners" element={<Partners />} />
                   <Route path="/partners/:id" element={<PartnerDetails />} />
                   <Route path="/dating" element={<Dating />} />
