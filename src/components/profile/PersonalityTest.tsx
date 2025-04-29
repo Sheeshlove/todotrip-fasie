@@ -37,7 +37,7 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
   const totalQuestions = questions.length;
   const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
 
-  // Reset current answer when changing questions
+  // Set current answer when changing questions (but not after answer selection)
   useEffect(() => {
     const questionId = questions[currentQuestionIndex]?.id;
     if (questionId && answers[questionId]) {
@@ -55,7 +55,7 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
     const numericAnswer = parseInt(currentAnswer, 10);
     
     if (!isNaN(numericAnswer)) {
-      // Update answers in a stable way that ensures state is updated
+      // Update answers
       setAnswers(prev => ({
         ...prev,
         [questionId]: numericAnswer
@@ -63,10 +63,8 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
       
       // Handle last question or go to next
       if (isLastQuestion) {
-        // We'll calculate results in a separate function after state update
         calculateAndSaveResults();
       } else {
-        // Move to next question
         setCurrentQuestionIndex(prev => prev + 1);
       }
     }
@@ -162,9 +160,31 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
     setShowDialog(false);
   };
 
-  // Update the current answer state when selected
+  // Updated to handle both setting the answer and navigation
   const handleSetAnswer = (value: string) => {
+    // First set the current answer
     setCurrentAnswer(value);
+    
+    // Get question ID and convert answer to number
+    const questionId = questions[currentQuestionIndex].id;
+    const numericAnswer = parseInt(value, 10);
+    
+    // If we have a valid answer, save it and prepare to navigate
+    if (!isNaN(numericAnswer)) {
+      // Save the answer immediately
+      setAnswers(prev => ({
+        ...prev,
+        [questionId]: numericAnswer
+      }));
+      
+      // Immediately navigate if it's not the last question and not submitting
+      if (!isLastQuestion && !isSubmitting) {
+        // Short delay for better UX
+        setTimeout(() => {
+          setCurrentQuestionIndex(prev => prev + 1);
+        }, 300);
+      }
+    }
   };
 
   if (results) {

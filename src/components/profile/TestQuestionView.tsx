@@ -41,15 +41,9 @@ export const TestQuestionView = ({
     }
   };
 
-  // Handle option selection and auto-advance to next question
+  // Handle option selection - now simplified as navigation is handled in parent
   const handleOptionSelect = (value: string) => {
-    setCurrentAnswer(value);
-    // Auto-advance to next question after a brief delay for better UX
-    if (!isSubmitting && currentQuestionIndex < totalQuestions - 1) {
-      setTimeout(() => {
-        handleNext();
-      }, 300);
-    }
+    setCurrentAnswer(value); // This will trigger the logic in parent component
   };
 
   return (
