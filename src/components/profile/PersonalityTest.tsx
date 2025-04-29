@@ -27,7 +27,7 @@ interface PersonalityTestProps {
 
 export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
   const { user } = useAuth();
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [results, setResults] = useState<Record<string, number> | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,76 +35,123 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
   const [currentAnswer, setCurrentAnswer] = useState<string>('');
 
   const totalQuestions = questions.length;
-  const isLastQuestion = currentQuestion === totalQuestions - 1;
+  const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
 
-  const handleAnswer = (questionKey: string, value: number) => {
-    setAnswers(prev => ({ ...prev, [questionKey]: value }));
-    
-    if (isLastQuestion) {
-      calculateResults();
+  // Reset current answer when changing questions
+  useEffect(() => {
+    const questionId = questions[currentQuestionIndex]?.id;
+    if (questionId && answers[questionId]) {
+      setCurrentAnswer(answers[questionId].toString());
     } else {
-      setCurrentQuestion(prev => prev + 1);
       setCurrentAnswer('');
+    }
+  }, [currentQuestionIndex, answers]);
+
+  const handleNext = () => {
+    if (!currentAnswer) return;
+    
+    // Save the current answer
+    const questionId = questions[currentQuestionIndex].id;
+    const numericAnswer = parseInt(currentAnswer, 10);
+    
+    if (!isNaN(numericAnswer)) {
+      // Update answers in a stable way that ensures state is updated
+      setAnswers(prev => ({
+        ...prev,
+        [questionId]: numericAnswer
+      }));
+      
+      // Handle last question or go to next
+      if (isLastQuestion) {
+        // We'll calculate results in a separate function after state update
+        calculateAndSaveResults();
+      } else {
+        // Move to next question
+        setCurrentQuestionIndex(prev => prev + 1);
+      }
     }
   };
 
   const handlePrevious = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1);
-      setCurrentAnswer('');
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
     }
   };
 
-  const handleNext = () => {
-    if (currentAnswer) {
-      handleAnswer(questions[currentQuestion].id, parseInt(currentAnswer));
-    }
-  };
-
-  const calculateResults = async () => {
+  const calculateAndSaveResults = async () => {
     setIsSubmitting(true);
     
-    // Group answers by trait and calculate averages
-    const traits: Record<string, number[]> = {};
-    
-    // Group the answers by their corresponding trait
-    Object.entries(answers).forEach(([key, value]) => {
-      const question = questions.find(q => q.id === key);
-      if (question) {
-        const { trait } = question;
-        if (!traits[trait]) traits[trait] = [];
-        traits[trait].push(value);
+    try {
+      // First, ensure we have the latest answers by including the current one
+      const questionId = questions[currentQuestionIndex].id;
+      const numericAnswer = parseInt(currentAnswer, 10);
+      
+      const finalAnswers = {
+        ...answers,
+        [questionId]: numericAnswer
+      };
+      
+      // Group answers by trait and calculate averages
+      const traits: Record<string, number[]> = {
+        openness: [],
+        conscientiousness: [],
+        extraversion: [],
+        agreeableness: [],
+        neuroticism: []
+      };
+      
+      // Group the answers by their corresponding trait using the question's trait property
+      questions.forEach(question => {
+        const answer = finalAnswers[question.id];
+        if (typeof answer === 'number') {
+          const { trait, direction } = question;
+          
+          if (!traits[trait]) traits[trait] = [];
+          
+          // Adjust score for negative direction questions
+          const adjustedAnswer = direction === 'negative' ? 6 - answer : answer;
+          traits[trait].push(adjustedAnswer);
+        }
+      });
+      
+      // Calculate the average score for each trait (as a percentage)
+      const calculatedResults: Record<string, number> = {};
+      
+      Object.entries(traits).forEach(([trait, values]) => {
+        if (values.length > 0) {
+          // Convert from 1-5 scale to 0-100%
+          const average = values.reduce((sum, val) => sum + val, 0) / values.length;
+          calculatedResults[trait] = Math.round((average - 1) / 4 * 100);
+        } else {
+          calculatedResults[trait] = 50; // Default to middle if no answers
+        }
+      });
+      
+      if (user) {
+        try {
+          await saveTestResults(user.id, calculatedResults);
+          toast.success("Результаты теста успешно сохранены!");
+        } catch (error) {
+          console.error('Error saving test results:', error);
+          toast.error("Ошибка при сохранении результатов теста");
+        }
       }
-    });
-    
-    // Calculate the average score for each trait (as a percentage)
-    const calculatedResults: Record<string, number> = {};
-    Object.entries(traits).forEach(([trait, values]) => {
-      // Convert from 1-5 scale to 0-100%
-      const average = values.reduce((sum, val) => sum + val, 0) / values.length;
-      calculatedResults[trait] = Math.round((average - 1) / 4 * 100);
-    });
-    
-    if (user) {
-      try {
-        await saveTestResults(user.id, calculatedResults);
-        toast.success("Результаты теста успешно сохранены!");
-      } catch (error) {
-        console.error('Error saving test results:', error);
-        toast.error("Ошибка при сохранении результатов теста");
+      
+      setResults(calculatedResults);
+      
+      if (onComplete) {
+        onComplete();
       }
-    }
-    
-    setResults(calculatedResults);
-    setIsSubmitting(false);
-    
-    if (onComplete) {
-      onComplete();
+    } catch (error) {
+      console.error('Error calculating test results:', error);
+      toast.error("Ошибка при обработке результатов теста");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleRestartTest = () => {
-    setCurrentQuestion(0);
+    setCurrentQuestionIndex(0);
     setAnswers({});
     setResults(null);
     setCurrentAnswer('');
@@ -113,6 +160,11 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
 
   const handleStartTest = () => {
     setShowDialog(false);
+  };
+
+  // Update the current answer state when selected
+  const handleSetAnswer = (value: string) => {
+    setCurrentAnswer(value);
   };
 
   if (results) {
@@ -178,11 +230,11 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
             </div>
           ) : (
             <TestQuestionView
-              currentQuestion={questions[currentQuestion]}
-              currentQuestionIndex={currentQuestion}
+              currentQuestion={questions[currentQuestionIndex]}
+              currentQuestionIndex={currentQuestionIndex}
               totalQuestions={totalQuestions}
               currentAnswer={currentAnswer}
-              setCurrentAnswer={setCurrentAnswer}
+              setCurrentAnswer={handleSetAnswer}
               handlePrevious={handlePrevious}
               handleNext={handleNext}
               isSubmitting={isSubmitting}
