@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { TestQuestionView } from './TestQuestionView';
-import { personalityTestQuestions } from '@/data/personalityTestQuestions';
+import { questions } from '@/data/personalityTestQuestions';
 import { saveTestResults } from '@/services/personalityTestService';
 
 // Lazy load the results view component
@@ -21,7 +21,7 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
   const [results, setResults] = useState<Record<string, number> | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const totalQuestions = personalityTestQuestions.length;
+  const totalQuestions = questions.length;
   const isLastQuestion = currentQuestion === totalQuestions - 1;
 
   const handleAnswer = (questionKey: string, value: number) => {
@@ -92,7 +92,7 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
     );
   }
 
-  const question = personalityTestQuestions[currentQuestion];
+  const question = questions[currentQuestion];
   
   return (
     <Card className="bg-todoDarkGray border-todoBlack mb-6">
@@ -104,10 +104,14 @@ export const PersonalityTest = ({ onComplete }: PersonalityTestProps) => {
           </div>
         ) : (
           <TestQuestionView
-            question={question}
-            currentQuestion={currentQuestion}
+            currentQuestion={question}
+            currentQuestionIndex={currentQuestion}
             totalQuestions={totalQuestions}
-            onAnswer={handleAnswer}
+            currentAnswer=""
+            setCurrentAnswer={() => {}}
+            handlePrevious={() => {}}
+            handleNext={() => {}}
+            isSubmitting={false}
           />
         )}
       </CardContent>
