@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,7 +35,7 @@ export const ProfileForm = () => {
     
     setIsUpdating(true);
     try {
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from('profiles')
         .update({
           username: values.name,
@@ -46,10 +45,25 @@ export const ProfileForm = () => {
           city: values.city,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .select();
 
       if (error) throw error;
+      
+      // Clear the profile cache in localStorage
+      localStorage.removeItem(`profile_${user.id}`);
+      localStorage.removeItem(`profile_${user.id}_time`);
+      
+      // Update the localStorage with the new profile data
+      if (data && data.length > 0) {
+        localStorage.setItem(`profile_${user.id}`, JSON.stringify(data[0]));
+        localStorage.setItem(`profile_${user.id}_time`, Date.now().toString());
+      }
+      
       toast.success('Профиль обновлен');
+      
+      // Force a page reload to ensure the updated profile is displayed
+      window.location.reload();
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Ошибка обновления профиля');
@@ -71,7 +85,15 @@ export const ProfileForm = () => {
         .eq('id', user.id);
 
       if (error) throw error;
+      
+      // Clear the profile cache in localStorage
+      localStorage.removeItem(`profile_${user.id}`);
+      localStorage.removeItem(`profile_${user.id}_time`);
+      
       toast.success('Фото профиля обновлено');
+      
+      // Force a page reload to ensure the updated profile is displayed
+      window.location.reload();
     } catch (error) {
       console.error('Error updating profile image:', error);
       toast.error('Ошибка обновления фото профиля');

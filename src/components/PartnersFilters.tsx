@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -27,9 +26,9 @@ interface PartnersFiltersProps {
 }
 
 export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 350000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
   const [minPrice, setMinPrice] = useState("0");
-  const [maxPrice, setMaxPrice] = useState("350000");
+  const [maxPrice, setMaxPrice] = useState("100000");
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [allInclusive, setAllInclusive] = useState(false);
   const [hotOffers, setHotOffers] = useState(false);
@@ -66,9 +65,9 @@ export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
   };
 
   const handleReset = () => {
-    setPriceRange([0, 350000]);
+    setPriceRange([0, 100000]);
     setMinPrice("0");
-    setMaxPrice("350000");
+    setMaxPrice("100000");
     setSortBy(null);
     setAllInclusive(false);
     setHotOffers(false);
@@ -115,7 +114,7 @@ export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
           <Slider
             value={priceRange}
             min={0}
-            max={350000}
+            max={100000}
             step={1000}
             onValueChange={handlePriceRangeChange}
           />

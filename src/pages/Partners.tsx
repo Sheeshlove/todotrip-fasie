@@ -1,4 +1,3 @@
-
 import { useState, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Filter, Loader2, AlertCircle } from 'lucide-react';
@@ -25,7 +24,7 @@ const Partners = () => {
   const [date, setDate] = useState<[Date | null, Date | null]>([null, null]);
   const [embeddedContentError, setEmbeddedContentError] = useState(false);
   const [filters, setFilters] = useState({
-    priceRange: [0, 350000] as [number, number],
+    priceRange: [0, 100000] as [number, number],
     sortBy: null as string | null,
     allInclusive: false,
     hotOffers: false,
