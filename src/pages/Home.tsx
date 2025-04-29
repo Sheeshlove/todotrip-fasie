@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { preloadImages } from '@/data/placeholderImages';
@@ -10,11 +9,30 @@ import { useAuth } from '@/context/AuthContext';
 
 const Home = () => {
   const { profile } = useAuth();
-  const userCity = profile?.city || 'Санкт-Петербург';
+  const userCity = profile?.city || '';
   
   useEffect(() => {
     preloadImages();
   }, []);
+
+  // Function to get destination buttons in the correct order
+  const getDestinationButtons = () => {
+    const buttons = [];
+    
+    // Always show Санкт-Петербург first (clickable)
+    buttons.push(<DestinationButton key="spb" city="Санкт-Петербург" disabled={false} />);
+    
+    // Show user's city if it's not Санкт-Петербург and not empty
+    if (userCity && userCity !== 'Санкт-Петербург') {
+      buttons.push(<DestinationButton key="usercity" city={userCity} disabled={true} />);
+    }
+    
+    // Always show Москва and Сочи (disabled)
+    buttons.push(<DestinationButton key="moscow" city="Москва" disabled={true} />);
+    buttons.push(<DestinationButton key="sochi" city="Сочи" disabled={true} />);
+    
+    return buttons;
+  };
   
   return (
     <PageLayout title="ToDoTrip - Главная" description="AI-powered travel route planner">
@@ -37,9 +55,7 @@ const Home = () => {
             </div>
             
             <div className="space-y-3">
-              <DestinationButton city={userCity} />
-              <DestinationButton city="Москва" disabled />
-              <DestinationButton city="Сочи" disabled />
+              {getDestinationButtons()}
             </div>
           </Card>
           
