@@ -1,14 +1,15 @@
-import { defineConfig } from "vite";
+
+import { defineConfig, ConfigEnv, UserConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }: ConfigEnv): UserConfig => ({
   server: {
     host: "::",
     port: 8080,
-    middlewareMode: 'html',
+    middlewareMode: false, // Changed from string to boolean
     proxy: {},
     fs: {
       strict: true,
@@ -77,8 +78,8 @@ export default defineConfig(({ mode }) => ({
     exclude: []
   },
   
-  configureServer: (server) => {
-    server.middlewares.use((req, res, next) => {
+  configureServer: (server: any) => {
+    server.middlewares.use((req: any, res: any, next: any) => {
       // Security headers
       res.setHeader('Content-Security-Policy', 
         "default-src 'self'; " +

@@ -1,3 +1,4 @@
+
 import React, { useState, lazy, Suspense } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,7 +16,7 @@ import { PersonalInfoForm } from './PersonalInfoForm';
 // Dynamically import heavier components that aren't needed immediately
 const LocationSelector = lazy(() => import('./LocationSelector').then(mod => ({ default: mod.LocationSelector })));
 const HobbiesSelector = lazy(() => import('./HobbiesSelector').then(mod => ({ default: mod.HobbiesSelector })));
-const ProfileImageUpload = lazy(() => import('@/components/ProfileImageUpload'));
+const ProfileImageUpload = lazy(() => import('@/components/ProfileImageUpload').then(mod => ({ default: mod.default })));
 
 // Simple loading component for Suspense fallbacks
 const LoadingField = () => (
@@ -91,7 +92,7 @@ export const ProfileForm = () => {
       window.setTimeout(() => {
         window.location.reload();
       }, 1500); // Give time for the toast to show
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating profile image:', error);
       toast.error('Ошибка обновления фото профиля');
     }

@@ -1,4 +1,3 @@
-
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
@@ -159,7 +158,7 @@ export const useOffers = (page: number, filters: FilterState = defaultFilters) =
     queryFn: () => fetchOffers(page, filters),
     staleTime: STALE_TIME,
     gcTime: CACHE_TIME,
-    keepPreviousData: true, // Keep previous data while loading new data
+    placeholderData: (previousData) => previousData,
     retry: 2,
     refetchOnWindowFocus: false,
   });

@@ -1,9 +1,10 @@
+
 import React, { Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from './context/AuthContext';
 import OnboardingScreen from "./components/OnboardingScreen";
@@ -33,6 +34,12 @@ const Contact = React.lazy(() => import("./pages/Contact"));
 const ProfilePage = React.lazy(() => import("./pages/ProfilePage"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
+// Wrapper component for OnboardingScreen to provide navigation
+const OnboardingWrapper = () => {
+  const navigate = useNavigate();
+  return <OnboardingScreen onComplete={() => navigate("/")} />;
+};
+
 const App = () => {
   return (
     <ErrorBoundary>
@@ -43,7 +50,7 @@ const App = () => {
               <Suspense fallback={<LoadingSpinner />}>
                 <AuthProvider>
                   <Routes>
-                    <Route path="/onboarding" element={<OnboardingScreen />} />
+                    <Route path="/onboarding" element={<OnboardingWrapper />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/create-profile" element={<CreateProfile />} />

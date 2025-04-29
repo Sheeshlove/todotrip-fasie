@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import PageLayout from '@/components/PageLayout';
 import { PartnersFilters } from '@/components/PartnersFilters';
-import { useOffers } from '@/hooks/useOffers';
+import { useOffers, OffersResponse } from '@/hooks/useOffers';
 import { SearchBar } from '@/components/partners/SearchBar';
 import { DateRangeSelector } from '@/components/partners/DateRangeSelector';
 import { OfferGrid } from '@/components/partners/OfferGrid';
@@ -34,6 +34,8 @@ const Partners = () => {
   });
 
   const { data, isLoading, error, isFetching } = useOffers(currentPage, filters);
+  // Add type assertion
+  const offersData = data as OffersResponse | undefined;
 
   const toggleFilters = () => setShowFilters(!showFilters);
 
@@ -110,12 +112,12 @@ const Partners = () => {
 
       <ScrollArea className="flex-1 p-4 bg-todoBlack">
         <OfferGrid
-          offers={data?.offers || []}
+          offers={offersData?.offers || []}
           isLoading={isLoading}
           error={error instanceof Error ? error : null}
-          total={data?.total || 0}
+          total={offersData?.total || 0}
           currentPage={currentPage}
-          pageSize={data?.pageSize || 12}
+          pageSize={offersData?.pageSize || 12}
           onPageChange={handlePageChange}
           onOfferClick={handleOfferClick}
         />

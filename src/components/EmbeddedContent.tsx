@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -8,8 +8,10 @@ const EmbeddedContent = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const partnerUrl = 'https://scantour.ru/testtest.html?my_module=todotrip.work@gmail.com';
-
+  const [key, setKey] = useState(Date.now()); // Used to force iframe reload
+  
   const loadContent = () => {
     setIsLoading(true);
     setHasError(false);
@@ -27,18 +29,19 @@ const EmbeddedContent = () => {
   useEffect(() => {
     const handler = loadContent();
     return handler;
-  }, []);
+  }, [key]);
 
   const handleRetry = () => {
-    loadContent();
+    setKey(Date.now()); // Create a new key to force iframe reload
     setIsLoaded(false);
-    // Force iframe reload by creating a new key
-    setTimeout(() => setIsLoaded(true), 100);
+    setHasError(false);
+    setIsLoading(true);
   };
 
   const handleIframeLoad = () => {
     setIsLoaded(true);
     setIsLoading(false);
+    console.log("External content loaded successfully");
   };
 
   const handleIframeError = () => {
@@ -81,7 +84,9 @@ const EmbeddedContent = () => {
       
       {!hasError && (
         <iframe
+          ref={iframeRef}
           src={partnerUrl}
+          key={key} // Use key to force recreation when needed
           className={`w-full h-full border-0 transition-opacity duration-300 ${isLoaded && !isLoading ? 'opacity-100' : 'opacity-0'}`}
           style={{
             colorScheme: 'dark',
