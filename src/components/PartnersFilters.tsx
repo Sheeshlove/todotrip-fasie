@@ -102,14 +102,15 @@ export function PartnersFilters({ onFilterChange }: PartnersFiltersProps) {
             />
           </div>
         </div>
-        <Slider
-          value={priceRange}
-          min={0}
-          max={350000}
-          step={1000}
-          onValueChange={handlePriceRangeChange}
-          className="py-4"
-        />
+        <div className="py-6">
+          <Slider
+            value={priceRange}
+            min={0}
+            max={350000}
+            step={1000}
+            onValueChange={handlePriceRangeChange}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
