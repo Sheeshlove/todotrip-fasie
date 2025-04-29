@@ -38,6 +38,17 @@ export const TestQuestionView = ({
     return "Нейротизм";
   };
   
+  // Handle option selection and auto-advance to next question
+  const handleOptionSelect = (value: string) => {
+    setCurrentAnswer(value);
+    // Auto-advance to next question after a brief delay for better UX
+    setTimeout(() => {
+      if (!isSubmitting) {
+        handleNext();
+      }
+    }, 300);
+  };
+  
   return (
     <>
       <div className="mb-6">
@@ -57,7 +68,7 @@ export const TestQuestionView = ({
         
         <RadioGroup 
           value={currentAnswer} 
-          onValueChange={setCurrentAnswer}
+          onValueChange={handleOptionSelect}
           className="space-y-3"
         >
           {options.map((option) => (
@@ -89,27 +100,23 @@ export const TestQuestionView = ({
           Назад
         </Button>
         
-        <Button
-          onClick={handleNext}
-          disabled={!currentAnswer || isSubmitting}
-          className="bg-todoYellow text-black hover:bg-yellow-400"
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Обработка...
-            </>
-          ) : currentQuestionIndex === totalQuestions - 1 ? (
-            <>
-              Завершить тест
-            </>
-          ) : (
-            <>
-              Далее
-              <ChevronRight className="ml-2 h-4 w-4" />
-            </>
-          )}
-        </Button>
+        {isSubmitting ? (
+          <Button
+            disabled
+            className="bg-todoYellow text-black hover:bg-yellow-400"
+          >
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Обработка...
+          </Button>
+        ) : currentQuestionIndex === totalQuestions - 1 ? (
+          <Button
+            onClick={handleNext}
+            disabled={!currentAnswer || isSubmitting}
+            className="bg-todoYellow text-black hover:bg-yellow-400"
+          >
+            Завершить тест
+          </Button>
+        ) : null}
       </div>
     </>
   );
