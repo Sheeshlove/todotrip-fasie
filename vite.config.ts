@@ -19,13 +19,67 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
+  
+  // Add build optimization settings
+  build: {
+    target: 'es2015',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production',
+        drop_debugger: mode === 'production'
+      }
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: [
+            'react', 
+            'react-dom', 
+            'react-router-dom',
+            '@supabase/supabase-js',
+            '@tanstack/react-query'
+          ],
+          ui: [
+            '@/components/ui',
+            'lucide-react',
+            'clsx',
+            'tailwind-merge'
+          ]
+        },
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
+      }
+    },
+    sourcemap: mode !== 'production',
+    emptyOutDir: true,
+    cssCodeSplit: true,
+    assetsInlineLimit: 4096, // 4kb - inline smaller assets
+    reportCompressedSize: false // improves build performance
+  },
+  
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  
+  // Configure asset optimization
+  optimizeDeps: {
+    include: [
+      'react', 
+      'react-dom', 
+      'react-router-dom',
+      '@supabase/supabase-js',
+      '@tanstack/react-query'
+    ],
+    exclude: []
+  },
+  
   configureServer: (server) => {
     server.middlewares.use((req, res, next) => {
+      // Security headers
       res.setHeader('Content-Security-Policy', 
         "default-src 'self'; " +
         "script-src 'self' 'unsafe-inline'; " +
@@ -42,6 +96,23 @@ export default defineConfig(({ mode }) => ({
       res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
       res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
       res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+      
+      // Add cache control headers for better performance
+      const url = req.url;
+      
+      if (url.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+        // Static assets cache: 7 days
+        res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+      } else if (url.includes('assets/')) {
+        // Hashed assets cache: 1 year
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      } else {
+        // HTML and API responses: no cache
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      }
+      
       next();
     });
   }

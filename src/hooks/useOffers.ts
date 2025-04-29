@@ -1,41 +1,58 @@
-
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useEffect } from 'react';
 
-interface Offer {
+export interface Offer {
   id: string;
   title: string;
-  description: string;
   price: number;
-  image?: string;
-  location?: string;
-  duration?: string;
-  details?: string;
-  included?: string[];
-  all_inclusive: boolean;
-  hot_offer: boolean;
-  ai_recommended: boolean;
-  valid_from?: string;
-  valid_until?: string;
+  description: string;
+  image: string | null;
+  location: string | null;
+  duration: string | null;
+  all_inclusive: boolean | null;
+  hot_offer: boolean | null;
+  ai_recommended: boolean | null;
+  details: string | null;
+  included: string[] | null;
+  valid_from: string | null;
+  valid_until: string | null;
+  created_at: string | null;
 }
 
-interface FilterState {
-  priceRange: [number, number];
-  sortBy: string | null;
-  allInclusive: boolean;
-  hotOffers: boolean;
-  aiRecommended: boolean;
-  dateRange?: [Date | null, Date | null];
-  searchQuery?: string;
-}
-
-interface OffersResponse {
+export interface OffersResponse {
   offers: Offer[];
   total: number;
   page: number;
   pageSize: number;
 }
 
+export interface FilterState {
+  priceRange: [number, number] | null;
+  dateRange: [Date, Date] | null;
+  allInclusive: boolean;
+  hotOffers: boolean;
+  aiRecommended: boolean;
+  searchQuery: string;
+  sortBy: 'cheapToExpensive' | 'expensiveToCheap' | 'default';
+}
+
+// Default filter state for reuse
+const defaultFilters: FilterState = {
+  priceRange: null,
+  dateRange: null,
+  allInclusive: false,
+  hotOffers: false,
+  aiRecommended: false,
+  searchQuery: '',
+  sortBy: 'default'
+};
+
+// Cache time constants
+const STALE_TIME = 2 * 60 * 1000; // 2 minutes
+const CACHE_TIME = 10 * 60 * 1000; // 10 minutes
+
+// Memoized fetch function to avoid recreation
 const fetchOffers = async (page: number, filters: FilterState): Promise<OffersResponse> => {
   let query = supabase
     .from('offers')
@@ -96,9 +113,39 @@ const fetchOffers = async (page: number, filters: FilterState): Promise<OffersRe
   };
 };
 
-export const useOffers = (page: number, filters: FilterState) => {
+// Pre-fetches the next page of offers to reduce loading time when paginating
+const prefetchNextPage = (queryClient: any, page: number, filters: FilterState) => {
+  queryClient.prefetchQuery({
+    queryKey: ['offers', page + 1, filters],
+    queryFn: () => fetchOffers(page + 1, filters),
+    staleTime: STALE_TIME
+  });
+};
+
+// Generates a query key from filters for caching
+const getOffersQueryKey = (page: number, filters: FilterState) => 
+  ['offers', page, filters];
+
+export const useOffers = (page: number, filters: FilterState = defaultFilters) => {
+  const queryClient = useQueryClient();
+  
+  // Prefetch next page when current page changes
+  useEffect(() => {
+    // Don't prefetch if we're at the last known page
+    const currentData = queryClient.getQueryData<OffersResponse>(
+      getOffersQueryKey(page, filters)
+    );
+    
+    if (currentData && currentData.page * currentData.pageSize < currentData.total) {
+      prefetchNextPage(queryClient, page, filters);
+    }
+  }, [page, filters, queryClient]);
+
   return useQuery({
-    queryKey: ['offers', page, filters],
+    queryKey: getOffersQueryKey(page, filters),
     queryFn: () => fetchOffers(page, filters),
+    staleTime: STALE_TIME,
+    gcTime: CACHE_TIME,
+    keepPreviousData: true, // Keep previous data while loading new data
   });
 };
