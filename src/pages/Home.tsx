@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { preloadImages } from '@/data/placeholderImages';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ChevronRight, Map, Info, Camera } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Home = () => {
   useEffect(() => {
@@ -75,6 +74,14 @@ const Home = () => {
 };
 
 const DestinationButton = ({ city, disabled = false }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (!disabled) {
+      navigate(`/ai-trip?city=${encodeURIComponent(city)}`);
+    }
+  };
+
   return (
     <Button 
       className={`w-full justify-between text-left ${
@@ -83,6 +90,7 @@ const DestinationButton = ({ city, disabled = false }) => {
           : 'bg-todoBlack text-white hover:bg-todoBlack/80'
       }`}
       disabled={disabled}
+      onClick={handleClick}
     >
       <div className="flex items-center">
         <Camera className="w-4 h-4 mr-2" />
