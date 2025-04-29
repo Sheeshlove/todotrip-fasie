@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -153,8 +154,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Cleanup
     return () => {
       isMounted = false;
-      authPromise.then(subscription => {
-        subscription.subscription.unsubscribe();
+      authPromise.then(listener => {
+        // Fix the type issue by checking if data property exists
+        if ('data' in listener) {
+          listener.data.subscription.unsubscribe();
+        } else {
+          listener.subscription.unsubscribe();
+        }
       });
     };
   }, [navigate, handleProfileAndNavigation]);

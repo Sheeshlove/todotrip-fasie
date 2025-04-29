@@ -41,13 +41,14 @@ export * from './sheet';
 export * from './sidebar';
 export * from './skeleton';
 export * from './slider';
-export * from './sonner';
 export * from './switch';
 export * from './table';
 export * from './tabs';
 export * from './textarea';
 export * from './toast';
-export * from './toaster';
+// Export the renamed Toaster from sonner to avoid naming conflict
+import { Toaster as SonnerToaster, toast as sonnerToast } from './sonner';
+export { SonnerToaster, sonnerToast };
 export * from './toggle-group';
 export * from './toggle';
 export * from './tooltip';
