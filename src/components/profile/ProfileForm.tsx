@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,14 +11,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { HobbiesDialog } from '@/components/HobbiesDialog';
 import { ProfileImageUpload } from '@/components/ProfileImageUpload';
-import { Loader2, MapPin } from 'lucide-react';
+import { Loader2, MapPin, Navigation } from 'lucide-react';
 import { profileSchema, ProfileFormValues } from '@/lib/validations/profile';
 import { russianCities } from '@/data/cities';
+import { useGeolocation } from '@/hooks/useGeolocation';
 
 export const ProfileForm = () => {
   const { user, profile } = useAuth();
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(profile?.hobbies || []);
   const [isUpdating, setIsUpdating] = useState(false);
+  const { city: detectedCity, status: geoStatus, error: geoError, detectCity } = useGeolocation();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -79,6 +80,27 @@ export const ProfileForm = () => {
     }
   };
 
+  // Effect to update city when detected
+  const handleDetectCity = () => {
+    detectCity();
+  };
+
+  // Set detected city in form when available
+  const handleSetDetectedCity = () => {
+    if (detectedCity) {
+      form.setValue('city', detectedCity);
+      toast.success(`Город успешно определен: ${detectedCity}`);
+    }
+  };
+  
+  React.useEffect(() => {
+    if (geoStatus === 'success' && detectedCity) {
+      handleSetDetectedCity();
+    } else if (geoStatus === 'error' && geoError) {
+      toast.error(geoError);
+    }
+  }, [geoStatus, detectedCity, geoError]);
+
   if (!user) {
     return <div className="text-center text-white">Загрузка профиля...</div>;
   }
@@ -127,24 +149,46 @@ export const ProfileForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-white">Город</FormLabel>
-                <Select 
-                  onValueChange={field.onChange} 
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger className="w-full flex items-center">
-                      <MapPin className="mr-2 h-4 w-4 text-todoMediumGray" />
-                      <SelectValue placeholder="Выберите город" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent className="max-h-80">
-                    {russianCities.map((city) => (
-                      <SelectItem key={city} value={city}>
-                        {city}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="space-y-2">
+                  <Select 
+                    onValueChange={field.onChange} 
+                    value={field.value || ""}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full flex items-center">
+                        <MapPin className="mr-2 h-4 w-4 text-todoMediumGray" />
+                        <SelectValue placeholder="Выберите город" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="max-h-80">
+                      {russianCities.map((city) => (
+                        <SelectItem key={city} value={city}>
+                          {city}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full flex items-center justify-center gap-2 mt-1"
+                    onClick={handleDetectCity}
+                    disabled={geoStatus === 'loading'}
+                  >
+                    {geoStatus === 'loading' ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Определение...
+                      </>
+                    ) : (
+                      <>
+                        <Navigation className="h-4 w-4" />
+                        Определить автоматически
+                      </>
+                    )}
+                  </Button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
