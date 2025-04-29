@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import type { AuthState, UserProfile } from '@/lib/types/auth';
@@ -10,14 +10,9 @@ interface AuthContextType extends AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, metadata?: { [key: string]: any }) => Promise<void>;
   signOut: () => Promise<void>;
-  updateProfile: (userId: string, updatedProfile: UserProfile) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// In-memory cache with expiration
-const profileCache = new Map<string, {data: UserProfile, expiry: number}>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({
@@ -34,30 +29,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     lockoutDuration: 15 * 60 * 1000, // 15 minutes
   });
 
-  // Update profile in cache and state
-  const updateProfile = useCallback((userId: string, updatedProfile: UserProfile) => {
-    // Update in-memory cache
-    profileCache.set(userId, {
-      data: updatedProfile,
-      expiry: Date.now() + CACHE_TTL
-    });
-    
-    // Update component state
-    setState(s => ({ ...s, profile: updatedProfile }));
-  }, []);
-  
-  // Make the updateProfile function available globally
-  useEffect(() => {
-    window.updateProfileCache = updateProfile;
-    
-    return () => {
-      delete window.updateProfileCache;
-    };
-  }, [updateProfile]);
-
-  // Memoize the profile fetch function to avoid recreating it on every render
-  const fetchUserProfile = useCallback(async (userId: string): Promise<UserProfile | null> => {
+  const handleProfileAndNavigation = async (userId: string, event?: string) => {
     try {
+      // Use localStorage to check if we've recently fetched this profile
+      const cachedProfileData = localStorage.getItem(`profile_${userId}`);
+      const cachedProfileTime = localStorage.getItem(`profile_${userId}_time`);
+      
+      // If we have a cached profile and it's less than 5 minutes old, use it
+      if (cachedProfileData && cachedProfileTime) {
+        const cacheAge = Date.now() - parseInt(cachedProfileTime);
+        if (cacheAge < 5 * 60 * 1000) { // 5 minutes
+          const profile = JSON.parse(cachedProfileData);
+          setState(s => ({ ...s, profile: profile as UserProfile }));
+          
+          if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
+            navigate('/');
+          }
+          return;
+        }
+      }
+      
+      // Otherwise fetch from API
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
@@ -66,125 +58,72 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         console.error('Error fetching profile:', error);
-        return null;
-      }
-
-      if (profile) {
-        // Store in in-memory cache with current timestamp
-        const now = Date.now();
-        profileCache.set(userId, {
-          data: profile as UserProfile,
-          expiry: now + CACHE_TTL
-        });
-        
-        return profile as UserProfile;
-      }
-      
-      return null;
-    } catch (error) {
-      console.error('Error in fetchUserProfile:', error);
-      return null;
-    }
-  }, []);
-
-  const handleProfileAndNavigation = useCallback(async (userId: string, event?: string) => {
-    try {
-      // Check in-memory cache first for better performance
-      const now = Date.now();
-      const cachedProfile = profileCache.get(userId);
-      
-      if (cachedProfile && now < cachedProfile.expiry) {
-        setState(s => ({ ...s, profile: cachedProfile.data }));
-        
         if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
-          navigate('/');
+          console.log('No profile found, redirecting to create-profile');
+          navigate('/create-profile');
+          return;
         }
-        return;
       }
-      
-      // Fetch profile if not cached or expired
-      const profile = await fetchUserProfile(userId);
-      
+
       if (profile) {
-        setState(s => ({ ...s, profile }));
+        // Cache the profile in localStorage
+        localStorage.setItem(`profile_${userId}`, JSON.stringify(profile));
+        localStorage.setItem(`profile_${userId}_time`, Date.now().toString());
+        
+        setState(s => ({ ...s, profile: profile as UserProfile }));
       }
       
       if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
         if (!profile) {
+          console.log('No profile found, redirecting to create-profile');
           navigate('/create-profile');
         } else {
+          console.log('Profile found, redirecting to home');
           navigate('/');
         }
       }
     } catch (error) {
       console.error('Error in handleProfileAndNavigation:', error);
     }
-  }, [fetchUserProfile, navigate]);
+  };
 
   useEffect(() => {
-    // Flag to prevent state updates if the component unmounts
-    let isMounted = true;
-    
-    // Setup auth state listener
-    const setupAuth = async () => {
-      try {
-        // Set up auth state listener first
-        const authListener = supabase.auth.onAuthStateChange((event, session) => {
-          if (!isMounted) return;
-          
-          setState(s => ({ ...s, user: session?.user ?? null }));
-          
-          if (session?.user) {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
+        
+        setState(s => ({ ...s, user: session?.user ?? null }));
+        
+        if (session?.user) {
+          // Defer Supabase calls with setTimeout to prevent deadlocks
+          setTimeout(() => {
             handleProfileAndNavigation(session.user.id, event);
-          } else {
-            setState(s => ({ ...s, profile: null }));
-            if (event === 'SIGNED_OUT') {
-              navigate('/login');
-            }
-          }
-        });
-        
-        // Then get initial session
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (isMounted) {
-          setState(s => ({ 
-            ...s, 
-            user: session?.user ?? null, 
-            loading: false 
-          }));
-          
-          if (session?.user) {
-            handleProfileAndNavigation(session.user.id);
-          }
-        }
-        
-        return authListener;
-      } catch (error) {
-        console.error('Auth setup error:', error);
-        if (isMounted) {
-          setState(s => ({ ...s, loading: false }));
-        }
-        return { subscription: { unsubscribe: () => {} } };
-      }
-    };
-    
-    // Initialize auth
-    const authPromise = setupAuth();
-    
-    // Cleanup
-    return () => {
-      isMounted = false;
-      authPromise.then(listener => {
-        // Fix the type issue by checking if data property exists
-        if ('data' in listener) {
-          listener.data.subscription.unsubscribe();
+          }, 0);
         } else {
-          listener.subscription.unsubscribe();
+          setState(s => ({ ...s, profile: null }));
+          if (event === 'SIGNED_OUT') {
+            navigate('/login');
+          }
         }
-      });
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setState(s => ({ ...s, user: session?.user ?? null, loading: false }));
+      if (session?.user) {
+        // Defer Supabase calls with setTimeout
+        setTimeout(() => {
+          handleProfileAndNavigation(session.user.id);
+        }, 0);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
     };
-  }, [navigate, handleProfileAndNavigation]);
+  }, [navigate]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -260,11 +199,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Clear profile cache
-      if (state.user?.id) {
-        profileCache.delete(state.user.id);
-      }
-      
       setState({ user: null, profile: null, loading: false });
       
       navigate('/login');
@@ -277,7 +211,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signUp, signOut, updateProfile }}>
+    <AuthContext.Provider value={{ ...state, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

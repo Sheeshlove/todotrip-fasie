@@ -11,7 +11,7 @@ interface ProfileImageUploadProps {
   onImageUpdate: (url: string) => void;
 }
 
-const ProfileImageUpload = ({ userId, currentImage, onImageUpdate }: ProfileImageUploadProps) => {
+export const ProfileImageUpload = ({ userId, currentImage, onImageUpdate }: ProfileImageUploadProps) => {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const { uploadImage, uploading } = useProfileImages(userId);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -79,5 +79,3 @@ const ProfileImageUpload = ({ userId, currentImage, onImageUpdate }: ProfileImag
     </div>
   );
 };
-
-export default ProfileImageUpload;

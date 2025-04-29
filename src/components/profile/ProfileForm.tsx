@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useForm } from 'react-hook-form';
@@ -9,21 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { profileSchema, ProfileFormValues } from '@/lib/validations/profile';
 
-// Base components loaded immediately
 import { PersonalInfoForm } from './PersonalInfoForm';
-
-// Dynamically import heavier components that aren't needed immediately
-const LocationSelector = lazy(() => import('./LocationSelector').then(mod => ({ default: mod.LocationSelector })));
-const HobbiesSelector = lazy(() => import('./HobbiesSelector').then(mod => ({ default: mod.HobbiesSelector })));
-const ProfileImageUpload = lazy(() => import('@/components/ProfileImageUpload'));
-
-// Simple loading component for Suspense fallbacks
-const LoadingField = () => (
-  <div className="flex items-center space-x-2 p-4 border rounded-md animate-pulse">
-    <Loader2 className="h-4 w-4 animate-spin text-todoYellow" />
-    <span className="text-todoYellow text-sm">Загрузка...</span>
-  </div>
-);
+import { LocationSelector } from './LocationSelector';
+import { HobbiesSelector } from './HobbiesSelector';
+import { ProfileImageUpload } from '@/components/ProfileImageUpload';
 
 export const ProfileForm = () => {
   const { user, profile } = useAuth();
@@ -41,28 +30,40 @@ export const ProfileForm = () => {
     },
   });
 
-  const updateProfile = async (data: ProfileFormValues) => {
+  const updateProfile = async (values: ProfileFormValues) => {
     if (!user) return;
     
     setIsUpdating(true);
-    
     try {
-      // Update the profile with the form data
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from('profiles')
         .update({
-          username: data.name,
-          age: data.age,
-          description: data.description,
-          hobbies: selectedHobbies,
-          city: data.city,
+          username: values.name,
+          age: values.age,
+          description: values.description,
+          hobbies: values.hobbies,
+          city: values.city,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .select();
 
       if (error) throw error;
       
-      toast.success('Профиль успешно обновлен');
+      // Clear the profile cache in localStorage
+      localStorage.removeItem(`profile_${user.id}`);
+      localStorage.removeItem(`profile_${user.id}_time`);
+      
+      // Update the localStorage with the new profile data
+      if (data && data.length > 0) {
+        localStorage.setItem(`profile_${user.id}`, JSON.stringify(data[0]));
+        localStorage.setItem(`profile_${user.id}_time`, Date.now().toString());
+      }
+      
+      toast.success('Профиль обновлен');
+      
+      // Force a page reload to ensure the updated profile is displayed
+      window.location.reload();
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Ошибка обновления профиля');
@@ -85,23 +86,15 @@ export const ProfileForm = () => {
 
       if (error) throw error;
       
-      // Update profile in context instead of reloading the page
-      if (profile) {
-        // Create an updated profile
-        const updatedProfile = {
-          ...profile,
-          avatar_url: url,
-          updated_at: new Date().toISOString()
-        };
-        
-        // Update the cache directly if cache mechanism is used in AuthContext
-        if (window.updateProfileCache && typeof window.updateProfileCache === 'function') {
-          window.updateProfileCache(user.id, updatedProfile);
-        }
-      }
+      // Clear the profile cache in localStorage
+      localStorage.removeItem(`profile_${user.id}`);
+      localStorage.removeItem(`profile_${user.id}_time`);
       
       toast.success('Фото профиля обновлено');
-    } catch (error: any) {
+      
+      // Force a page reload to ensure the updated profile is displayed
+      window.location.reload();
+    } catch (error) {
       console.error('Error updating profile image:', error);
       toast.error('Ошибка обновления фото профиля');
     }
@@ -113,29 +106,21 @@ export const ProfileForm = () => {
 
   return (
     <>
-      <Suspense fallback={<LoadingField />}>
-        <ProfileImageUpload 
-          userId={user.id}
-          currentImage={profile?.avatar_url || null}
-          onImageUpdate={updateProfileImage}
-        />
-      </Suspense>
+      <ProfileImageUpload 
+        userId={user.id}
+        currentImage={profile?.avatar_url || null}
+        onImageUpdate={updateProfileImage}
+      />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(updateProfile)} className="space-y-6 mt-6">
           <PersonalInfoForm form={form} />
-          
-          <Suspense fallback={<LoadingField />}>
-            <LocationSelector form={form} />
-          </Suspense>
-          
-          <Suspense fallback={<LoadingField />}>
-            <HobbiesSelector 
-              form={form} 
-              selectedHobbies={selectedHobbies} 
-              setSelectedHobbies={setSelectedHobbies} 
-            />
-          </Suspense>
+          <LocationSelector form={form} />
+          <HobbiesSelector 
+            form={form} 
+            selectedHobbies={selectedHobbies} 
+            setSelectedHobbies={setSelectedHobbies} 
+          />
 
           <Button 
             type="submit" 

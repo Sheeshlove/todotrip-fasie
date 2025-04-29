@@ -19,7 +19,13 @@ const Slider = React.forwardRef<
     <SliderPrimitive.Track className="relative h-[1px] w-full grow overflow-hidden rounded-full bg-todoMediumGray">
       <SliderPrimitive.Range className="absolute h-full bg-todoYellow" />
     </SliderPrimitive.Track>
-    {(props.value || props.defaultValue)?.map((_, i) => (
+    {props.defaultValue?.map((_, i) => (
+      <SliderPrimitive.Thumb 
+        key={i} 
+        className="block h-5 w-5 rounded-full border-2 border-todoYellow bg-black ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      />
+    )) || 
+    props.value?.map((_, i) => (
       <SliderPrimitive.Thumb 
         key={i} 
         className="block h-5 w-5 rounded-full border-2 border-todoYellow bg-black ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
