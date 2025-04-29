@@ -1,5 +1,16 @@
 
-import { Sight } from '@/components/RouteSelection/SightCard';
+// Define the Sight type directly in this file
+export interface Sight {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  hours: string;
+  website: string;
+  websiteUrl: string;
+  contacts: string;
+  imageUrl: string;
+}
 
 export const spbSights: Sight[] = [
   {
