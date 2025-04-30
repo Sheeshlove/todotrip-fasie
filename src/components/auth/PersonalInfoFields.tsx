@@ -5,6 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { UseFormReturn } from "react-hook-form";
 import { RegisterFormValues } from "@/lib/validations/register";
 import { HobbiesDialog } from "@/components/HobbiesDialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface PersonalInfoFieldsProps {
   form: UseFormReturn<RegisterFormValues>;
@@ -53,13 +55,42 @@ export const PersonalInfoFields = ({
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-white">Хобби (необязательно)</FormLabel>
-            <HobbiesDialog
-              selectedHobbies={selectedHobbies}
-              onHobbiesChange={(hobbies) => {
-                onHobbiesChange(hobbies);
-                field.onChange(hobbies);
-              }}
-            />
+            <FormControl>
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-2">
+                  {selectedHobbies.length > 0 ? (
+                    selectedHobbies.map((hobby) => (
+                      <Badge
+                        key={hobby}
+                        variant="outline"
+                        className="bg-todoLightGray text-todoBlack hover:bg-todoLightGray/80 rounded-full px-4 py-1 text-sm"
+                      >
+                        {hobby}
+                      </Badge>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-400">Нет выбранных хобби</p>
+                  )}
+                </div>
+                
+                <HobbiesDialog
+                  selectedHobbies={selectedHobbies}
+                  onHobbiesChange={(hobbies) => {
+                    onHobbiesChange(hobbies);
+                    field.onChange(hobbies);
+                  }}
+                  trigger={
+                    <Button 
+                      variant="outline" 
+                      type="button" 
+                      className="w-full mt-2"
+                    >
+                      Выбрать
+                    </Button>
+                  }
+                />
+              </div>
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}

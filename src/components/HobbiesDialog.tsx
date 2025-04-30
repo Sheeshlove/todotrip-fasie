@@ -16,9 +16,10 @@ import { useState } from "react";
 interface HobbiesDialogProps {
   selectedHobbies: string[];
   onHobbiesChange: (hobbies: string[]) => void;
+  trigger?: React.ReactNode;
 }
 
-export function HobbiesDialog({ selectedHobbies, onHobbiesChange }: HobbiesDialogProps) {
+export function HobbiesDialog({ selectedHobbies, onHobbiesChange, trigger }: HobbiesDialogProps) {
   const [localSelectedHobbies, setLocalSelectedHobbies] = useState<string[]>(selectedHobbies);
   const allHobbies = hobbiesData.flatMap(category => category.hobbies);
 
@@ -37,23 +38,27 @@ export function HobbiesDialog({ selectedHobbies, onHobbiesChange }: HobbiesDialo
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="flex flex-wrap gap-2">
-          {selectedHobbies.length > 0 ? (
-            selectedHobbies.map((hobby) => (
-              <Badge
-                key={hobby}
-                variant="outline"
-                className="bg-todoLightGray text-todoBlack hover:bg-todoLightGray/80 rounded-full px-4 py-1 text-sm"
-              >
-                {hobby}
-              </Badge>
-            ))
-          ) : (
-            <Button variant="outline" type="button" className="w-full">
-              Выбрать хобби
-            </Button>
-          )}
-        </div>
+        {trigger ? (
+          trigger
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {selectedHobbies.length > 0 ? (
+              selectedHobbies.map((hobby) => (
+                <Badge
+                  key={hobby}
+                  variant="outline"
+                  className="bg-todoLightGray text-todoBlack hover:bg-todoLightGray/80 rounded-full px-4 py-1 text-sm"
+                >
+                  {hobby}
+                </Badge>
+              ))
+            ) : (
+              <Button variant="outline" type="button" className="w-full">
+                Выбрать хобби
+              </Button>
+            )}
+          </div>
+        )}
       </DialogTrigger>
 
       <DialogContent className="max-w-md">
