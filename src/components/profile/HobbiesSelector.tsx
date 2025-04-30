@@ -15,7 +15,11 @@ interface HobbiesSelectorProps {
 export const HobbiesSelector = ({ form, selectedHobbies, setSelectedHobbies }: HobbiesSelectorProps) => {
   // Make sure form value stays in sync with selectedHobbies
   useEffect(() => {
-    form.setValue('hobbies', selectedHobbies, { shouldValidate: true });
+    form.setValue('hobbies', selectedHobbies, { 
+      shouldValidate: true,
+      shouldDirty: true, // Mark as dirty to trigger form change events
+      shouldTouch: true  // Mark as touched to trigger validation
+    });
   }, [selectedHobbies, form]);
 
   return (
@@ -47,8 +51,10 @@ export const HobbiesSelector = ({ form, selectedHobbies, setSelectedHobbies }: H
                 selectedHobbies={selectedHobbies}
                 onHobbiesChange={(hobbies) => {
                   setSelectedHobbies(hobbies);
-                  // Make sure to update the form value
+                  // Make sure to update the form value and trigger form events
                   field.onChange(hobbies);
+                  // Explicitly mark as dirty and touched to trigger auto-save
+                  form.trigger('hobbies');
                 }}
                 trigger={
                   <Button 
