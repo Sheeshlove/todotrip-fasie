@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Toggle } from "@/components/ui/toggle";
 import { hobbiesData } from "@/data/hobbies";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface HobbiesDialogProps {
   selectedHobbies: string[];
@@ -20,8 +19,18 @@ interface HobbiesDialogProps {
 }
 
 export function HobbiesDialog({ selectedHobbies, onHobbiesChange, trigger }: HobbiesDialogProps) {
-  const [localSelectedHobbies, setLocalSelectedHobbies] = useState<string[]>(selectedHobbies);
+  const [localSelectedHobbies, setLocalSelectedHobbies] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
   const allHobbies = hobbiesData.flatMap(category => category.hobbies);
+
+  // Update localSelectedHobbies when the dialog opens
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) {
+      // When opening, initialize with current selected hobbies
+      setLocalSelectedHobbies([...selectedHobbies]);
+    }
+    setOpen(newOpen);
+  };
 
   const toggleHobby = (hobby: string) => {
     setLocalSelectedHobbies(current => 
@@ -33,32 +42,13 @@ export function HobbiesDialog({ selectedHobbies, onHobbiesChange, trigger }: Hob
 
   const handleDone = () => {
     onHobbiesChange(localSelectedHobbies);
+    setOpen(false); // Close dialog
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        {trigger ? (
-          trigger
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {selectedHobbies.length > 0 ? (
-              selectedHobbies.map((hobby) => (
-                <Badge
-                  key={hobby}
-                  variant="outline"
-                  className="bg-todoLightGray text-todoBlack hover:bg-todoLightGray/80 rounded-full px-4 py-1 text-sm"
-                >
-                  {hobby}
-                </Badge>
-              ))
-            ) : (
-              <Button variant="outline" type="button" className="w-full">
-                Выбрать хобби
-              </Button>
-            )}
-          </div>
-        )}
+        {trigger}
       </DialogTrigger>
 
       <DialogContent className="max-w-md">

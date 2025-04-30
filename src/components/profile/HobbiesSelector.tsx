@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { UseFormReturn } from 'react-hook-form';
 import { ProfileFormValues } from '@/lib/validations/profile';
@@ -14,6 +13,11 @@ interface HobbiesSelectorProps {
 }
 
 export const HobbiesSelector = ({ form, selectedHobbies, setSelectedHobbies }: HobbiesSelectorProps) => {
+  // Make sure form value stays in sync with selectedHobbies
+  useEffect(() => {
+    form.setValue('hobbies', selectedHobbies, { shouldValidate: true });
+  }, [selectedHobbies, form]);
+
   return (
     <FormField
       control={form.control}
@@ -43,6 +47,7 @@ export const HobbiesSelector = ({ form, selectedHobbies, setSelectedHobbies }: H
                 selectedHobbies={selectedHobbies}
                 onHobbiesChange={(hobbies) => {
                   setSelectedHobbies(hobbies);
+                  // Make sure to update the form value
                   field.onChange(hobbies);
                 }}
                 trigger={

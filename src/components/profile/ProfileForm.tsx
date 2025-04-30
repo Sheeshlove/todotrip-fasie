@@ -35,13 +35,15 @@ export const ProfileForm = () => {
     
     setIsUpdating(true);
     try {
+      console.log("Submitting profile with hobbies:", selectedHobbies);
+      
       const { error, data } = await supabase
         .from('profiles')
         .update({
           username: values.name,
           age: values.age,
           description: values.description,
-          hobbies: values.hobbies,
+          hobbies: selectedHobbies, // Use selectedHobbies state here
           city: values.city,
           updated_at: new Date().toISOString(),
         })
@@ -50,11 +52,10 @@ export const ProfileForm = () => {
 
       if (error) throw error;
       
-      // Clear the profile cache in localStorage
+      // Clear and update the profile cache
       localStorage.removeItem(`profile_${user.id}`);
       localStorage.removeItem(`profile_${user.id}_time`);
       
-      // Update the localStorage with the new profile data
       if (data && data.length > 0) {
         localStorage.setItem(`profile_${user.id}`, JSON.stringify(data[0]));
         localStorage.setItem(`profile_${user.id}_time`, Date.now().toString());
@@ -62,7 +63,7 @@ export const ProfileForm = () => {
       
       toast.success('Профиль обновлен');
       
-      // Force a page reload to ensure the updated profile is displayed
+      // Force a page reload to show updated profile
       window.location.reload();
     } catch (error) {
       console.error('Error updating profile:', error);
