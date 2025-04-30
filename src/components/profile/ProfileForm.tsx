@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { profileSchema, ProfileFormValues } from '@/lib/validations/profile';
 import { useNavigate, useBeforeUnload } from 'react-router-dom';
-
 import { PersonalInfoForm } from './PersonalInfoForm';
 import { LocationSelector } from './LocationSelector';
 import { HobbiesSelector } from './HobbiesSelector';
@@ -18,19 +17,20 @@ import { ProfileImageUpload } from '@/components/ProfileImageUpload';
 // Utility function to debounce function calls
 const debounce = (fn: Function, ms = 300) => {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return function(...args: any[]) {
+  return function (...args: any[]) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn.apply(this, args), ms);
   };
 };
-
 export const ProfileForm = () => {
-  const { user, profile } = useAuth();
+  const {
+    user,
+    profile
+  } = useAuth();
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(profile?.hobbies || []);
   const [isUpdating, setIsUpdating] = useState(false);
   const [needsSaving, setNeedsSaving] = useState(false);
   const navigate = useNavigate();
-
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -38,34 +38,30 @@ export const ProfileForm = () => {
       age: profile?.age || '',
       description: profile?.description || '',
       hobbies: profile?.hobbies || [],
-      city: profile?.city || '',
+      city: profile?.city || ''
     },
-    mode: 'onBlur', // Validate on blur for better UX
+    mode: 'onBlur' // Validate on blur for better UX
   });
 
   // Auto-save profile when form values change (with debouncing)
   const saveProfile = async (values: ProfileFormValues) => {
     if (!user || isUpdating) return;
-    
     setIsUpdating(true);
     setNeedsSaving(false);
-    
     try {
-      const { error, data } = await supabase
-        .from('profiles')
-        .update({
-          username: values.name,
-          age: values.age,
-          description: values.description,
-          hobbies: selectedHobbies,
-          city: values.city,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id)
-        .select();
-
+      const {
+        error,
+        data
+      } = await supabase.from('profiles').update({
+        username: values.name,
+        age: values.age,
+        description: values.description,
+        hobbies: selectedHobbies,
+        city: values.city,
+        updated_at: new Date().toISOString()
+      }).eq('id', user.id).select();
       if (error) throw error;
-      
+
       // Update cache
       if (data && data.length > 0) {
         localStorage.removeItem(`profile_${user.id}`);
@@ -73,10 +69,9 @@ export const ProfileForm = () => {
         localStorage.setItem(`profile_${user.id}`, JSON.stringify(data[0]));
         localStorage.setItem(`profile_${user.id}_time`, Date.now().toString());
       }
-      
       toast.success('Изменения сохранены', {
         position: 'bottom-right',
-        duration: 2000,
+        duration: 2000
       });
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -88,37 +83,28 @@ export const ProfileForm = () => {
   };
 
   // Debounced save function
-  const debouncedSave = React.useCallback(
-    debounce((data: ProfileFormValues) => saveProfile(data), 1000),
-    [user, selectedHobbies]
-  );
-  
+  const debouncedSave = React.useCallback(debounce((data: ProfileFormValues) => saveProfile(data), 1000), [user, selectedHobbies]);
+
   // Watch form changes and trigger auto-save
   useEffect(() => {
-    const subscription = form.watch((data) => {
+    const subscription = form.watch(data => {
       if (user) {
         setNeedsSaving(true);
         debouncedSave(data as ProfileFormValues);
       }
     });
-    
     return () => subscription.unsubscribe();
   }, [form, debouncedSave, user]);
-  
+
   // Save on page exit
-  useBeforeUnload(
-    React.useCallback(
-      (event) => {
-        if (needsSaving) {
-          saveProfile(form.getValues());
-          // Standard message for beforeunload dialog
-          event.preventDefault();
-          event.returnValue = '';
-        }
-      },
-      [needsSaving, form]
-    )
-  );
+  useBeforeUnload(React.useCallback(event => {
+    if (needsSaving) {
+      saveProfile(form.getValues());
+      // Standard message for beforeunload dialog
+      event.preventDefault();
+      event.returnValue = '';
+    }
+  }, [needsSaving, form]));
 
   // Save when navigating away using React Router
   useEffect(() => {
@@ -132,24 +118,20 @@ export const ProfileForm = () => {
   // Handle image updates
   const updateProfileImage = async (url: string) => {
     if (!user) return;
-    
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          avatar_url: url,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
-
+      const {
+        error
+      } = await supabase.from('profiles').update({
+        avatar_url: url,
+        updated_at: new Date().toISOString()
+      }).eq('id', user.id);
       if (error) throw error;
-      
+
       // Clear the profile cache in localStorage
       localStorage.removeItem(`profile_${user.id}`);
       localStorage.removeItem(`profile_${user.id}_time`);
-      
       toast.success('Фото профиля обновлено');
-      
+
       // No need to reload - just update the UI
       if (profile) {
         profile.avatar_url = url;
@@ -159,44 +141,26 @@ export const ProfileForm = () => {
       toast.error('Ошибка обновления фото профиля');
     }
   };
-
   if (!user) {
     return <div className="text-center text-white">Загрузка профиля...</div>;
   }
-
-  return (
-    <>
-      <ProfileImageUpload 
-        userId={user.id}
-        currentImage={profile?.avatar_url || null}
-        onImageUpdate={updateProfileImage}
-      />
+  return <>
+      <ProfileImageUpload userId={user.id} currentImage={profile?.avatar_url || null} onImageUpdate={updateProfileImage} />
 
       <Form {...form}>
         <div className="space-y-6 mt-6">
           <PersonalInfoForm form={form} />
           <LocationSelector form={form} />
-          <HobbiesSelector 
-            form={form} 
-            selectedHobbies={selectedHobbies} 
-            setSelectedHobbies={setSelectedHobbies} 
-          />
+          <HobbiesSelector form={form} selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} />
           
           {/* Status indicator instead of a save button */}
           <div className="flex items-center justify-end text-sm">
-            {isUpdating ? (
-              <div className="flex items-center text-gray-400">
+            {isUpdating ? <div className="flex items-center text-gray-400">
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Сохранение...
-              </div>
-            ) : needsSaving ? (
-              <div className="text-amber-400">Ожидание сохранения...</div>
-            ) : (
-              <div className="text-green-400">Все изменения сохранены</div>
-            )}
+              </div> : needsSaving ? <div className="text-amber-400">Ожидание сохранения...</div> : <div className="text-green-400 py-0 my-0 mx-0 px-[59px] rounded-none">Все изменения сохранены</div>}
           </div>
         </div>
       </Form>
-    </>
-  );
+    </>;
 };
