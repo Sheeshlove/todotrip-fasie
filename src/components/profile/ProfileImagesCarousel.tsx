@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { User, ImagePlus, X } from 'lucide-react';
+import { User, ImagePlus, X, Plus } from 'lucide-react';
 import { useProfileImages } from '@/hooks/useProfileImages';
 import { toast } from 'sonner';
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 interface ProfileImagesCarouselProps {
   userId: string;
@@ -126,31 +127,46 @@ export const ProfileImagesCarousel = ({ userId, images, onImagesUpdate }: Profil
         )}
       </div>
 
-      {/* Scrollable thumbnails */}
-      {userImages.length > 1 && (
-        <ScrollArea className="w-full whitespace-nowrap pb-2">
-          <div className="flex space-x-2">
-            {userImages.map((image, index) => (
-              <div 
-                key={image} 
-                className={`relative rounded-md overflow-hidden transition-all cursor-pointer w-16 h-16 flex-shrink-0 
-                  ${expandedImage === image ? 'ring-2 ring-todoYellow' : ''}`}
-                onClick={() => toggleImageExpansion(image)}
-              >
-                <img 
-                  src={image} 
-                  alt={`Profile image ${index + 1}`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      )}
+      {/* Scrollable thumbnails carousel - always show even if empty */}
+      <ScrollArea className="w-full whitespace-nowrap pb-2">
+        <div className="flex space-x-2">
+          {userImages.map((image, index) => (
+            <div 
+              key={image} 
+              className={`relative rounded-md overflow-hidden transition-all cursor-pointer w-16 h-16 flex-shrink-0 
+                ${expandedImage === image ? 'ring-2 ring-todoYellow' : ''}`}
+              onClick={() => toggleImageExpansion(image)}
+            >
+              <img 
+                src={image} 
+                alt={`Profile image ${index + 1}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          ))}
+          
+          {/* Add secondary photo button - always show if less than 10 images */}
+          {showAddButton && (
+            <label 
+              className="w-16 h-16 flex-shrink-0 bg-todoYellow rounded-md flex items-center justify-center cursor-pointer hover:bg-yellow-400 transition-colors"
+              aria-label="Добавить фотографию"
+            >
+              <Plus className="w-8 h-8 text-black" />
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+            </label>
+          )}
+        </div>
+      </ScrollArea>
 
-      {/* Add button */}
-      {showAddButton && (
+      {/* Add main button */}
+      {userImages.length === 0 && (
         <label className="fixed bottom-24 right-4 bg-todoYellow p-2 rounded-full cursor-pointer disabled:opacity-50 z-10">
           <ImagePlus className="w-6 h-6 text-black" />
           <input
