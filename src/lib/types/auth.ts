@@ -13,6 +13,7 @@ export interface UserProfile {
   city: string | null;
   smoking_attitude: string | null;
   drinking_attitude: string | null;
+  images: string[] | null;
 }
 
 export interface AuthState {

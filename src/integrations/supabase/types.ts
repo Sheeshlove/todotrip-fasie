@@ -109,6 +109,7 @@ export type Database = {
           drinking_attitude: string | null
           hobbies: string[] | null
           id: string
+          images: Json | null
           smoking_attitude: string | null
           updated_at: string | null
           username: string | null
@@ -122,6 +123,7 @@ export type Database = {
           drinking_attitude?: string | null
           hobbies?: string[] | null
           id: string
+          images?: Json | null
           smoking_attitude?: string | null
           updated_at?: string | null
           username?: string | null
@@ -135,6 +137,7 @@ export type Database = {
           drinking_attitude?: string | null
           hobbies?: string[] | null
           id?: string
+          images?: Json | null
           smoking_attitude?: string | null
           updated_at?: string | null
           username?: string | null
@@ -143,7 +146,45 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_profiles: {
+        Row: {
+          age: string | null
+          avatar_url: string | null
+          city: string | null
+          description: string | null
+          drinking_attitude: string | null
+          hobbies: string[] | null
+          id: string | null
+          images: Json | null
+          smoking_attitude: string | null
+          username: string | null
+        }
+        Insert: {
+          age?: string | null
+          avatar_url?: string | null
+          city?: string | null
+          description?: string | null
+          drinking_attitude?: string | null
+          hobbies?: string[] | null
+          id?: string | null
+          images?: Json | null
+          smoking_attitude?: string | null
+          username?: string | null
+        }
+        Update: {
+          age?: string | null
+          avatar_url?: string | null
+          city?: string | null
+          description?: string | null
+          drinking_attitude?: string | null
+          hobbies?: string[] | null
+          id?: string | null
+          images?: Json | null
+          smoking_attitude?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

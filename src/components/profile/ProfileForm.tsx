@@ -15,6 +15,7 @@ import { LocationSelector } from './LocationSelector';
 import { HobbiesSelector } from './HobbiesSelector';
 import { AttitudesSection } from './AttitudesSection';
 import { ProfileImageUpload } from '@/components/ProfileImageUpload';
+import { ProfileImagesCarousel } from './ProfileImagesCarousel';
 
 // Utility function to debounce function calls
 const debounce = (fn: Function, ms = 300) => {
@@ -30,6 +31,7 @@ export const ProfileForm = () => {
     profile
   } = useAuth();
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(profile?.hobbies || []);
+  const [profileImages, setProfileImages] = useState<string[]>(profile?.images || []);
   const [isUpdating, setIsUpdating] = useState(false);
   const [needsSaving, setNeedsSaving] = useState(false);
   const navigate = useNavigate();
@@ -64,6 +66,7 @@ export const ProfileForm = () => {
         city: values.city,
         smoking_attitude: values.smokingAttitude,
         drinking_attitude: values.drinkingAttitude,
+        images: profileImages,
         updated_at: new Date().toISOString()
       }).eq('id', user.id).select();
       if (error) throw error;
@@ -89,7 +92,7 @@ export const ProfileForm = () => {
   };
 
   // Debounced save function
-  const debouncedSave = React.useCallback(debounce((data: ProfileFormValues) => saveProfile(data), 1000), [user, selectedHobbies]);
+  const debouncedSave = React.useCallback(debounce((data: ProfileFormValues) => saveProfile(data), 1000), [user, selectedHobbies, profileImages]);
 
   // Watch form changes and trigger auto-save
   useEffect(() => {
@@ -100,7 +103,7 @@ export const ProfileForm = () => {
       }
     });
     return () => subscription.unsubscribe();
-  }, [form, debouncedSave, user]);
+  }, [form, debouncedSave, user, profileImages]);
 
   // Save on page exit
   useBeforeUnload(React.useCallback(event => {
@@ -147,11 +150,21 @@ export const ProfileForm = () => {
       toast.error('Ошибка обновления фото профиля');
     }
   };
+
+  // Handle multiple profile images update
+  const updateProfileImages = (urls: string[]) => {
+    setProfileImages(urls);
+    setNeedsSaving(true);
+    // This will trigger the form.watch effect which will save the profile
+  };
+
   if (!user) {
     return <div className="text-center text-white">Загрузка профиля...</div>;
   }
   return <>
       <ProfileImageUpload userId={user.id} currentImage={profile?.avatar_url || null} onImageUpdate={updateProfileImage} />
+      
+      <ProfileImagesCarousel userId={user.id} images={profileImages} onImagesUpdate={updateProfileImages} />
 
       <Form {...form}>
         <div className="space-y-6 mt-6">
