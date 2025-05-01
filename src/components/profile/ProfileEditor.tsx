@@ -1,5 +1,4 @@
 
-import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { ProfileForm } from './ProfileForm';
 import { AccountSettings } from './AccountSettings';
 

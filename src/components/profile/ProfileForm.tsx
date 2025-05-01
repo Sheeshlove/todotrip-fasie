@@ -5,33 +5,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { Form } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { Loader2, Save } from 'lucide-react';
 import { profileSchema, ProfileFormValues } from '@/lib/validations/profile';
 import { useNavigate, useBeforeUnload } from 'react-router-dom';
-import { PersonalInfoForm } from './PersonalInfoForm';
-import { LocationSelector } from './LocationSelector';
-import { HobbiesSelector } from './HobbiesSelector';
-import { AttitudesSection } from './AttitudesSection';
 import { ProfileImageUpload } from '@/components/ProfileImageUpload';
 import { ProfileImagesCarousel } from './ProfileImagesCarousel';
-
-// Utility function to debounce function calls
-const debounce = (fn: Function, ms = 300) => {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  return function (...args: any[]) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn.apply(this, args), ms);
-  };
-};
+import { ProfileFormContent } from './ProfileFormContent';
+import { useFormAutoSave } from '@/hooks/useFormAutoSave';
 
 export const ProfileForm = () => {
   const { user, profile } = useAuth();
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(profile?.hobbies || []);
   const [profileImages, setProfileImages] = useState<string[]>(profile?.images || []);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [needsSaving, setNeedsSaving] = useState(false);
   const navigate = useNavigate();
   
   const form = useForm<ProfileFormValues>({
@@ -50,10 +34,7 @@ export const ProfileForm = () => {
 
   // Save profile function
   const saveProfile = async (values: ProfileFormValues, images?: string[]) => {
-    if (!user || isUpdating) return;
-    
-    setIsUpdating(true);
-    setNeedsSaving(false);
+    if (!user) return;
     
     try {
       const imagesToSave = images || profileImages;
@@ -87,17 +68,15 @@ export const ProfileForm = () => {
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Ошибка сохранения');
-      setNeedsSaving(true);
-    } finally {
-      setIsUpdating(false);
+      throw error;
     }
   };
 
-  // Debounced save function for form changes
-  const debouncedSave = useCallback(
-    debounce((data: ProfileFormValues) => saveProfile(data), 1000), 
-    [user, selectedHobbies, profileImages]
-  );
+  const { isUpdating, needsSaving, setNeedsSaving, debouncedSave } = useFormAutoSave({
+    form,
+    userId: user?.id || '',
+    onSave: (data) => saveProfile(data),
+  });
 
   // Watch form changes and trigger auto-save
   useEffect(() => {
@@ -176,33 +155,13 @@ export const ProfileForm = () => {
       />
 
       <div className="bg-todoDarkGray/50 backdrop-blur-sm rounded-xl p-6 border border-white/5 shadow-lg">
-        <Form {...form}>
-          <div className="space-y-8">
-            <PersonalInfoForm form={form} />
-            <LocationSelector form={form} />
-            <HobbiesSelector form={form} selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} />
-            <AttitudesSection form={form} />
-            
-            {/* Status indicator */}
-            <div className="flex items-center justify-end text-sm">
-              {isUpdating ? (
-                <div className="flex items-center bg-black/20 px-4 py-2 rounded-full">
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin text-todoYellow" />
-                  <span className="text-gray-300">Сохранение...</span>
-                </div>
-              ) : needsSaving ? (
-                <div className="flex items-center bg-amber-900/20 text-amber-300 px-4 py-2 rounded-full">
-                  <span className="text-xs">Ожидание сохранения...</span>
-                </div>
-              ) : (
-                <div className="flex items-center bg-green-900/20 text-green-300 px-4 py-2 rounded-full">
-                  <Save className="w-4 h-4 mr-1" />
-                  <span className="text-xs">Все изменения сохранены</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </Form>
+        <ProfileFormContent
+          form={form}
+          selectedHobbies={selectedHobbies}
+          setSelectedHobbies={setSelectedHobbies}
+          isUpdating={isUpdating}
+          needsSaving={needsSaving}
+        />
       </div>
     </div>
   );
