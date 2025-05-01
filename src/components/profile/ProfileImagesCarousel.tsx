@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
@@ -107,9 +106,19 @@ export const ProfileImagesCarousel = ({ userId, images, onImagesUpdate }: Profil
             </button>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full bg-todoBlack">
-            <User className="w-1/4 h-1/4 text-gray-500" />
-          </div>
+          <label 
+            className="flex items-center justify-center h-full cursor-pointer bg-todoBlack hover:bg-gray-900 transition-colors"
+            aria-label="Добавить фотографию"
+          >
+            <Plus className="w-16 h-16 text-todoYellow" />
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageUpload}
+              disabled={uploading}
+            />
+          </label>
         )}
       </div>
 
