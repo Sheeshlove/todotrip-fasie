@@ -16,6 +16,7 @@ interface RegisterFormProps {
 
 export const RegisterForm = ({ onSubmit, isLoading }: RegisterFormProps) => {
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -23,6 +24,7 @@ export const RegisterForm = ({ onSubmit, isLoading }: RegisterFormProps) => {
       name: "",
       age: "",
       hobbies: [],
+      languages: [],
       description: "",
       phone: "",
       email: "",
@@ -39,6 +41,8 @@ export const RegisterForm = ({ onSubmit, isLoading }: RegisterFormProps) => {
             form={form}
             selectedHobbies={selectedHobbies}
             onHobbiesChange={setSelectedHobbies}
+            selectedLanguages={selectedLanguages}
+            onLanguagesChange={setSelectedLanguages}
           />
           <AccountInfoFields form={form} />
         </div>

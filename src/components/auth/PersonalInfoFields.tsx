@@ -84,17 +84,17 @@ export const PersonalInfoFields = ({
             <FormLabel className="text-white">Языки (необязательно)</FormLabel>
             <FormControl>
               <div className="space-y-2">
-                <div className="flex flex-wrap gap-2 min-h-[40px]">
+                <div className="flex flex-wrap gap-2 min-h-[40px] p-3 border border-white/10 rounded-lg bg-black/20 backdrop-blur-sm">
                   {selectedLanguages.map((language) => (
                     <Badge 
                       key={language} 
-                      className="bg-todoLightGray text-todoBlack hover:bg-todoLightGray/80 flex items-center gap-1 px-3 py-1.5"
+                      className="bg-todoYellow/90 text-black hover:bg-todoYellow/70 flex items-center gap-1 px-3 py-1.5"
                     >
                       {language}
                       <button 
                         type="button" 
                         onClick={() => handleRemoveLanguage(language)}
-                        className="ml-1 hover:bg-todoGray rounded-full p-0.5"
+                        className="ml-1 hover:bg-black/10 rounded-full p-0.5"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -107,16 +107,17 @@ export const PersonalInfoFields = ({
                 
                 <div className="flex flex-wrap gap-2">
                   <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                    <SelectTrigger className="w-full">
-                      <Globe className="mr-2 h-4 w-4 text-todoMediumGray" />
+                    <SelectTrigger className="w-full bg-todoDarkGray border-white/10">
+                      <Globe className="mr-2 h-4 w-4 text-todoYellow" />
                       <SelectValue placeholder="Выберите язык" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-80">
+                    <SelectContent className="max-h-80 bg-todoDarkGray border-white/10">
                       {languages.map((language) => (
                         <SelectItem
                           key={language}
                           value={language}
                           disabled={selectedLanguages.includes(language)}
+                          className="focus:bg-todoYellow/20 focus:text-white"
                         >
                           {language}
                         </SelectItem>
@@ -129,6 +130,7 @@ export const PersonalInfoFields = ({
                     variant="outline" 
                     onClick={handleAddLanguage}
                     disabled={!selectedLanguage || selectedLanguages.includes(selectedLanguage)}
+                    className="bg-transparent border-todoYellow text-todoYellow hover:bg-todoYellow/10"
                   >
                     Добавить
                   </Button>
@@ -154,7 +156,7 @@ export const PersonalInfoFields = ({
                       <Badge
                         key={hobby}
                         variant="outline"
-                        className="bg-todoLightGray text-todoBlack hover:bg-todoLightGray/80 rounded-full px-4 py-1 text-sm"
+                        className="bg-todoYellow/90 text-black hover:bg-todoYellow/70 rounded-full px-4 py-1 text-sm"
                       >
                         {hobby}
                       </Badge>
@@ -174,7 +176,7 @@ export const PersonalInfoFields = ({
                     <Button 
                       variant="outline" 
                       type="button" 
-                      className="w-full mt-2"
+                      className="w-full mt-2 bg-transparent border-todoYellow text-todoYellow hover:bg-todoYellow/10"
                     >
                       Выбрать
                     </Button>

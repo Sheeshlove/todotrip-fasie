@@ -9,6 +9,7 @@ export interface UserProfile {
   updated_at: string | null;
   description: string | null;
   hobbies: string[] | null;
+  languages: string[] | null;
   age: string | null;
   city: string | null;
   smoking_attitude: string | null;
