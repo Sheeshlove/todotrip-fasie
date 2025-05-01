@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { User, ImagePlus, X, Plus } from 'lucide-react';
+import { User, ImagePlus, Plus, Trash2 } from 'lucide-react';
 import { useProfileImages } from '@/hooks/useProfileImages';
 import { toast } from 'sonner';
 
@@ -97,13 +98,6 @@ export const ProfileImagesCarousel = ({ userId, images, onImagesUpdate }: Profil
               alt="Main profile image"
               className="w-full h-full object-cover"
             />
-            <button
-              onClick={() => handleDeleteImage(mainImage)}
-              className="absolute top-2 right-2 p-1 bg-red-600 rounded-full text-white hover:bg-red-700 transition-colors"
-              aria-label="Удалить изображение"
-            >
-              <X size={20} />
-            </button>
           </div>
         ) : (
           <label 
@@ -127,17 +121,30 @@ export const ProfileImagesCarousel = ({ userId, images, onImagesUpdate }: Profil
         <div className="flex space-x-2">
           {userImages.map((image, index) => (
             <div 
-              key={image} 
-              className={`relative rounded-md overflow-hidden transition-all cursor-pointer w-16 h-16 flex-shrink-0 
-                ${index === selectedMainImage ? 'ring-2 ring-todoYellow' : ''}`}
-              onClick={() => selectMainImage(index)}
+              key={image}
+              className="flex flex-col items-center"
             >
-              <img 
-                src={image} 
-                alt={`Profile image ${index + 1}`}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
+              <div 
+                className={`relative rounded-md overflow-hidden transition-all cursor-pointer w-16 h-16 flex-shrink-0 mb-1
+                  ${index === selectedMainImage ? 'ring-2 ring-todoYellow' : ''}`}
+                onClick={() => selectMainImage(index)}
+              >
+                <img 
+                  src={image} 
+                  alt={`Profile image ${index + 1}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <button
+                onClick={() => handleDeleteImage(image)}
+                className="p-1 text-red-600 hover:text-red-700 transition-colors"
+                aria-label="Удалить изображение"
+                title="Удалить изображение"
+                type="button"
+              >
+                <Trash2 size={16} />
+              </button>
             </div>
           ))}
           
