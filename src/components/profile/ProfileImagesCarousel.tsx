@@ -166,20 +166,6 @@ export const ProfileImagesCarousel = ({ userId, images, onImagesUpdate }: Profil
           )}
         </div>
       </ScrollArea>
-
-      {/* Add main button */}
-      {userImages.length === 0 && (
-        <label className="fixed bottom-24 right-4 bg-todoYellow p-2 rounded-full cursor-pointer disabled:opacity-50 z-10">
-          <ImagePlus className="w-6 h-6 text-black" />
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImageUpload}
-            disabled={uploading}
-          />
-        </label>
-      )}
     </div>
   );
 };
