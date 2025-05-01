@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { FormField, FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { UseFormReturn } from 'react-hook-form';
-import { ProfileFormValues } from '@/lib/validations/profile';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { UseFormReturn } from "react-hook-form";
+import { ProfileFormValues } from "@/lib/validations/profile";
 
 interface NameFieldProps {
   form: UseFormReturn<ProfileFormValues>;
@@ -16,13 +16,9 @@ export const NameField: React.FC<NameFieldProps> = ({ form }) => {
       name="name"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-white font-medium">Имя</FormLabel>
+          <FormLabel className="text-white">Имя</FormLabel>
           <FormControl>
-            <Input 
-              placeholder="Ваше имя" 
-              className="bg-todoDarkGray/70 border-white/10 focus:border-todoYellow/50 text-white transition-all"
-              {...field} 
-            />
+            <Input placeholder="Ваше имя" {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>

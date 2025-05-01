@@ -110,6 +110,7 @@ export type Database = {
           hobbies: string[] | null
           id: string
           images: Json | null
+          languages: string[] | null
           smoking_attitude: string | null
           updated_at: string | null
           username: string | null
@@ -124,6 +125,7 @@ export type Database = {
           hobbies?: string[] | null
           id: string
           images?: Json | null
+          languages?: string[] | null
           smoking_attitude?: string | null
           updated_at?: string | null
           username?: string | null
@@ -138,6 +140,7 @@ export type Database = {
           hobbies?: string[] | null
           id?: string
           images?: Json | null
+          languages?: string[] | null
           smoking_attitude?: string | null
           updated_at?: string | null
           username?: string | null
