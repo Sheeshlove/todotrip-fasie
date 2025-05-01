@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { preloadImages } from '@/data/placeholderImages';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ChevronRight, Map, Info, Camera } from 'lucide-react';
+import { ChevronRight, Map, Info, Camera, Users, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
@@ -37,20 +38,23 @@ const Home = () => {
   return (
     <PageLayout title="ToDoTrip - Главная" description="AI-powered travel route planner">
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] px-4 py-8">
-        <div className="max-w-md w-full space-y-6">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-todoYellow mb-2">Добро пожаловать в ToDoTrip</h1>
+        <div className="max-w-md w-full space-y-8 animate-fade-in">
+          <div className="text-center mb-10">
+            <div className="flex justify-center mb-4">
+              <Sparkles className="w-12 h-12 text-todoYellow animate-pulse" />
+            </div>
+            <h1 className="text-3xl font-bold text-todoYellow mb-3">Добро пожаловать в ToDoTrip</h1>
             <p className="text-todoLightGray">Ваш персональный помощник для путешествий по России</p>
           </div>
           
-          <Card className="bg-todoDarkGray border-todoLightGray/10 p-6">
-            <div className="flex items-center mb-4">
+          <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div className="flex items-center mb-6">
               <div className="bg-todoYellow/20 p-3 rounded-full mr-4">
                 <Map className="w-6 h-6 text-todoYellow" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-white">Популярные направления</h2>
-                <p className="text-sm text-todoMediumGray">Изучите лучшие места для посещения</p>
+                <p className="text-sm text-todoLightGray">Изучите лучшие места для посещения</p>
               </div>
             </div>
             
@@ -59,30 +63,32 @@ const Home = () => {
             </div>
           </Card>
           
-          <Card className="bg-todoDarkGray border-todoLightGray/10 p-6">
-            <div className="flex items-center mb-4">
+          <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <div className="flex items-center mb-6">
               <div className="bg-todoYellow/20 p-3 rounded-full mr-4">
-                <Info className="w-6 h-6 text-todoYellow" />
+                <Users className="w-6 h-6 text-todoYellow" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-white">О приложении</h2>
-                <p className="text-sm text-todoMediumGray">Как работает ToDoTrip</p>
+                <p className="text-sm text-todoLightGray">Как работает ToDoTrip</p>
               </div>
             </div>
             
-            <p className="text-todoLightGray mb-4">
+            <p className="text-todoLightGray mb-6 leading-relaxed">
               ToDoTrip поможет вам спланировать идеальный маршрут, найти интересные места и 
               забронировать услуги у наших партнеров.
             </p>
             
-            <div className="flex justify-between">
+            <div className="grid grid-cols-2 gap-4">
               <Link to="/partners">
-                <Button variant="secondary" className="bg-todoBlack border border-todoLightGray/20 hover:bg-todoBlack/80">
+                <Button variant="secondary" className="w-full bg-todoBlack border border-white/10 hover:bg-todoDarkGray hover:border-todoYellow/30 transition-all">
+                  <ShoppingBag size={18} className="mr-2" />
                   Партнеры
                 </Button>
               </Link>
               <Link to="/dating">
-                <Button variant="secondary" className="bg-todoBlack border border-todoLightGray/20 hover:bg-todoBlack/80">
+                <Button variant="secondary" className="w-full bg-todoBlack border border-white/10 hover:bg-todoDarkGray hover:border-todoYellow/30 transition-all">
+                  <Heart size={18} className="mr-2" />
                   Общение
                 </Button>
               </Link>
@@ -105,10 +111,10 @@ const DestinationButton = ({ city, disabled = false }) => {
 
   return (
     <Button 
-      className={`w-full justify-between text-left ${
+      className={`w-full justify-between text-left transition-all ${
         disabled 
           ? 'bg-todoBlack/30 text-todoMediumGray cursor-not-allowed' 
-          : 'bg-todoBlack text-white hover:bg-todoBlack/80'
+          : 'bg-todoBlack/60 text-white hover:bg-todoBlack hover:scale-102 hover:shadow-md'
       }`}
       disabled={disabled}
       onClick={handleClick}
@@ -118,7 +124,7 @@ const DestinationButton = ({ city, disabled = false }) => {
         <span>{city}</span>
       </div>
       {disabled ? (
-        <span className="text-xs">Скоро</span>
+        <span className="text-xs bg-gray-800 px-2 py-1 rounded-full">Скоро</span>
       ) : (
         <ChevronRight className="w-4 h-4" />
       )}

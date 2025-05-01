@@ -74,6 +74,11 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			scale: {
+				'101': '1.01',
+				'102': '1.02',
+				'103': '1.03',
+			},
 			keyframes: {
 				'accordion-down': {
 					from: {
@@ -116,6 +121,14 @@ export default {
 					"5%": { opacity: "1", transform: "translateY(0)" },
 					"85%": { opacity: "1", transform: "translateY(0)" },
 					"100%": { opacity: "0", transform: "translateY(-10px)" }
+				},
+				'pulse-soft': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.8' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-5px)' }
 				}
 			},
 			animation: {
@@ -123,11 +136,16 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.3s ease-out',
 				'fade-out': 'fade-out 0.3s ease-out',
-				'fadeInOut': 'fadeInOut 15s ease-in-out infinite'
+				'fadeInOut': 'fadeInOut 15s ease-in-out infinite',
+				'pulse-soft': 'pulse-soft 2s ease-in-out infinite',
+				'float': 'float 3s ease-in-out infinite'
 			},
 			fontFamily: {
 				unbounded: ['Unbounded', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', 'sans-serif']
-			}
+			},
+			boxShadow: {
+				'glow': '0 0 10px rgba(255, 222, 3, 0.3)'
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

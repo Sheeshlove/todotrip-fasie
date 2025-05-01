@@ -12,10 +12,10 @@ interface PersonalInfoFormProps {
 
 export const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
   return (
-    <>
+    <div className="space-y-5">
       <NameField form={form} />
       <AgeField form={form} />
       <DescriptionField form={form} />
-    </>
+    </div>
   );
 };

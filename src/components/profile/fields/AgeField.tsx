@@ -16,9 +16,19 @@ export const AgeField: React.FC<AgeFieldProps> = ({ form }) => {
       name="age"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-white">Возраст</FormLabel>
+          <FormLabel className="text-white font-medium">Возраст</FormLabel>
           <FormControl>
-            <Input type="text" placeholder="Ваш возраст" {...field} />
+            <Input 
+              type="number" 
+              placeholder="Ваш возраст" 
+              className="bg-todoDarkGray/70 border-white/10 focus:border-todoYellow/50 text-white transition-all"
+              {...field} 
+              onChange={(e) => {
+                // Restrict to numbers only
+                const value = e.target.value.replace(/\D/g, '');
+                field.onChange(value);
+              }}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>

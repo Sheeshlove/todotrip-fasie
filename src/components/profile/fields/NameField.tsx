@@ -16,9 +16,13 @@ export const NameField: React.FC<NameFieldProps> = ({ form }) => {
       name="name"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-white">Имя</FormLabel>
+          <FormLabel className="text-white font-medium">Имя</FormLabel>
           <FormControl>
-            <Input placeholder="Ваше имя" {...field} />
+            <Input 
+              placeholder="Ваше имя" 
+              className="bg-todoDarkGray/70 border-white/10 focus:border-todoYellow/50 text-white transition-all"
+              {...field} 
+            />
           </FormControl>
           <FormMessage />
         </FormItem>

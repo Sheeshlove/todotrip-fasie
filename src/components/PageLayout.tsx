@@ -19,7 +19,7 @@ const PageLayout = ({
   return (
     <div className="min-h-screen bg-todoBlack font-unbounded text-white pb-16">
       <Meta title={title} description={description} />
-      <main className="px-4">{children}</main>
+      <main className="px-4 py-4 max-w-4xl mx-auto">{children}</main>
       {!hideBottomMenu && <BottomMenu />}
     </div>
   );

@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@200;300;400;500;600;700;800;900&display=swap');
 @import './styles/cursor.css';
 
@@ -116,6 +117,16 @@
   .glass-panel {
     @apply backdrop-blur-md bg-white/5 border border-white/10;
   }
+
+  /* Improved buttons */
+  button, .btn {
+    @apply transition-all duration-200;
+  }
+
+  /* Improved focus styles */
+  input:focus, textarea:focus, select:focus, button:focus {
+    @apply outline-none ring-1 ring-todoYellow/30;
+  }
 }
 
 @layer components {
@@ -182,5 +193,19 @@
   
   .btn-secondary {
     @apply bg-todoDarkGray hover:bg-gray-700 text-white rounded-lg transition-all;
+  }
+
+  /* Improved animations */
+  .hover-scale {
+    @apply transition-transform hover:scale-105;
+  }
+
+  .hover-bright {
+    @apply transition-all hover:brightness-110;
+  }
+
+  /* Glass card */
+  .glass-card {
+    @apply bg-todoDarkGray/50 backdrop-blur-sm border border-white/5 rounded-xl shadow-lg;
   }
 }

@@ -5,6 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { LoginDialog } from "@/components/auth/LoginDialog";
 import PageLayout from "@/components/PageLayout";
+import { UserPlus } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import type { RegisterFormValues } from "@/lib/validations/register";
 
 const Register = () => {
@@ -44,20 +46,26 @@ const Register = () => {
 
   return (
     <PageLayout title="ТуДуТрип - Регистрация" description="Создайте аккаунт">
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 animate-fade-in">
         <div className="w-full max-w-lg">
-          <div className="bg-todoDarkGray rounded-lg p-8">
-            <h1 className="text-3xl font-bold mb-6 text-todoYellow">Создание аккаунта</h1>
+          <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 p-8 rounded-xl shadow-lg">
+            <div className="flex justify-center mb-6">
+              <div className="bg-todoYellow/20 p-3 rounded-full">
+                <UserPlus className="w-8 h-8 text-todoYellow" />
+              </div>
+            </div>
+            
+            <h1 className="text-3xl font-bold mb-8 text-todoYellow text-center">Создание аккаунта</h1>
             
             <RegisterForm onSubmit={onSubmit} isLoading={isLoading} />
 
-            <p className="text-sm text-center text-white mt-4">
+            <p className="text-sm text-center text-todoLightGray mt-6">
               Уже есть аккаунт?{" "}
               <Link to="/login" className="text-todoYellow hover:underline">
                 Войти
               </Link>
             </p>
-          </div>
+          </Card>
         </div>
       </div>
 
