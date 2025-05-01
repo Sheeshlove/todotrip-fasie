@@ -36,11 +36,15 @@ export const useProfileImages = (userId: string) => {
 
   const deleteImage = async (path: string) => {
     try {
+      // Ensure path is properly formatted
+      const formattedPath = path.includes(userId) ? path : `${userId}/${path}`;
+      
       const { error } = await supabase.storage
         .from('profiles')
-        .remove([`${userId}/${path}`]);
+        .remove([formattedPath]);
 
       if (error) {
+        console.error('Supabase delete error:', error);
         throw error;
       }
       

@@ -54,12 +54,14 @@ export const ProfileImagesCarousel = ({ userId, images, onImagesUpdate }: Profil
         }
         
         const updatedImages = userImages.filter(img => img !== imageUrl);
-        onImagesUpdate(updatedImages);
         
         // If the deleted image was expanded, close it
         if (expandedImage === imageUrl) {
           setExpandedImage(null);
         }
+        
+        // Notify parent about the change immediately
+        onImagesUpdate(updatedImages);
         
         toast.success('Изображение удалено');
       } catch (error) {

@@ -25,6 +25,7 @@ const debounce = (fn: Function, ms = 300) => {
     timeoutId = setTimeout(() => fn.apply(this, args), ms);
   };
 };
+
 export const ProfileForm = () => {
   const {
     user,
@@ -35,6 +36,7 @@ export const ProfileForm = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [needsSaving, setNeedsSaving] = useState(false);
   const navigate = useNavigate();
+  
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -49,12 +51,16 @@ export const ProfileForm = () => {
     mode: 'onBlur' // Validate on blur for better UX
   });
 
-  // Auto-save profile when form values change (with debouncing)
-  const saveProfile = async (values: ProfileFormValues) => {
+  // Save profile function
+  const saveProfile = async (values: ProfileFormValues, images?: string[]) => {
     if (!user || isUpdating) return;
+    
     setIsUpdating(true);
     setNeedsSaving(false);
+    
     try {
+      const imagesToSave = images || profileImages;
+      
       const {
         error,
         data
@@ -66,18 +72,20 @@ export const ProfileForm = () => {
         city: values.city,
         smoking_attitude: values.smokingAttitude,
         drinking_attitude: values.drinkingAttitude,
-        images: profileImages,
+        images: imagesToSave,
         updated_at: new Date().toISOString()
       }).eq('id', user.id).select();
+      
       if (error) throw error;
 
-      // Update cache
+      // Clear cache and update local storage
       if (data && data.length > 0) {
         localStorage.removeItem(`profile_${user.id}`);
         localStorage.removeItem(`profile_${user.id}_time`);
         localStorage.setItem(`profile_${user.id}`, JSON.stringify(data[0]));
         localStorage.setItem(`profile_${user.id}_time`, Date.now().toString());
       }
+      
       toast.success('Изменения сохранены', {
         position: 'bottom-right',
         duration: 2000
@@ -91,8 +99,11 @@ export const ProfileForm = () => {
     }
   };
 
-  // Debounced save function
-  const debouncedSave = React.useCallback(debounce((data: ProfileFormValues) => saveProfile(data), 1000), [user, selectedHobbies, profileImages]);
+  // Debounced save function for form changes
+  const debouncedSave = React.useCallback(
+    debounce((data: ProfileFormValues) => saveProfile(data), 1000), 
+    [user, selectedHobbies, profileImages]
+  );
 
   // Watch form changes and trigger auto-save
   useEffect(() => {
@@ -154,13 +165,18 @@ export const ProfileForm = () => {
   // Handle multiple profile images update
   const updateProfileImages = (urls: string[]) => {
     setProfileImages(urls);
-    setNeedsSaving(true);
-    // This will trigger the form.watch effect which will save the profile
+    
+    // Immediately save the profile with new images
+    saveProfile(form.getValues(), urls);
+    
+    // No need to set needsSaving since we're saving immediately
+    // setNeedsSaving(true);
   };
 
   if (!user) {
     return <div className="text-center text-white">Загрузка профиля...</div>;
   }
+  
   return <>
       <ProfileImageUpload userId={user.id} currentImage={profile?.avatar_url || null} onImageUpdate={updateProfileImage} />
       
