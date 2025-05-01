@@ -4,7 +4,7 @@ import PageLayout from '@/components/PageLayout';
 import { preloadImages } from '@/data/placeholderImages';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ChevronRight, Map, Info, Camera, Users, Sparkles } from 'lucide-react';
+import { ChevronRight, Map, Info, Camera, Users, Sparkles, ShoppingBag, Heart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
