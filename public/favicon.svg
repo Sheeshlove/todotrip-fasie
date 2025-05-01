@@ -1,6 +1,6 @@
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFDE03" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-  <path d="M2 17l10 5 10-5"></path>
-  <path d="M2 12l10 5 10-5"></path>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#FFD700">
+  <!-- Simplified gold thumbs up icon -->
+  <path d="M40,20 C32,20 25,27 25,35 C25,45 35,55 50,70 C65,55 75,45 75,35 C75,27 68,20 60,20 C55,20 50,23 50,28 C50,23 45,20 40,20 Z" />
+  <path d="M20,40 C15,50 15,65 20,75 C25,85 35,90 50,90 C65,90 75,85 80,75 C85,65 85,50 80,40" fill="none" stroke="#FFD700" stroke-width="5" />
 </svg>
