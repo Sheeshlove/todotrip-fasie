@@ -21,6 +21,9 @@ import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CustomCursor from "./components/CustomCursor";
 
+// Import custom styles
+import "./styles/custom-scrollbar.css";
+
 // Create the queryClient outside of the component
 const queryClient = new QueryClient({
   defaultOptions: {
