@@ -4,6 +4,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { useProfileImages } from '@/hooks/useProfileImages';
 import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import "@/styles/custom-scrollbar.css";
 
 interface ProfileImagesCarouselProps {
   userId: string;
@@ -97,15 +98,11 @@ export const ProfileImagesCarousel = ({
           </TooltipProvider>}
       </div>
       
-      {/* Scrollable thumbnails gallery with visible scrollbar */}
+      {/* Scrollable thumbnails gallery with styled scrollbar */}
       <div className="relative">
         <div 
           ref={scrollContainerRef} 
-          className="flex space-x-3 overflow-x-auto py-2 px-1" 
-          style={{
-            scrollbarWidth: 'thin',
-            msOverflowStyle: 'auto'
-          }}
+          className="flex space-x-3 overflow-x-auto py-2 px-1 custom-scrollbar" 
         >
           {userImages.map((image, index) => (
             <div key={image} className="flex flex-col items-center">
@@ -131,25 +128,6 @@ export const ProfileImagesCarousel = ({
             </div>
           )}
         </div>
-        
-        {/* Custom scrollbar styling - visible at the bottom */}
-        <style jsx>{`
-          div::-webkit-scrollbar {
-            height: 4px;
-            width: 4px;
-          }
-          div::-webkit-scrollbar-track {
-            background: #333;
-            border-radius: 4px;
-          }
-          div::-webkit-scrollbar-thumb {
-            background: #666;
-            border-radius: 4px;
-          }
-          div::-webkit-scrollbar-thumb:hover {
-            background: #888;
-          }
-        `}</style>
       </div>
       
       {/* Instruction text for users */}
