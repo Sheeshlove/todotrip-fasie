@@ -15,6 +15,7 @@ import { profileSchema, ProfileFormValues } from '@/lib/validations/profile';
 import { PersonalInfoForm } from '@/components/profile/PersonalInfoForm';
 import { LocationSelector } from '@/components/profile/LocationSelector';
 import { HobbiesSelector } from '@/components/profile/HobbiesSelector';
+import { AttitudesSection } from '@/components/profile/AttitudesSection';
 
 const CreateProfile = () => {
   const { user, profile } = useAuth();
@@ -30,6 +31,8 @@ const CreateProfile = () => {
       description: profile?.description || '',
       hobbies: profile?.hobbies || [],
       city: profile?.city || '',
+      smokingAttitude: profile?.smoking_attitude || '',
+      drinkingAttitude: profile?.drinking_attitude || '',
     },
   });
 
@@ -46,6 +49,8 @@ const CreateProfile = () => {
           description: values.description,
           hobbies: values.hobbies,
           city: values.city,
+          smoking_attitude: values.smokingAttitude,
+          drinking_attitude: values.drinkingAttitude,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
@@ -78,6 +83,7 @@ const CreateProfile = () => {
                   selectedHobbies={selectedHobbies} 
                   setSelectedHobbies={setSelectedHobbies} 
                 />
+                <AttitudesSection form={form} />
 
                 <Button 
                   type="submit" 

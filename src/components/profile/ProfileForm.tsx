@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +13,7 @@ import { useNavigate, useBeforeUnload } from 'react-router-dom';
 import { PersonalInfoForm } from './PersonalInfoForm';
 import { LocationSelector } from './LocationSelector';
 import { HobbiesSelector } from './HobbiesSelector';
+import { AttitudesSection } from './AttitudesSection';
 import { ProfileImageUpload } from '@/components/ProfileImageUpload';
 
 // Utility function to debounce function calls
@@ -38,7 +40,9 @@ export const ProfileForm = () => {
       age: profile?.age || '',
       description: profile?.description || '',
       hobbies: profile?.hobbies || [],
-      city: profile?.city || ''
+      city: profile?.city || '',
+      smokingAttitude: profile?.smoking_attitude || '',
+      drinkingAttitude: profile?.drinking_attitude || ''
     },
     mode: 'onBlur' // Validate on blur for better UX
   });
@@ -58,6 +62,8 @@ export const ProfileForm = () => {
         description: values.description,
         hobbies: selectedHobbies,
         city: values.city,
+        smoking_attitude: values.smokingAttitude,
+        drinking_attitude: values.drinkingAttitude,
         updated_at: new Date().toISOString()
       }).eq('id', user.id).select();
       if (error) throw error;
@@ -152,6 +158,7 @@ export const ProfileForm = () => {
           <PersonalInfoForm form={form} />
           <LocationSelector form={form} />
           <HobbiesSelector form={form} selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} />
+          <AttitudesSection form={form} />
           
           {/* Status indicator instead of a save button */}
           <div className="flex items-center justify-end text-sm">

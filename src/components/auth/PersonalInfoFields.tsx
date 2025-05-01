@@ -7,6 +7,8 @@ import { RegisterFormValues } from "@/lib/validations/register";
 import { HobbiesDialog } from "@/components/HobbiesDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 interface PersonalInfoFieldsProps {
   form: UseFormReturn<RegisterFormValues>;
@@ -90,6 +92,56 @@ export const PersonalInfoFields = ({
                   }
                 />
               </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="smokingAttitude"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-white">Отношение к курению (необязательно)</FormLabel>
+            <FormControl>
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className="space-y-3"
+              >
+                {["Не курю", "Только электронки :)", "Курю, когда выпью", "Дымлю, как паровоз"].map((option) => (
+                  <div key={option} className="flex items-center space-x-2">
+                    <RadioGroupItem value={option} id={`smoking-${option}`} />
+                    <Label htmlFor={`smoking-${option}`} className="text-white">{option}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="drinkingAttitude"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-white">Отношение к алкоголю (необязательно)</FormLabel>
+            <FormControl>
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className="space-y-3"
+              >
+                {["Не пью", "Пью по особым случаям", "Пью в компании", "Пью по выходным", "Пью часто"].map((option) => (
+                  <div key={option} className="flex items-center space-x-2">
+                    <RadioGroupItem value={option} id={`drinking-${option}`} />
+                    <Label htmlFor={`drinking-${option}`} className="text-white">{option}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
             </FormControl>
             <FormMessage />
           </FormItem>
