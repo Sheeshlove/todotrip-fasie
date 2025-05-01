@@ -1,14 +1,14 @@
 
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Map, ShoppingBag, MessageCircle, User } from 'lucide-react';
+import { Home, Handshake, MessageCircle, User } from 'lucide-react';
 
 const BottomMenu = () => {
   const location = useLocation();
   
   const menuItems = [
-    { path: '/', name: 'Главная', icon: Map },
-    { path: '/partners', name: 'Партнёры', icon: ShoppingBag },
+    { path: '/', name: 'Главная', icon: Home },
+    { path: '/partners', name: 'Партнёры', icon: Handshake },
     { path: '/dating', name: 'Общение', icon: MessageCircle },
     { path: '/profile', name: 'Профиль', icon: User },
   ];

@@ -3,7 +3,7 @@ import PageLayout from '@/components/PageLayout';
 import { preloadImages } from '@/data/placeholderImages';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ChevronRight, Map, Info, Camera, Users, Sparkles, ShoppingBag, MessageCircle } from 'lucide-react';
+import { ChevronRight, Home, Info, Camera, Users, Sparkles, Handshake, MessageCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
@@ -43,13 +43,13 @@ const Home = () => {
               <Sparkles className="w-12 h-12 text-todoYellow animate-pulse" />
             </div>
             <h1 className="text-3xl font-bold text-todoYellow mb-3">Добро пожаловать в ToDoTrip</h1>
-            <p className="text-todoLightGray">Ваш персональный помощник для путешествий по России</p>
+            <p className="text-todoLightGray">Ваш персональный помощник для путешествий по Р��ссии</p>
           </div>
           
           <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all">
             <div className="flex items-center mb-6">
               <div className="bg-todoYellow/20 p-3 rounded-full mr-4">
-                <Map className="w-6 h-6 text-todoYellow" />
+                <Home className="w-6 h-6 text-todoYellow" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-white">Популярные направления</h2>
@@ -81,7 +81,7 @@ const Home = () => {
             <div className="grid grid-cols-2 gap-4">
               <Link to="/partners">
                 <Button variant="secondary" className="w-full bg-todoBlack border border-white/10 hover:bg-todoDarkGray hover:border-todoYellow/30 transition-all">
-                  <ShoppingBag size={18} className="mr-2" />
+                  <Handshake size={18} className="mr-2" />
                   Партнеры
                 </Button>
               </Link>
