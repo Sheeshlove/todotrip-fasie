@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { preloadImages } from '@/data/placeholderImages';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ChevronRight, Map, Info, Camera, Users, Sparkles, ShoppingBag, Heart } from 'lucide-react';
+import { ChevronRight, Map, Info, Camera, Users, Sparkles, ShoppingBag, MessageCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
@@ -88,7 +87,7 @@ const Home = () => {
               </Link>
               <Link to="/dating">
                 <Button variant="secondary" className="w-full bg-todoBlack border border-white/10 hover:bg-todoDarkGray hover:border-todoYellow/30 transition-all">
-                  <Heart size={18} className="mr-2" />
+                  <MessageCircle size={18} className="mr-2" />
                   Общение
                 </Button>
               </Link>

@@ -1,7 +1,7 @@
 
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Map, ShoppingBag, Heart, User } from 'lucide-react';
+import { Map, ShoppingBag, MessageCircle, User } from 'lucide-react';
 
 const BottomMenu = () => {
   const location = useLocation();
@@ -9,7 +9,7 @@ const BottomMenu = () => {
   const menuItems = [
     { path: '/', name: 'Главная', icon: Map },
     { path: '/partners', name: 'Партнёры', icon: ShoppingBag },
-    { path: '/dating', name: 'Общение', icon: Heart },
+    { path: '/dating', name: 'Общение', icon: MessageCircle },
     { path: '/profile', name: 'Профиль', icon: User },
   ];
   
