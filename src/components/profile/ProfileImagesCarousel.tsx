@@ -30,17 +30,16 @@ export const ProfileImagesCarousel = ({
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="w-full max-w-md mx-auto mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-lg font-medium text-white">Ваши фотографии ({userImages.length}/10)</h3>
+      <div className="w-full max-w-md mx-auto mb-8">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-medium text-white/90">Галерея ({userImages.length}/10)</h3>
           {showAddButton && <AddImageButton onImageUpload={handleImageUpload} uploading={uploading} />}
         </div>
         
-        {/* Scrollable thumbnails gallery with styled scrollbar */}
-        <div className="relative">
+        <div className="bg-todoDarkGray/50 backdrop-blur-sm rounded-xl p-3 border border-white/5 shadow-lg">
           <div 
             ref={scrollContainerRef} 
-            className="flex space-x-3 overflow-x-auto py-2 px-1 custom-scrollbar" 
+            className="flex space-x-4 overflow-x-auto py-2 px-1 custom-scrollbar min-h-[120px]" 
           >
             {userImages.map((image, index) => (
               <DraggableImageItem 
@@ -53,17 +52,17 @@ export const ProfileImagesCarousel = ({
             ))}
             
             {/* Empty state when no images */}
-            {userImages.length === 0 && !showAddButton && (
-              <div className="flex-1 h-24 flex items-center justify-center text-todoMediumGray">
-                Нет фотографий
+            {userImages.length === 0 && (
+              <div className="flex-1 h-24 flex items-center justify-center text-todoMediumGray/70 w-full">
+                <p className="text-sm">Нет фотографий</p>
               </div>
             )}
           </div>
         </div>
         
         {/* Instruction text for users */}
-        <p className="text-sm text-gray-400 mt-2 text-center">
-          Прокрутите для просмотра всех фотографий, перетащите для изменения порядка ({userImages.length}/10)
+        <p className="text-xs text-gray-500 mt-2 text-center">
+          ◀️ Прокрутите для просмотра • Перетащите для изменения порядка ▶️
         </p>
       </div>
     </DndProvider>

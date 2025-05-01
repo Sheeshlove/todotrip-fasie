@@ -2,6 +2,7 @@
 import React, { useRef } from 'react';
 import { Trash2, GripVertical } from 'lucide-react';
 import { useDrag, useDrop } from 'react-dnd';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Type for the draggable image item
 interface DragItem {
@@ -79,37 +80,51 @@ export const DraggableImageItem = ({
     },
   });
   
-  const opacity = isDragging ? 0.4 : 1;
-  
   // Initialize drag and drop refs
   drag(drop(ref));
   
   return (
     <div 
       ref={ref} 
-      style={{ opacity }} 
-      className="flex flex-col items-center"
+      style={{ opacity: isDragging ? 0.4 : 1 }} 
+      className="flex flex-col items-center transition-all"
     >
-      <div className="relative rounded-md overflow-hidden w-24 h-24 flex-shrink-0 mb-1 border border-todoBlack group">
+      <div className="relative rounded-lg overflow-hidden w-24 h-24 flex-shrink-0 
+        border border-white/10 group shadow-md transition-transform 
+        hover:scale-[1.03] hover:shadow-lg">
         <img 
           src={image} 
           alt={`Фото профиля ${index + 1}`} 
           className="w-full h-full object-cover" 
           loading="lazy" 
         />
-        <button 
-          onClick={() => handleDeleteImage(image)} 
-          className="absolute top-1 right-1 p-1 bg-red-600 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity" 
-          aria-label="Удалить изображение" 
-          title="Удалить изображение" 
-          type="button"
-        >
-          <Trash2 size={12} />
-        </button>
-        <div className="absolute bottom-1 left-1 p-1 text-white opacity-0 group-hover:opacity-70 cursor-move">
-          <GripVertical size={16} />
+        
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button 
+                onClick={() => handleDeleteImage(image)} 
+                className="absolute top-1 right-1 p-1.5 bg-black/50 backdrop-blur-sm hover:bg-red-600 
+                  rounded-full text-white opacity-0 group-hover:opacity-100 transition-all" 
+                aria-label="Удалить изображение" 
+                type="button"
+              >
+                <Trash2 size={14} />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="bg-black/80 border-white/10 text-xs">
+              <p>Удалить</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
+        <div className="absolute bottom-0 left-0 right-0 p-1.5 bg-black/40 
+          backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 
+          cursor-move transition-opacity flex items-center justify-center">
+          <GripVertical size={14} className="mr-1" /> <span className="text-xs">Переместить</span>
         </div>
       </div>
+      <span className="text-xs text-gray-500 mt-1">{index + 1}</span>
     </div>
   );
 };

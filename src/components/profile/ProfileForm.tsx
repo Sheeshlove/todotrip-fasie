@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useForm } from 'react-hook-form';
@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Save } from 'lucide-react';
 import { profileSchema, ProfileFormValues } from '@/lib/validations/profile';
 import { useNavigate, useBeforeUnload } from 'react-router-dom';
 import { PersonalInfoForm } from './PersonalInfoForm';
@@ -27,10 +27,7 @@ const debounce = (fn: Function, ms = 300) => {
 };
 
 export const ProfileForm = () => {
-  const {
-    user,
-    profile
-  } = useAuth();
+  const { user, profile } = useAuth();
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(profile?.hobbies || []);
   const [profileImages, setProfileImages] = useState<string[]>(profile?.images || []);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -48,7 +45,7 @@ export const ProfileForm = () => {
       smokingAttitude: profile?.smoking_attitude || '',
       drinkingAttitude: profile?.drinking_attitude || ''
     },
-    mode: 'onBlur' // Validate on blur for better UX
+    mode: 'onBlur'
   });
 
   // Save profile function
@@ -61,10 +58,7 @@ export const ProfileForm = () => {
     try {
       const imagesToSave = images || profileImages;
       
-      const {
-        error,
-        data
-      } = await supabase.from('profiles').update({
+      const { error, data } = await supabase.from('profiles').update({
         username: values.name,
         age: values.age,
         description: values.description,
@@ -100,7 +94,7 @@ export const ProfileForm = () => {
   };
 
   // Debounced save function for form changes
-  const debouncedSave = React.useCallback(
+  const debouncedSave = useCallback(
     debounce((data: ProfileFormValues) => saveProfile(data), 1000), 
     [user, selectedHobbies, profileImages]
   );
@@ -117,10 +111,9 @@ export const ProfileForm = () => {
   }, [form, debouncedSave, user, profileImages]);
 
   // Save on page exit
-  useBeforeUnload(React.useCallback(event => {
+  useBeforeUnload(useCallback(event => {
     if (needsSaving) {
       saveProfile(form.getValues());
-      // Standard message for beforeunload dialog
       event.preventDefault();
       event.returnValue = '';
     }
@@ -139,20 +132,16 @@ export const ProfileForm = () => {
   const updateProfileImage = async (url: string) => {
     if (!user) return;
     try {
-      const {
-        error
-      } = await supabase.from('profiles').update({
+      const { error } = await supabase.from('profiles').update({
         avatar_url: url,
         updated_at: new Date().toISOString()
       }).eq('id', user.id);
+      
       if (error) throw error;
 
-      // Clear the profile cache in localStorage
       localStorage.removeItem(`profile_${user.id}`);
       localStorage.removeItem(`profile_${user.id}_time`);
-      toast.success('Фото профиля обновлено');
 
-      // No need to reload - just update the UI
       if (profile) {
         profile.avatar_url = url;
       }
@@ -165,38 +154,56 @@ export const ProfileForm = () => {
   // Handle multiple profile images update
   const updateProfileImages = (urls: string[]) => {
     setProfileImages(urls);
-    
-    // Immediately save the profile with new images
     saveProfile(form.getValues(), urls);
-    
-    // No need to set needsSaving since we're saving immediately
-    // setNeedsSaving(true);
   };
 
   if (!user) {
     return <div className="text-center text-white">Загрузка профиля...</div>;
   }
   
-  return <>
-      <ProfileImageUpload userId={user.id} currentImage={profile?.avatar_url || null} onImageUpdate={updateProfileImage} />
+  return (
+    <div className="space-y-8">
+      <ProfileImageUpload 
+        userId={user.id} 
+        currentImage={profile?.avatar_url || null} 
+        onImageUpdate={updateProfileImage} 
+      />
       
-      <ProfileImagesCarousel userId={user.id} images={profileImages} onImagesUpdate={updateProfileImages} />
+      <ProfileImagesCarousel 
+        userId={user.id} 
+        images={profileImages} 
+        onImagesUpdate={updateProfileImages} 
+      />
 
-      <Form {...form}>
-        <div className="space-y-6 mt-6">
-          <PersonalInfoForm form={form} />
-          <LocationSelector form={form} />
-          <HobbiesSelector form={form} selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} />
-          <AttitudesSection form={form} />
-          
-          {/* Status indicator instead of a save button */}
-          <div className="flex items-center justify-end text-sm">
-            {isUpdating ? <div className="flex items-center text-gray-400">
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Сохранение...
-              </div> : needsSaving ? <div className="text-amber-400">Ожидание сохранения...</div> : <div className="text-green-400 py-0 my-0 mx-0 px-[59px] rounded-none">Все изменения сохранены</div>}
+      <div className="bg-todoDarkGray/50 backdrop-blur-sm rounded-xl p-6 border border-white/5 shadow-lg">
+        <Form {...form}>
+          <div className="space-y-8">
+            <PersonalInfoForm form={form} />
+            <LocationSelector form={form} />
+            <HobbiesSelector form={form} selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} />
+            <AttitudesSection form={form} />
+            
+            {/* Status indicator */}
+            <div className="flex items-center justify-end text-sm">
+              {isUpdating ? (
+                <div className="flex items-center bg-black/20 px-4 py-2 rounded-full">
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin text-todoYellow" />
+                  <span className="text-gray-300">Сохранение...</span>
+                </div>
+              ) : needsSaving ? (
+                <div className="flex items-center bg-amber-900/20 text-amber-300 px-4 py-2 rounded-full">
+                  <span className="text-xs">Ожидание сохранения...</span>
+                </div>
+              ) : (
+                <div className="flex items-center bg-green-900/20 text-green-300 px-4 py-2 rounded-full">
+                  <Save className="w-4 h-4 mr-1" />
+                  <span className="text-xs">Все изменения сохранены</span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </Form>
-    </>;
+        </Form>
+      </div>
+    </div>
+  );
 };

@@ -13,13 +13,25 @@ export const AddImageButton = ({ onImageUpload, uploading }: AddImageButtonProps
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <label className="w-10 h-10 bg-todoYellow rounded-full flex items-center justify-center cursor-pointer hover:bg-yellow-400 transition-colors flex-shrink-0 ml-2" aria-label="Добавить фотографию">
-            <Plus className="w-6 h-6 text-black" />
-            <input type="file" accept="image/*" className="hidden" onChange={onImageUpload} disabled={uploading} />
+          <label 
+            className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all 
+              flex-shrink-0 ${uploading 
+                ? 'bg-gray-500 cursor-not-allowed' 
+                : 'bg-todoYellow hover:bg-yellow-400 hover:scale-105 hover:shadow-md'}`} 
+            aria-label="Добавить фотографию"
+          >
+            <Plus className="w-5 h-5 text-black" />
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="hidden" 
+              onChange={onImageUpload} 
+              disabled={uploading} 
+            />
           </label>
         </TooltipTrigger>
-        <TooltipContent>
-          <p>Добавить фото (максимум 10)</p>
+        <TooltipContent side="bottom" className="bg-black/80 border-white/10 text-xs">
+          <p>Добавить фото</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
