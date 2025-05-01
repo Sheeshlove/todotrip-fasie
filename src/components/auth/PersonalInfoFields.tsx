@@ -9,18 +9,43 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { languages } from "@/data/languages";
+import { Globe, X } from "lucide-react";
+import React from "react";
 
 interface PersonalInfoFieldsProps {
   form: UseFormReturn<RegisterFormValues>;
   selectedHobbies: string[];
+  selectedLanguages: string[];
   onHobbiesChange: (hobbies: string[]) => void;
+  onLanguagesChange: (languages: string[]) => void;
 }
 
 export const PersonalInfoFields = ({
   form,
   selectedHobbies,
+  selectedLanguages,
   onHobbiesChange,
+  onLanguagesChange,
 }: PersonalInfoFieldsProps) => {
+  const [selectedLanguage, setSelectedLanguage] = React.useState<string>('');
+
+  const handleAddLanguage = () => {
+    if (selectedLanguage && !selectedLanguages.includes(selectedLanguage)) {
+      const updatedLanguages = [...selectedLanguages, selectedLanguage];
+      onLanguagesChange(updatedLanguages);
+      form.setValue('languages', updatedLanguages);
+      setSelectedLanguage('');
+    }
+  };
+
+  const handleRemoveLanguage = (languageToRemove: string) => {
+    const updatedLanguages = selectedLanguages.filter(lang => lang !== languageToRemove);
+    onLanguagesChange(updatedLanguages);
+    form.setValue('languages', updatedLanguages);
+  };
+
   return (
     <div className="space-y-6">
       <FormField
@@ -45,6 +70,70 @@ export const PersonalInfoFields = ({
             <FormLabel className="text-white">Возраст</FormLabel>
             <FormControl>
               <Input type="number" placeholder="Ваш возраст" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="languages"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-white">Языки (необязательно)</FormLabel>
+            <FormControl>
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-2 min-h-[40px]">
+                  {selectedLanguages.map((language) => (
+                    <Badge 
+                      key={language} 
+                      className="bg-todoLightGray text-todoBlack hover:bg-todoLightGray/80 flex items-center gap-1 px-3 py-1.5"
+                    >
+                      {language}
+                      <button 
+                        type="button" 
+                        onClick={() => handleRemoveLanguage(language)}
+                        className="ml-1 hover:bg-todoGray rounded-full p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                  {selectedLanguages.length === 0 && (
+                    <p className="text-sm text-gray-400">Нет выбранных языков</p>
+                  )}
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                    <SelectTrigger className="w-full">
+                      <Globe className="mr-2 h-4 w-4 text-todoMediumGray" />
+                      <SelectValue placeholder="Выберите язык" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-80">
+                      {languages.map((language) => (
+                        <SelectItem
+                          key={language}
+                          value={language}
+                          disabled={selectedLanguages.includes(language)}
+                        >
+                          {language}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={handleAddLanguage}
+                    disabled={!selectedLanguage || selectedLanguages.includes(selectedLanguage)}
+                  >
+                    Добавить
+                  </Button>
+                </div>
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>

@@ -7,6 +7,7 @@ export const profileSchema = z.object({
   hobbies: z.array(z.string()).optional(),
   description: z.string().optional(),
   city: z.string().optional(),
+  languages: z.array(z.string()).optional(),
   smokingAttitude: z.string().optional(),
   drinkingAttitude: z.string().optional(),
 });

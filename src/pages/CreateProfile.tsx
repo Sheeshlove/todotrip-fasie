@@ -15,12 +15,14 @@ import { profileSchema, ProfileFormValues } from '@/lib/validations/profile';
 import { PersonalInfoForm } from '@/components/profile/PersonalInfoForm';
 import { LocationSelector } from '@/components/profile/LocationSelector';
 import { HobbiesSelector } from '@/components/profile/HobbiesSelector';
+import { LanguagesSelector } from '@/components/profile/LanguagesSelector';
 import { AttitudesSection } from '@/components/profile/AttitudesSection';
 
 const CreateProfile = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(profile?.hobbies || []);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(profile?.languages || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<ProfileFormValues>({
@@ -30,6 +32,7 @@ const CreateProfile = () => {
       age: profile?.age || '',
       description: profile?.description || '',
       hobbies: profile?.hobbies || [],
+      languages: profile?.languages || [],
       city: profile?.city || '',
       smokingAttitude: profile?.smoking_attitude || '',
       drinkingAttitude: profile?.drinking_attitude || '',
@@ -48,6 +51,7 @@ const CreateProfile = () => {
           age: values.age,
           description: values.description,
           hobbies: values.hobbies,
+          languages: selectedLanguages,
           city: values.city,
           smoking_attitude: values.smokingAttitude,
           drinking_attitude: values.drinkingAttitude,
@@ -78,6 +82,11 @@ const CreateProfile = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <PersonalInfoForm form={form} />
                 <LocationSelector form={form} />
+                <LanguagesSelector
+                  form={form}
+                  selectedLanguages={selectedLanguages}
+                  setSelectedLanguages={setSelectedLanguages}
+                />
                 <HobbiesSelector 
                   form={form} 
                   selectedHobbies={selectedHobbies} 

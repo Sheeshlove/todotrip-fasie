@@ -15,6 +15,7 @@ import { useFormAutoSave } from '@/hooks/useFormAutoSave';
 export const ProfileForm = () => {
   const { user, profile } = useAuth();
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(profile?.hobbies || []);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(profile?.languages || []);
   const [profileImages, setProfileImages] = useState<string[]>(profile?.images || []);
   const navigate = useNavigate();
   
@@ -25,6 +26,7 @@ export const ProfileForm = () => {
       age: profile?.age || '',
       description: profile?.description || '',
       hobbies: profile?.hobbies || [],
+      languages: profile?.languages || [],
       city: profile?.city || '',
       smokingAttitude: profile?.smoking_attitude || '',
       drinkingAttitude: profile?.drinking_attitude || ''
@@ -44,6 +46,7 @@ export const ProfileForm = () => {
         age: values.age,
         description: values.description,
         hobbies: selectedHobbies,
+        languages: selectedLanguages,
         city: values.city,
         smoking_attitude: values.smokingAttitude,
         drinking_attitude: values.drinkingAttitude,
@@ -159,6 +162,8 @@ export const ProfileForm = () => {
           form={form}
           selectedHobbies={selectedHobbies}
           setSelectedHobbies={setSelectedHobbies}
+          selectedLanguages={selectedLanguages}
+          setSelectedLanguages={setSelectedLanguages}
           isUpdating={isUpdating}
           needsSaving={needsSaving}
         />
