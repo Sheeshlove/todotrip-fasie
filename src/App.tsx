@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -17,6 +16,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Contact from "./pages/Contact";
 import ProfilePage from "./pages/ProfilePage";
+import AiTrip from "./pages/AiTrip"; // Import the new AiTrip page
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CustomCursor from "./components/CustomCursor";
@@ -93,6 +93,7 @@ const App: React.FC = () => {
                   <Route path="/partners" element={<Partners />} />
                   <Route path="/partners/:id" element={<PartnerDetails />} />
                   <Route path="/dating" element={<Dating />} />
+                  <Route path="/ai-trip" element={<AiTrip />} />
                   <Route path="/create-profile" element={<CreateProfile />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
