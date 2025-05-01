@@ -11,6 +11,8 @@ export interface UserProfile {
   hobbies: string[] | null;
   age: string | null;
   city: string | null;
+  smoking_attitude: string | null;
+  drinking_attitude: string | null;
 }
 
 export interface AuthState {

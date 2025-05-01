@@ -106,8 +106,10 @@ export type Database = {
           city: string | null
           created_at: string | null
           description: string | null
+          drinking_attitude: string | null
           hobbies: string[] | null
           id: string
+          smoking_attitude: string | null
           updated_at: string | null
           username: string | null
         }
@@ -117,8 +119,10 @@ export type Database = {
           city?: string | null
           created_at?: string | null
           description?: string | null
+          drinking_attitude?: string | null
           hobbies?: string[] | null
           id: string
+          smoking_attitude?: string | null
           updated_at?: string | null
           username?: string | null
         }
@@ -128,8 +132,10 @@ export type Database = {
           city?: string | null
           created_at?: string | null
           description?: string | null
+          drinking_attitude?: string | null
           hobbies?: string[] | null
           id?: string
+          smoking_attitude?: string | null
           updated_at?: string | null
           username?: string | null
         }
