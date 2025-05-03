@@ -29,10 +29,8 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
   
   // Создаем карусель для свайпов (Create carousel for swipes)
   const [emblaRef] = useEmblaCarousel({ 
-    draggable: true,
     dragFree: true,
-    loop: false,
-    startIndex: 0
+    loop: false
   });
 
   // Функция обработки свайпа (Swipe handling function)
