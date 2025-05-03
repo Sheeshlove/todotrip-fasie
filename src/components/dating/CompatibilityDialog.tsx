@@ -2,7 +2,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getCompatibilityColor, getCompatibilityBgColor } from '@/services/compatibilityService';
-import { CircleInfo, Heart } from 'lucide-react';
+import { CircleHelp, Heart } from 'lucide-react';
 
 interface CompatibilityDialogProps {
   isOpen: boolean;
@@ -48,7 +48,7 @@ export const CompatibilityDialog: React.FC<CompatibilityDialogProps> = ({
             {Object.entries(analysis).filter(([key]) => key !== 'overall').map(([trait, text]) => (
               <div key={trait} className="bg-todoDarkGray/60 p-3 rounded-lg border border-white/10">
                 <h3 className="font-medium mb-1 flex items-center gap-1">
-                  <CircleInfo className="w-4 h-4 text-todoYellow" />
+                  <CircleHelp className="w-4 h-4 text-todoYellow" />
                   {trait === 'openness' && 'Открытость опыту'}
                   {trait === 'conscientiousness' && 'Добросовестность'}
                   {trait === 'extraversion' && 'Экстраверсия'}
