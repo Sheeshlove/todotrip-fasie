@@ -65,9 +65,10 @@ export const calculateCompatibility = (
  * Получение цвета на основе показателя совместимости
  */
 export const getCompatibilityColor = (score: number): string => {
-  if (score >= 80) return 'text-todoYellow'; // High compatibility
-  if (score >= 60) return 'text-orange-400'; // Medium compatibility
-  return 'text-red-500'; // Low compatibility
+  if (score >= 80) return 'text-green-500'; // High compatibility (80-100%)
+  if (score >= 50) return 'text-todoYellow'; // Medium-high compatibility (50-80%)
+  if (score >= 25) return 'text-orange-400'; // Medium-low compatibility (25-50%)
+  return 'text-red-500'; // Low compatibility (0-25%)
 };
 
 /**
@@ -75,9 +76,10 @@ export const getCompatibilityColor = (score: number): string => {
  * Получение класса цвета фона на основе показателя совместимости
  */
 export const getCompatibilityBgColor = (score: number): string => {
-  if (score >= 80) return 'bg-todoYellow/90'; // High compatibility
-  if (score >= 60) return 'bg-orange-400/90'; // Medium compatibility
-  return 'bg-red-500/90'; // Low compatibility
+  if (score >= 80) return 'bg-green-500/90'; // High compatibility (80-100%)
+  if (score >= 50) return 'bg-todoYellow/90'; // Medium-high compatibility (50-80%)
+  if (score >= 25) return 'bg-orange-400/90'; // Medium-low compatibility (25-50%)
+  return 'bg-red-500/90'; // Low compatibility (0-25%)
 };
 
 /**

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
@@ -10,21 +9,23 @@ import {
 } from '@/components/ui/carousel';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { User, Info } from 'lucide-react';
+import { User } from 'lucide-react';
 import { getCompatibilityColor, getCompatibilityBgColor } from '@/services/compatibilityService';
 
 interface UserCardProps {
   user: any;
   currentUserHobbies: string[];
   compatibilityScore?: number;
-  onInfoClick?: () => void;
+  currentUserHasTakenTest: boolean;
+  userHasTakenTest: boolean;
 }
 
 export const UserCard: React.FC<UserCardProps> = ({ 
   user, 
   currentUserHobbies,
   compatibilityScore = 100,
-  onInfoClick 
+  currentUserHasTakenTest = false,
+  userHasTakenTest = false 
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(user?.avatar_url || null);
   
@@ -52,9 +53,23 @@ export const UserCard: React.FC<UserCardProps> = ({
     !currentUserHobbies.includes(hobby)
   ) || [];
   
-  // Get compatibility color based on score
+  // Get compatibility color and background classes based on score
   const compatibilityColorClass = getCompatibilityColor(compatibilityScore);
   const compatibilityBgClass = getCompatibilityBgColor(compatibilityScore);
+
+  // Get the text for the compatibility circle
+  const getCompatibilityText = () => {
+    if (!currentUserHasTakenTest) {
+      return 'Пройдите тест, чтобы разблокировать результат';
+    }
+    if (!userHasTakenTest) {
+      return `${user?.username || 'Пользователь'} не прошел тест`;
+    }
+    return `${compatibilityScore}%`;
+  };
+
+  // Determine if the circle should be gray
+  const isGrayCircle = !currentUserHasTakenTest || !userHasTakenTest;
   
   return (
     <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 rounded-xl overflow-hidden shadow-lg">
@@ -71,30 +86,23 @@ export const UserCard: React.FC<UserCardProps> = ({
             <User className="w-1/4 h-1/4 text-todoYellow" />
           </div>
         )}
-        
-        {/* Compatibility Circle */}
+      </div>
+
+      {/* Compatibility Circle - moved under the photo */}
+      <div className="flex justify-center -mt-8 relative z-10">
         <div 
-          className={`absolute top-3 right-3 ${compatibilityBgClass} rounded-full w-12 h-12 flex items-center justify-center cursor-pointer`}
-          onClick={onInfoClick}
-          title="Нажмите для подробной информации о совместимости"
+          className={`${isGrayCircle ? 'bg-gray-500/90' : compatibilityBgClass} rounded-full w-24 h-24 flex items-center justify-center border-4 border-todoDarkGray`}
         >
-          <span className="text-black font-bold text-sm">{compatibilityScore}%</span>
+          <div className="w-10 h-10 rounded-full bg-todoDarkGray absolute"></div>
+          <span className={`${isGrayCircle ? 'text-white' : 'text-black'} font-bold text-sm text-center px-2 absolute`}>
+            {getCompatibilityText()}
+          </span>
         </div>
-        
-        {/* Info button */}
-        {onInfoClick && (
-          <div 
-            className="absolute top-3 left-3 bg-black/50 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
-            onClick={onInfoClick}
-          >
-            <Info className="w-5 h-5 text-todoYellow" />
-          </div>
-        )}
       </div>
       
       {/* Image carousel */}
       {allImages.length > 1 && (
-        <div className="p-4 bg-black/30">
+        <div className="p-4 bg-black/30 mt-4">
           <Carousel className="w-full">
             <CarouselContent>
               {allImages.map((image: string, index: number) => (

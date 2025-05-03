@@ -1,17 +1,14 @@
-
 import { useState, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Share2, Users, UserPlus, Check, X, Info } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Share2, Users, UserPlus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { UserCard } from '@/components/dating/UserCard';
 import { useAuth } from '@/context/AuthContext';
 import { SwipeControls } from '@/components/dating/SwipeControls';
 import { EmptyState } from '@/components/dating/EmptyState';
 import { calculateCompatibility, getCompatibilityAnalysis } from '@/services/compatibilityService';
-import { CompatibilityDialog } from '@/components/dating/CompatibilityDialog';
 
 const Dating = () => {
   const { toast } = useToast();
@@ -23,9 +20,8 @@ const Dating = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [userTestResults, setUserTestResults] = useState<any>(null);
   const [otherUsersTestResults, setOtherUsersTestResults] = useState<Record<string, any>>({});
-  const [showCompatibilityDialog, setShowCompatibilityDialog] = useState(false);
-  const [compatibilityAnalysis, setCompatibilityAnalysis] = useState<Record<string, string>>({});
   const [compatibilityScore, setCompatibilityScore] = useState(100);
+  const [compatibilityAnalysis, setCompatibilityAnalysis] = useState<Record<string, string>>({});
   
   // Fetch user's profile and test results
   useEffect(() => {
@@ -194,10 +190,6 @@ const Dating = () => {
     });
   };
   
-  const handleShowCompatibility = () => {
-    setShowCompatibilityDialog(true);
-  };
-  
   if (loading) {
     return (
       <PageLayout title="ToDoTrip - Общение" description="Ищите попутчиков для ваших путешествий">
@@ -217,20 +209,14 @@ const Dating = () => {
               user={currentUser} 
               currentUserHobbies={userProfile?.hobbies || []} 
               compatibilityScore={compatibilityScore}
-              onInfoClick={handleShowCompatibility}
+              currentUserHasTakenTest={!!userTestResults}
+              userHasTakenTest={!!otherUsersTestResults[currentUser.id]}
             />
             <SwipeControls onSwipe={handleSwipe} />
           </div>
         ) : (
           <EmptyState onInviteFriends={handleInviteFriends} />
         )}
-        
-        <CompatibilityDialog 
-          isOpen={showCompatibilityDialog}
-          onClose={() => setShowCompatibilityDialog(false)}
-          compatibilityScore={compatibilityScore}
-          analysis={compatibilityAnalysis}
-        />
       </div>
     </PageLayout>
   );
