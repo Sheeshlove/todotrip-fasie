@@ -40,6 +40,11 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
         title: "Лайк!",
         description: `Вы лайкнули профиль ${currentUser?.username || 'пользователя'}!`,
       });
+    } else if (direction === 'left') {
+      toast({
+        title: "Пропуск",
+        description: `Вы пропустили профиль ${currentUser?.username || 'пользователя'}`,
+      });
     }
     
     onSwipe(direction);
