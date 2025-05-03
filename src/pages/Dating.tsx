@@ -1,13 +1,100 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Share2, Users, UserPlus } from 'lucide-react';
+import { Share2, Users, UserPlus, Check, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { UserCard } from '@/components/dating/UserCard';
+import { useAuth } from '@/context/AuthContext';
+import { SwipeControls } from '@/components/dating/SwipeControls';
+import { EmptyState } from '@/components/dating/EmptyState';
 
 const Dating = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [users, setUsers] = useState<any[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
+  
+  // Fetch user's profile to later compare hobbies
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+      
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+          
+        if (error) throw error;
+        setUserProfile(profile);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+    
+    fetchUserProfile();
+  }, [user]);
+  
+  // Fetch other users' profiles
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .neq('id', user.id);
+          
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          setUsers(data);
+          setCurrentUser(data[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        toast({
+          title: "Ошибка!",
+          description: "Не удалось загрузить пользователей.",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUsers();
+  }, [user, toast]);
+  
+  const handleSwipe = (direction: 'left' | 'right') => {
+    // Here you would implement actual matching logic
+    // For now, we'll just simulate the swipe
+    
+    if (direction === 'right') {
+      toast({
+        title: "Лайк!",
+        description: `Вы лайкнули профиль ${currentUser?.username || 'пользователя'}!`,
+      });
+    }
+    
+    // Move to the next profile
+    if (currentIndex < users.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setCurrentUser(users[currentIndex + 1]);
+    } else {
+      // No more profiles to show
+      setCurrentUser(null);
+    }
+  };
   
   const handleInviteFriends = () => {
     // In a real app, this would use the Web Share API or copy to clipboard
@@ -40,31 +127,30 @@ const Dating = () => {
     });
   };
   
-  return (
-    <PageLayout title="ToDoTrip - Find Travel Partners" description="Ищите попутчиков для ваших путешествий">
-      <div className="flex flex-col items-center justify-center min-h-[80vh] text-center">
-        <div className="flex justify-center mb-6">
-          <Users className="w-12 h-12 text-todoYellow" />
+  if (loading) {
+    return (
+      <PageLayout title="ToDoTrip - Общение" description="Ищите попутчиков для ваших путешествий">
+        <div className="flex flex-col items-center justify-center min-h-[80vh] text-center">
+          <p className="text-white text-lg">Загрузка профилей...</p>
         </div>
-        <h1 className="text-3xl font-bold mb-6 text-white">Находите попутчиков</h1>
-        
-        <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 rounded-xl p-8 max-w-md w-full shadow-lg">
-          <div className="flex justify-center mb-8">
-            <div className="bg-todoBlack/50 w-20 h-20 rounded-full flex items-center justify-center">
-              <UserPlus className="w-10 h-10 text-todoYellow" />
-            </div>
+      </PageLayout>
+    );
+  }
+  
+  return (
+    <PageLayout title="ToDoTrip - Общение" description="Ищите попутчиков для ваших путешествий">
+      <div className="flex flex-col items-center justify-center min-h-[80vh] text-center px-4 py-6">
+        {users.length > 0 && currentUser ? (
+          <div className="w-full max-w-md">
+            <UserCard 
+              user={currentUser} 
+              currentUserHobbies={userProfile?.hobbies || []} 
+            />
+            <SwipeControls onSwipe={handleSwipe} />
           </div>
-          
-          <p className="text-lg mb-8 text-todoLightGray">Пока что никого нет, пригласи друзей!</p>
-          
-          <Button
-            onClick={handleInviteFriends}
-            className="bg-todoYellow text-black hover:bg-yellow-400 transition-all font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center"
-          >
-            <Share2 className="mr-2 w-5 h-5" />
-            Позвать друзей!
-          </Button>
-        </Card>
+        ) : (
+          <EmptyState onInviteFriends={handleInviteFriends} />
+        )}
       </div>
     </PageLayout>
   );
