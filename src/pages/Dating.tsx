@@ -3,13 +3,15 @@ import { useState, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Share2, Users, UserPlus, Check, X } from 'lucide-react';
+import { Share2, Users, UserPlus, Check, X, Info } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { UserCard } from '@/components/dating/UserCard';
 import { useAuth } from '@/context/AuthContext';
 import { SwipeControls } from '@/components/dating/SwipeControls';
 import { EmptyState } from '@/components/dating/EmptyState';
+import { calculateCompatibility, getCompatibilityAnalysis } from '@/services/compatibilityService';
+import { CompatibilityDialog } from '@/components/dating/CompatibilityDialog';
 
 const Dating = () => {
   const { toast } = useToast();
@@ -19,46 +21,95 @@ const Dating = () => {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [userTestResults, setUserTestResults] = useState<any>(null);
+  const [otherUsersTestResults, setOtherUsersTestResults] = useState<Record<string, any>>({});
+  const [showCompatibilityDialog, setShowCompatibilityDialog] = useState(false);
+  const [compatibilityAnalysis, setCompatibilityAnalysis] = useState<Record<string, string>>({});
+  const [compatibilityScore, setCompatibilityScore] = useState(100);
   
-  // Fetch user's profile to later compare hobbies
+  // Fetch user's profile and test results
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchUserData = async () => {
       if (!user) return;
       
       try {
-        const { data: profile, error } = await supabase
+        // Fetch profile
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single();
           
-        if (error) throw error;
+        if (profileError) throw profileError;
         setUserProfile(profile);
+        
+        // Fetch test results
+        const { data: testResults, error: testError } = await supabase
+          .from('ocean_test_results')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+          
+        if (testError) throw testError;
+        setUserTestResults(testResults);
       } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error('Error fetching user data:', error);
       }
     };
     
-    fetchUserProfile();
+    fetchUserData();
   }, [user]);
   
-  // Fetch other users' profiles
+  // Fetch other users' profiles and test results
   useEffect(() => {
     const fetchUsers = async () => {
       if (!user) return;
       
       try {
         setLoading(true);
-        const { data, error } = await supabase
+        
+        // Fetch other users' profiles
+        const { data: usersData, error: usersError } = await supabase
           .from('profiles')
           .select('*')
           .neq('id', user.id);
           
-        if (error) throw error;
+        if (usersError) throw usersError;
         
-        if (data && data.length > 0) {
-          setUsers(data);
-          setCurrentUser(data[0]);
+        // Fetch all test results
+        if (usersData && usersData.length > 0) {
+          const userIds = usersData.map(user => user.id);
+          
+          const { data: testResults, error: testResultsError } = await supabase
+            .from('ocean_test_results')
+            .select('*')
+            .in('user_id', userIds);
+            
+          if (testResultsError) throw testResultsError;
+          
+          // Create a map of user IDs to test results
+          const testResultsMap: Record<string, any> = {};
+          if (testResults) {
+            testResults.forEach(result => {
+              testResultsMap[result.user_id] = result;
+            });
+          }
+          
+          setOtherUsersTestResults(testResultsMap);
+          setUsers(usersData);
+          
+          if (usersData.length > 0) {
+            setCurrentUser(usersData[0]);
+            
+            // Calculate initial compatibility
+            if (userTestResults && testResultsMap[usersData[0].id]) {
+              const score = calculateCompatibility(userTestResults, testResultsMap[usersData[0].id]);
+              setCompatibilityScore(score);
+              
+              const analysis = getCompatibilityAnalysis(userTestResults, testResultsMap[usersData[0].id]);
+              setCompatibilityAnalysis(analysis);
+            }
+          }
         }
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -73,7 +124,7 @@ const Dating = () => {
     };
     
     fetchUsers();
-  }, [user, toast]);
+  }, [user, toast, userTestResults]);
   
   const handleSwipe = (direction: 'left' | 'right') => {
     // Here you would implement actual matching logic
@@ -88,8 +139,24 @@ const Dating = () => {
     
     // Move to the next profile
     if (currentIndex < users.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setCurrentUser(users[currentIndex + 1]);
+      const nextIndex = currentIndex + 1;
+      const nextUser = users[nextIndex];
+      setCurrentIndex(nextIndex);
+      setCurrentUser(nextUser);
+      
+      // Calculate compatibility for the next user
+      if (userTestResults && otherUsersTestResults[nextUser.id]) {
+        const score = calculateCompatibility(userTestResults, otherUsersTestResults[nextUser.id]);
+        setCompatibilityScore(score);
+        
+        const analysis = getCompatibilityAnalysis(userTestResults, otherUsersTestResults[nextUser.id]);
+        setCompatibilityAnalysis(analysis);
+      } else {
+        setCompatibilityScore(75); // Default score when no data
+        setCompatibilityAnalysis({
+          overall: "Недостаточно данных для полного анализа совместимости. Предложите пройти тест личности."
+        });
+      }
     } else {
       // No more profiles to show
       setCurrentUser(null);
@@ -127,6 +194,10 @@ const Dating = () => {
     });
   };
   
+  const handleShowCompatibility = () => {
+    setShowCompatibilityDialog(true);
+  };
+  
   if (loading) {
     return (
       <PageLayout title="ToDoTrip - Общение" description="Ищите попутчиков для ваших путешествий">
@@ -145,12 +216,21 @@ const Dating = () => {
             <UserCard 
               user={currentUser} 
               currentUserHobbies={userProfile?.hobbies || []} 
+              compatibilityScore={compatibilityScore}
+              onInfoClick={handleShowCompatibility}
             />
             <SwipeControls onSwipe={handleSwipe} />
           </div>
         ) : (
           <EmptyState onInviteFriends={handleInviteFriends} />
         )}
+        
+        <CompatibilityDialog 
+          isOpen={showCompatibilityDialog}
+          onClose={() => setShowCompatibilityDialog(false)}
+          compatibilityScore={compatibilityScore}
+          analysis={compatibilityAnalysis}
+        />
       </div>
     </PageLayout>
   );

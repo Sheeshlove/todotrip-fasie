@@ -10,14 +10,22 @@ import {
 } from '@/components/ui/carousel';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { User } from 'lucide-react';
+import { User, Info } from 'lucide-react';
+import { getCompatibilityColor, getCompatibilityBgColor } from '@/services/compatibilityService';
 
 interface UserCardProps {
   user: any;
   currentUserHobbies: string[];
+  compatibilityScore?: number;
+  onInfoClick?: () => void;
 }
 
-export const UserCard: React.FC<UserCardProps> = ({ user, currentUserHobbies }) => {
+export const UserCard: React.FC<UserCardProps> = ({ 
+  user, 
+  currentUserHobbies,
+  compatibilityScore = 100,
+  onInfoClick 
+}) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(user?.avatar_url || null);
   
   // Parse the images from json if they exist
@@ -44,6 +52,10 @@ export const UserCard: React.FC<UserCardProps> = ({ user, currentUserHobbies }) 
     !currentUserHobbies.includes(hobby)
   ) || [];
   
+  // Get compatibility color based on score
+  const compatibilityColorClass = getCompatibilityColor(compatibilityScore);
+  const compatibilityBgClass = getCompatibilityBgColor(compatibilityScore);
+  
   return (
     <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 rounded-xl overflow-hidden shadow-lg">
       {/* Main profile image */}
@@ -60,10 +72,24 @@ export const UserCard: React.FC<UserCardProps> = ({ user, currentUserHobbies }) 
           </div>
         )}
         
-        {/* Compatibility Circle - Hardcoded to 100% for now */}
-        <div className="absolute top-3 right-3 bg-todoYellow/90 rounded-full w-12 h-12 flex items-center justify-center">
-          <span className="text-black font-bold text-sm">100%</span>
+        {/* Compatibility Circle */}
+        <div 
+          className={`absolute top-3 right-3 ${compatibilityBgClass} rounded-full w-12 h-12 flex items-center justify-center cursor-pointer`}
+          onClick={onInfoClick}
+          title="Нажмите для подробной информации о совместимости"
+        >
+          <span className="text-black font-bold text-sm">{compatibilityScore}%</span>
         </div>
+        
+        {/* Info button */}
+        {onInfoClick && (
+          <div 
+            className="absolute top-3 left-3 bg-black/50 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
+            onClick={onInfoClick}
+          >
+            <Info className="w-5 h-5 text-todoYellow" />
+          </div>
+        )}
       </div>
       
       {/* Image carousel */}
