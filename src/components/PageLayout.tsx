@@ -1,46 +1,28 @@
 
 import React from 'react';
-import Meta from './Meta';
-import SecurityHeaders from './SecurityHeaders';
-import { sanitize } from '@/utils/securityUtils';
+import { Helmet } from 'react-helmet-async';
+import { ASCIIBackground } from './ASCIIBackground';
+import BottomMenu from './BottomMenu';
 
 interface PageLayoutProps {
-  children: React.ReactNode;
   title: string;
-  description?: string;
-  noIndex?: boolean;
-  image?: string;
-  type?: string;
+  description: string;
+  children: React.ReactNode;
 }
 
-const PageLayout: React.FC<PageLayoutProps> = ({ 
-  children, 
-  title, 
-  description,
-  noIndex = false,
-  image,
-  type = "website"
-}) => {
-  // Sanitize inputs for security
-  const sanitizedTitle = sanitize.xss(title);
-  const sanitizedDescription = sanitize.xss(description || '');
-  const sanitizedImage = image ? sanitize.url(image) : undefined;
-
+const PageLayout: React.FC<PageLayoutProps> = ({ title, description, children }) => {
   return (
     <>
-      <Meta
-        title={sanitizedTitle}
-        description={sanitizedDescription}
-        noIndex={noIndex}
-        image={sanitizedImage}
-        type={type}
-      />
-      
-      {/* Add security headers */}
-      <SecurityHeaders />
-      
-      <div className="min-h-screen bg-todoBlack flex flex-col">
-        {children}
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+      </Helmet>
+      <div className="min-h-screen bg-todoBlack text-white overflow-x-hidden">
+        <ASCIIBackground />
+        <div className="pb-20"> {/* Added padding to the bottom for the menu */}
+          {children}
+        </div>
+        <BottomMenu />
       </div>
     </>
   );
