@@ -30,6 +30,9 @@ export const UserImageGallery: React.FC<UserImageGalleryProps> = ({
     ? [user.avatar_url, ...userImages] 
     : userImages.length > 0 ? userImages : (user?.avatar_url ? [user.avatar_url] : []);
   
+  const hasNoImages = allImages.length === 0;
+  const username = user?.username || 'Пользователь';
+  
   return (
     <>
       {/* Main profile image - make it more impressive */}
@@ -39,13 +42,16 @@ export const UserImageGallery: React.FC<UserImageGalleryProps> = ({
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-todoDarkGray/70 z-10"></div>
             <img 
               src={selectedImage} 
-              alt={`${user?.username || 'User'}`} 
+              alt={`${username}`} 
               className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
             />
           </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-todoDarkGray to-black">
-            <User className="w-1/4 h-1/4 text-todoYellow" />
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-todoDarkGray to-black text-center p-6">
+            <User className="w-1/4 h-1/4 text-todoYellow mb-4" />
+            <p className="text-todoLightGray text-lg font-medium">
+              {username} {hasNoImages ? 'пока не установил фото профиля' : ''}
+            </p>
           </div>
         )}
       </div>
@@ -67,7 +73,7 @@ export const UserImageGallery: React.FC<UserImageGalleryProps> = ({
                   >
                     <img 
                       src={image} 
-                      alt={`${user?.username || 'User'} ${index + 1}`} 
+                      alt={`${username} ${index + 1}`} 
                       className="w-full h-full object-cover"
                     />
                   </div>

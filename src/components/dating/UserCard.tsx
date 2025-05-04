@@ -21,7 +21,12 @@ export const UserCard: React.FC<UserCardProps> = ({
   currentUserHasTakenTest = false,
   userHasTakenTest = false 
 }) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(user?.avatar_url || null);
+  // Use profile image if available, otherwise set to null
+  const [selectedImage, setSelectedImage] = useState<string | null>(
+    user?.avatar_url || (user?.images && user.images.length > 0 ? 
+      (typeof user.images === 'string' ? JSON.parse(user.images)[0] : user.images[0]) : 
+      null)
+  );
   
   const handleImageClick = (image: string) => {
     setSelectedImage(image);

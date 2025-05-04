@@ -35,15 +35,17 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
 
   // Функция обработки свайпа (Swipe handling function)
   const handleSwipe = (direction: 'left' | 'right') => {
+    const username = currentUser?.username || 'пользователя';
+    
     if (direction === 'right') {
       toast({
         title: "Лайк!",
-        description: `Вы лайкнули профиль ${currentUser?.username || 'пользователя'}!`,
+        description: `Вы лайкнули профиль ${username}!`,
       });
     } else if (direction === 'left') {
       toast({
         title: "Пропуск",
-        description: `Вы пропустили профиль ${currentUser?.username || 'пользователя'}`,
+        description: `Вы пропустили профиль ${username}`,
       });
     }
     
