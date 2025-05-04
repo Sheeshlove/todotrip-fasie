@@ -1,23 +1,30 @@
 
-import React from 'react';
+import React, { memo } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ASCIIBackgroundProps {
   opacity?: number;
 }
 
-const ASCIIBackground: React.FC<ASCIIBackgroundProps> = ({ opacity = 0.03 }) => {
-  // ASCII art pattern - travel/code themed
+// Memoized version of ASCIIBackground to prevent unnecessary re-renders
+const ASCIIBackground: React.FC<ASCIIBackgroundProps> = memo(({ opacity = 0.03 }) => {
+  const isMobile = useIsMobile();
+  
+  // Simplified pattern with less repetition for better performance
   const asciiPattern = `
-  ░░░░  ┌─────┐  ┌────┐  ▄▄█▓▓  ░░░░ 
-  ░░░░  │ ___ │  │ ** │  ▄▄▄▄▄  ░░░░ 
-  ░░░░  └─────┘  └────┘  ▀▀▀▀▀  ░░░░
-  ▓▓█▄    << >>    ░░    {[ ]}   ▓▓▓▓  
-  ░░░░  [ПУТЬ]   МАРШРУТ  </>    ░░░░ 
-  ░░░░  ╔═════╗  ┌────┐  ░░░░   ░░░░ 
-  ░░░░  ║ === ║  │ ░░ │  ░▒▒▓▓  ░░░░
-  ▒▒▓▓  ╚═════╝  └────┘  ▄▄▄▄▄  ▒▒▓▓  
-  ░░░░    [>_]    ░░░░    █▓▒░   ░░░░ 
+  ░░░░  ┌─────┐  ▄▄█▓▓  ░░░░ 
+  ░░░░  │ ___ │  ▄▄▄▄▄  ░░░░ 
+  ░░░░  └─────┘  ▀▀▀▀▀  ░░░░
+  ▓▓█▄    << >>   {[ ]}   ▓▓▓▓  
+  ░░░░  [ПУТЬ]   </>    ░░░░ 
+  ░░░░  ╔═════╗  ░░░░   ░░░░ 
+  ░░░░  ║ === ║  ░▒▒▓▓  ░░░░
+  ▒▒▓▓  ╚═════╝  ▄▄▄▄▄  ▒▒▓▓  
   `;
+
+  // Reduce number of elements for mobile
+  const repeatCount = isMobile ? 5 : 10;
+  const lineCount = isMobile ? 7 : 12;
 
   return (
     <div 
@@ -28,9 +35,9 @@ const ASCIIBackground: React.FC<ASCIIBackgroundProps> = ({ opacity = 0.03 }) => 
       }}
     >
       <div className="absolute inset-0 flex flex-wrap overflow-hidden">
-        {Array(15).fill(0).map((_, i) => (
+        {Array(lineCount).fill(0).map((_, i) => (
           <div key={i} className="w-full whitespace-pre text-center">
-            {Array(8).fill(0).map((_, j) => (
+            {Array(repeatCount).fill(0).map((_, j) => (
               <span key={j} className="inline-block mx-1">
                 {asciiPattern}
               </span>
@@ -40,6 +47,9 @@ const ASCIIBackground: React.FC<ASCIIBackgroundProps> = ({ opacity = 0.03 }) => 
       </div>
     </div>
   );
-};
+});
+
+// Add display name for React DevTools
+ASCIIBackground.displayName = 'ASCIIBackground';
 
 export default ASCIIBackground;

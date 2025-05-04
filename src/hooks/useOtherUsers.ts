@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { calculateCompatibility, getCompatibilityAnalysis } from '@/services/compatibilityService';
@@ -14,6 +14,20 @@ export interface OtherUsersData {
   compatibilityAnalysis: Record<string, string>;
 }
 
+// Cache for other users data
+const othersCache: {
+  data: any[] | null;
+  testResults: Record<string, any> | null;
+  timestamp: number;
+} = {
+  data: null,
+  testResults: null,
+  timestamp: 0
+};
+
+// Cache expiration time in milliseconds (5 minutes)
+const CACHE_EXPIRATION = 5 * 60 * 1000;
+
 export const useOtherUsers = (userProfile: any, userTestResults: any) => {
   const { toast } = useToast();
   const [users, setUsers] = useState<any[]>([]);
@@ -26,8 +40,8 @@ export const useOtherUsers = (userProfile: any, userTestResults: any) => {
 
   // Функция расчета совместимости с текущим пользователем
   // Function to calculate compatibility with current user
-  const calculateCurrentUserCompatibility = (nextUser: any) => {
-    if (userTestResults && otherUsersTestResults[nextUser.id]) {
+  const calculateCurrentUserCompatibility = useCallback((nextUser: any) => {
+    if (userTestResults && otherUsersTestResults[nextUser?.id]) {
       const score = calculateCompatibility(userTestResults, otherUsersTestResults[nextUser.id]);
       setCompatibilityScore(score);
       
@@ -39,13 +53,34 @@ export const useOtherUsers = (userProfile: any, userTestResults: any) => {
         overall: "Недостаточно данных для полного анализа совместимости. Предложите пройти тест личности."
       });
     }
-  };
+  }, [userTestResults, otherUsersTestResults]);
 
   // Fetch other users' profiles and test results
   useEffect(() => {
     const fetchUsers = async () => {
+      if (!userProfile?.id) {
+        setLoading(false);
+        return;
+      }
+      
       try {
         setLoading(true);
+        
+        // Check if cache is valid
+        const now = Date.now();
+        if (othersCache.data && othersCache.testResults && (now - othersCache.timestamp) < CACHE_EXPIRATION) {
+          // Use cached data
+          setUsers(othersCache.data);
+          setOtherUsersTestResults(othersCache.testResults);
+          
+          if (othersCache.data.length > 0) {
+            setCurrentUser(othersCache.data[0]);
+            calculateCurrentUserCompatibility(othersCache.data[0]);
+          }
+          
+          setLoading(false);
+          return;
+        }
         
         // Fetch other users' profiles
         const { data: usersData, error: usersError } = await supabase
@@ -74,6 +109,11 @@ export const useOtherUsers = (userProfile: any, userTestResults: any) => {
             });
           }
           
+          // Update cache
+          othersCache.data = usersData;
+          othersCache.testResults = testResultsMap;
+          othersCache.timestamp = now;
+          
           setOtherUsersTestResults(testResultsMap);
           setUsers(usersData);
           
@@ -98,13 +138,11 @@ export const useOtherUsers = (userProfile: any, userTestResults: any) => {
       }
     };
     
-    if (userProfile?.id) {
-      fetchUsers();
-    }
-  }, [userProfile, toast, userTestResults]);
+    fetchUsers();
+  }, [userProfile?.id, toast, userTestResults, calculateCurrentUserCompatibility]);
 
   // Function to move to next user and calculate compatibility
-  const moveToNextUser = (currentIndex: number) => {
+  const moveToNextUser = useCallback((currentIndex: number) => {
     if (currentIndex < users.length - 1) {
       const nextIndex = currentIndex + 1;
       const nextUser = users[nextIndex];
@@ -120,7 +158,7 @@ export const useOtherUsers = (userProfile: any, userTestResults: any) => {
     // No more profiles to show
     setCurrentUser(null);
     return null;
-  };
+  }, [users, calculateCurrentUserCompatibility]);
 
   return {
     users,

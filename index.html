@@ -9,10 +9,25 @@
     <meta name="author" content="ToDoTrip" />
     <link rel="icon" type="image/png" href="/lovable-uploads/8feabb92-1be0-40f4-85e4-21e044a27ed6.png" />
     
-    <!-- Preload the Unbounded font to avoid FOUT (Flash of Unstyled Text) -->
+    <!-- Preload only essential font weights with improved display strategy -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      /* Apply font-display: swap for better loading performance */
+      @font-face {
+        font-family: 'Unbounded';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Unbounded';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+      }
+    </style>
 
     <meta property="og:title" content="ToDoTrip - AI Travel App" />
     <meta property="og:description" content="Создаём туристические маршруты для путешествий по России и помогаем искать попутчиков по интересам" />

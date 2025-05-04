@@ -10,6 +10,16 @@ export interface UserProfileData {
   error: Error | null;
 }
 
+// Cache for user data to prevent redundant fetches
+const userDataCache: Record<string, {
+  profile: any;
+  testResults: any;
+  timestamp: number;
+}> = {};
+
+// Cache expiration time in milliseconds (5 minutes)
+const CACHE_EXPIRATION = 5 * 60 * 1000;
+
 export const useDatingProfile = (): UserProfileData => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
@@ -20,6 +30,18 @@ export const useDatingProfile = (): UserProfileData => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user) {
+        setLoading(false);
+        return;
+      }
+      
+      // Check if we have valid cached data
+      const cachedData = userDataCache[user.id];
+      const now = Date.now();
+      
+      if (cachedData && (now - cachedData.timestamp) < CACHE_EXPIRATION) {
+        // Use cached data if it's still valid
+        setProfile(cachedData.profile);
+        setTestResults(cachedData.testResults);
         setLoading(false);
         return;
       }
@@ -46,6 +68,13 @@ export const useDatingProfile = (): UserProfileData => {
           
         if (testError) throw testError;
         setTestResults(testData);
+        
+        // Cache the fetched data
+        userDataCache[user.id] = {
+          profile: profileData,
+          testResults: testData,
+          timestamp: now
+        };
       } catch (err) {
         console.error('Error fetching user data:', err);
         setError(err as Error);
