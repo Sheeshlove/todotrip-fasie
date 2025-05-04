@@ -16,13 +16,13 @@ interface GenericDescriptionFieldProps<T extends Record<string, any>> {
  * Многоразовый компонент поля описания
  * Generic reusable description field component
  */
-export const GenericDescriptionField = <T extends Record<string, any>>({
+export function GenericDescriptionField<T extends Record<string, any>>({
   form,
   fieldName,
   label = "Описание",
   placeholder = "Расскажите о себе",
   required = true
-}: GenericDescriptionFieldProps<T>) => {
+}: GenericDescriptionFieldProps<T>) {
   return (
     <FormField
       control={form.control}
@@ -45,4 +45,4 @@ export const GenericDescriptionField = <T extends Record<string, any>>({
       )}
     />
   );
-};
+}

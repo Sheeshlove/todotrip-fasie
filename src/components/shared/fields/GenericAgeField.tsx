@@ -15,12 +15,12 @@ interface GenericAgeFieldProps<T extends Record<string, any>> {
  * Многоразовый компонент поля возраста
  * Generic reusable age field component
  */
-export const GenericAgeField = <T extends Record<string, any>>({
+export function GenericAgeField<T extends Record<string, any>>({
   form,
   fieldName,
   label = "Возраст",
   placeholder = "Ваш возраст"
-}: GenericAgeFieldProps<T>) => {
+}: GenericAgeFieldProps<T>) {
   return (
     <FormField
       control={form.control}
@@ -36,4 +36,4 @@ export const GenericAgeField = <T extends Record<string, any>>({
       )}
     />
   );
-};
+}

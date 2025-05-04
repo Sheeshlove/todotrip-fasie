@@ -6,7 +6,6 @@ import { UseFormReturn } from "react-hook-form";
 
 interface GenericNameFieldProps<T extends Record<string, any>> {
   form: UseFormReturn<T>;
-  name?: string;
   fieldName: keyof T; // Which field in the form to bind to
   label?: string;
   placeholder?: string;
@@ -16,13 +15,12 @@ interface GenericNameFieldProps<T extends Record<string, any>> {
  * Многоразовый компонент поля имени
  * Generic reusable name field component
  */
-export const GenericNameField = <T extends Record<string, any>>({
+export function GenericNameField<T extends Record<string, any>>({
   form,
-  name = "name",
   fieldName,
   label = "Имя",
   placeholder = "Ваше имя"
-}: GenericNameFieldProps<T>) => {
+}: GenericNameFieldProps<T>) {
   return (
     <FormField
       control={form.control}
@@ -38,4 +36,4 @@ export const GenericNameField = <T extends Record<string, any>>({
       )}
     />
   );
-};
+}
