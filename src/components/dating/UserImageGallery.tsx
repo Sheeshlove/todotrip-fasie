@@ -32,31 +32,36 @@ export const UserImageGallery: React.FC<UserImageGalleryProps> = ({
   
   return (
     <>
-      {/* Main profile image */}
-      <div className="relative w-full aspect-square overflow-hidden">
+      {/* Main profile image - make it more impressive */}
+      <div className="relative w-full aspect-[3/4] overflow-hidden">
         {selectedImage ? (
-          <img 
-            src={selectedImage} 
-            alt={`${user?.username || 'User'}`} 
-            className="w-full h-full object-cover"
-          />
+          <div className="relative w-full h-full">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-todoDarkGray/70 z-10"></div>
+            <img 
+              src={selectedImage} 
+              alt={`${user?.username || 'User'}`} 
+              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+            />
+          </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-black">
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-todoDarkGray to-black">
             <User className="w-1/4 h-1/4 text-todoYellow" />
           </div>
         )}
       </div>
       
-      {/* Image carousel */}
+      {/* Image carousel - more polished */}
       {allImages.length > 1 && (
-        <div className="p-4 bg-black/30 mt-4">
+        <div className="p-4 bg-gradient-to-t from-black/60 to-transparent">
           <Carousel className="w-full">
             <CarouselContent>
               {allImages.map((image: string, index: number) => (
-                <CarouselItem key={index} className="basis-1/4 md:basis-1/5">
+                <CarouselItem key={index} className="basis-1/4 md:basis-1/5 pl-2">
                   <div 
-                    className={`aspect-square rounded-md overflow-hidden cursor-pointer border-2 ${
-                      selectedImage === image ? 'border-todoYellow' : 'border-transparent'
+                    className={`aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-300 ${
+                      selectedImage === image 
+                        ? 'border-2 border-todoYellow scale-105 shadow-glow' 
+                        : 'border border-white/10 opacity-80 hover:opacity-100'
                     }`}
                     onClick={() => onImageSelect(image)}
                   >
@@ -69,8 +74,8 @@ export const UserImageGallery: React.FC<UserImageGalleryProps> = ({
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="left-1" />
-            <CarouselNext className="right-1" />
+            <CarouselPrevious className="left-1 bg-black/50 border-todoYellow/30 hover:bg-black/70 text-todoYellow" />
+            <CarouselNext className="right-1 bg-black/50 border-todoYellow/30 hover:bg-black/70 text-todoYellow" />
           </Carousel>
         </div>
       )}

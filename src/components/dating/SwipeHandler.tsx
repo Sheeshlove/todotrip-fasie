@@ -86,10 +86,10 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full">
       <div 
         ref={emblaRef} 
-        className="overflow-hidden"
+        className="overflow-hidden rounded-2xl shadow-lg"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}

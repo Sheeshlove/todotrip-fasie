@@ -26,13 +26,16 @@ export const UserHobbies: React.FC<UserHobbiesProps> = ({
   }
   
   return (
-    <div className="space-y-2">
-      <h4 className="text-left text-todoLightGray">Хобби:</h4>
+    <div className="space-y-3">
+      <h4 className="text-left text-todoLightGray flex items-center gap-2">
+        <span className="w-4 h-0.5 bg-todoYellow"></span>
+        Хобби и интересы
+      </h4>
       <div className="flex flex-wrap gap-2">
         {commonHobbies.map((hobby: string, index: number) => (
           <Badge 
             key={`common-${index}`} 
-            className="bg-todoYellow text-black hover:bg-todoYellow/80"
+            className="bg-todoYellow text-black hover:bg-todoYellow/80 shadow-sm"
           >
             {hobby}
           </Badge>
@@ -42,7 +45,7 @@ export const UserHobbies: React.FC<UserHobbiesProps> = ({
           <Badge 
             key={`unique-${index}`} 
             variant="outline"
-            className="text-white border-white/20 bg-transparent"
+            className="text-white/90 border-white/20 bg-todoBlack/30 hover:bg-todoBlack/50"
           >
             {hobby}
           </Badge>

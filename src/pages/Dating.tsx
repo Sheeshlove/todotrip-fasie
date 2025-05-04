@@ -10,7 +10,8 @@ const Dating = () => {
     return (
       <PageLayout title="ToDoTrip - Общение" description="Ищите попутчиков для ваших путешествий">
         <div className="flex flex-col items-center justify-center min-h-[80vh] text-center">
-          <p className="text-white text-lg">Загрузка профилей...</p>
+          <div className="w-16 h-16 border-4 border-todoYellow border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-white/80 text-lg mt-4">Загрузка профилей...</p>
         </div>
       </PageLayout>
     );
@@ -18,10 +19,12 @@ const Dating = () => {
   
   return (
     <PageLayout title="ToDoTrip - Общение" description="Ищите попутчиков для ваших путешествий">
-      <DatingContainer 
-        userProfile={profile}
-        userTestResults={testResults}
-      />
+      <div className="max-w-md mx-auto">
+        <DatingContainer 
+          userProfile={profile}
+          userTestResults={testResults}
+        />
+      </div>
     </PageLayout>
   );
 };
