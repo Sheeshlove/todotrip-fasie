@@ -1,17 +1,12 @@
 
 import React, { useEffect } from 'react';
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { HelmetProvider } from "react-helmet-async";
 import { setupSessionTimeout } from './utils/secureSessionUtils';
 import { setupSecurityHeaders } from './utils/securitySetup';
 import { toast } from 'sonner';
-import { queryClient } from './lib/query-client';
 import ErrorBoundary from "./components/ErrorBoundary";
 import OnboardingWrapper from "./components/OnboardingWrapper";
 import AppRoutes from "./routes/AppRoutes";
+import Providers from './components/Providers';
 
 // Import custom styles
 import "./styles/custom-scrollbar.css";
@@ -35,19 +30,13 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <HelmetProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <ErrorBoundary>
-            <OnboardingWrapper>
-              <AppRoutes />
-            </OnboardingWrapper>
-          </ErrorBoundary>
-        </TooltipProvider>
-      </HelmetProvider>
-    </QueryClientProvider>
+    <Providers>
+      <ErrorBoundary>
+        <OnboardingWrapper>
+          <AppRoutes />
+        </OnboardingWrapper>
+      </ErrorBoundary>
+    </Providers>
   );
 };
 
