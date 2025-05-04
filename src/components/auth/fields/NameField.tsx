@@ -1,8 +1,9 @@
 
 import React from 'react';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { RegisterFormValues } from "@/lib/validations/register";
-import { GenericNameField } from '@/components/shared/fields/GenericNameField';
 
 interface NameFieldProps {
   form: UseFormReturn<RegisterFormValues>;
@@ -10,9 +11,18 @@ interface NameFieldProps {
 
 export const NameField: React.FC<NameFieldProps> = ({ form }) => {
   return (
-    <GenericNameField<RegisterFormValues>
-      form={form}
-      fieldName="name"
+    <FormField
+      control={form.control}
+      name="name"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel className="text-white">Имя</FormLabel>
+          <FormControl>
+            <Input placeholder="Ваше имя" {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
     />
   );
 };
