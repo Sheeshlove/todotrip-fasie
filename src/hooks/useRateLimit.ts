@@ -1,50 +1,107 @@
-import { useState, useCallback } from 'react';
+
+import { useState, useCallback, useEffect } from 'react';
 
 interface RateLimitOptions {
   maxAttempts: number;
   timeWindow: number; // in milliseconds
   lockoutDuration: number; // in milliseconds
+  storagePrefix?: string; // prefix for localStorage keys
 }
 
+interface RateLimitState {
+  attempts: number[];
+  isLocked: boolean;
+  lockoutEndTime: number | null;
+}
+
+const STORAGE_PREFIX = 'todotrip_security_';
+
 export const useRateLimit = (options: RateLimitOptions) => {
-  const [attempts, setAttempts] = useState<number[]>([]);
-  const [isLocked, setIsLocked] = useState(false);
-  const [lockoutEndTime, setLockoutEndTime] = useState<number | null>(null);
+  const storageKey = `${options.storagePrefix || STORAGE_PREFIX}ratelimit`;
+  
+  // Initialize state from localStorage if available
+  const [state, setState] = useState<RateLimitState>(() => {
+    try {
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (err) {
+      console.error('Failed to parse rate limit data from localStorage');
+    }
+    
+    return {
+      attempts: [],
+      isLocked: false,
+      lockoutEndTime: null
+    };
+  });
+  
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    } catch (err) {
+      console.error('Failed to save rate limit data to localStorage');
+    }
+  }, [state, storageKey]);
 
   const checkRateLimit = useCallback(() => {
     const now = Date.now();
     
     // Remove attempts outside the time window
-    const recentAttempts = attempts.filter(time => now - time < options.timeWindow);
-    setAttempts(recentAttempts);
-
+    const recentAttempts = state.attempts.filter(time => now - time < options.timeWindow);
+    
     // Check if locked out
-    if (isLocked && lockoutEndTime && now < lockoutEndTime) {
-      const remainingTime = Math.ceil((lockoutEndTime - now) / 1000);
-      throw new Error(`Too many attempts. Please try again in ${remainingTime} seconds.`);
+    if (state.isLocked && state.lockoutEndTime && now < state.lockoutEndTime) {
+      const remainingTime = Math.ceil((state.lockoutEndTime - now) / 1000);
+      throw new Error(`Слишком много попыток. Пожалуйста, попробуйте снова через ${remainingTime} секунд.`);
     }
 
     // Reset lock if lockout period has ended
-    if (isLocked && lockoutEndTime && now >= lockoutEndTime) {
-      setIsLocked(false);
-      setLockoutEndTime(null);
+    if (state.isLocked && state.lockoutEndTime && now >= state.lockoutEndTime) {
+      setState({
+        attempts: [],
+        isLocked: false,
+        lockoutEndTime: null
+      });
+      return;
     }
 
     // Check if too many attempts
     if (recentAttempts.length >= options.maxAttempts) {
-      setIsLocked(true);
-      setLockoutEndTime(now + options.lockoutDuration);
-      throw new Error(`Too many attempts. Please try again in ${Math.ceil(options.lockoutDuration / 1000)} seconds.`);
+      const newLockoutEndTime = now + options.lockoutDuration;
+      
+      setState({
+        attempts: recentAttempts,
+        isLocked: true,
+        lockoutEndTime: newLockoutEndTime
+      });
+      
+      throw new Error(`Слишком много попыток. Пожалуйста, попробуйте снова через ${Math.ceil(options.lockoutDuration / 1000)} секунд.`);
     }
 
     // Add new attempt
-    setAttempts([...recentAttempts, now]);
-  }, [attempts, isLocked, lockoutEndTime, options]);
+    setState({
+      attempts: [...recentAttempts, now],
+      isLocked: state.isLocked,
+      lockoutEndTime: state.lockoutEndTime
+    });
+  }, [state, options]);
+
+  const resetRateLimit = useCallback(() => {
+    setState({
+      attempts: [],
+      isLocked: false,
+      lockoutEndTime: null
+    });
+  }, []);
 
   return {
     checkRateLimit,
-    isLocked,
-    remainingAttempts: options.maxAttempts - attempts.length,
-    lockoutEndTime
+    resetRateLimit,
+    isLocked: state.isLocked,
+    remainingAttempts: options.maxAttempts - state.attempts.length,
+    lockoutEndTime: state.lockoutEndTime
   };
-}; 
+};

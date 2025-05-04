@@ -1,29 +1,47 @@
-
-import { ReactNode } from 'react';
-import BottomMenu from './BottomMenu';
-import Meta from './Meta';
-import ASCIIBackground from './ASCIIBackground';
+import React from 'react';
+import { Meta } from './Meta';
+import SecurityHeaders from './SecurityHeaders';
+import { sanitize } from '@/utils/securityUtils';
 
 interface PageLayoutProps {
-  children: ReactNode;
-  title?: string;
+  children: React.ReactNode;
+  title: string;
   description?: string;
-  hideBottomMenu?: boolean;
+  noIndex?: boolean;
+  image?: string;
+  type?: string;
 }
 
-const PageLayout = ({ 
+const PageLayout: React.FC<PageLayoutProps> = ({ 
   children, 
-  title = 'ToDoTrip - AI Travel App', 
-  description = 'AI-powered travel app for planning trips around Russia', 
-  hideBottomMenu = false 
-}: PageLayoutProps) => {
+  title, 
+  description,
+  noIndex = false,
+  image,
+  type = "website"
+}) => {
+  // Sanitize inputs for security
+  const sanitizedTitle = sanitize.xss(title);
+  const sanitizedDescription = sanitize.xss(description || '');
+  const sanitizedImage = image ? sanitize.url(image) : undefined;
+
   return (
-    <div className="min-h-screen bg-todoBlack font-unbounded text-white pb-16 relative">
-      <ASCIIBackground />
-      <Meta title={title} description={description} />
-      <main className="px-4 py-4 max-w-4xl mx-auto relative z-10">{children}</main>
-      {!hideBottomMenu && <BottomMenu />}
-    </div>
+    <>
+      <Meta
+        title={sanitizedTitle}
+        description={sanitizedDescription}
+        noIndex={noIndex}
+        image={sanitizedImage}
+        type={type}
+      />
+      
+      {/* Add security headers */}
+      <SecurityHeaders />
+      
+      <div className="min-h-screen bg-todoBlack flex flex-col">
+        {children}
+      </div>
+    </>
   );
 };
 
