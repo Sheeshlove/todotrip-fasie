@@ -36,7 +36,7 @@ export const UserCard: React.FC<UserCardProps> = ({
   };
   
   return (
-    <Card className={`bg-todoDarkGray/70 backdrop-blur-md border-todoYellow/10 rounded-xl overflow-hidden shadow-lg ${isMobile ? 'max-w-[100%]' : ''}`}>
+    <Card className={`bg-todoDarkGray/70 backdrop-blur-md border-todoYellow/10 rounded-xl overflow-hidden shadow-lg ${isMobile ? 'max-w-[100%]' : ''} hover:shadow-glow transition-all duration-300`}>
       <UserImageGallery
         user={user}
         selectedImage={selectedImage}
@@ -44,23 +44,29 @@ export const UserCard: React.FC<UserCardProps> = ({
       />
 
       {/* Compatibility Circle - under the photo */}
-      <CompatibilityCircle
-        compatibilityScore={compatibilityScore}
-        currentUserHasTakenTest={currentUserHasTakenTest}
-        userHasTakenTest={userHasTakenTest}
-        username={user?.username}
-      />
+      <div className="animate-fade-in">
+        <CompatibilityCircle
+          compatibilityScore={compatibilityScore}
+          currentUserHasTakenTest={currentUserHasTakenTest}
+          userHasTakenTest={userHasTakenTest}
+          username={user?.username}
+        />
+      </div>
       
-      {/* User info */}
+      {/* User info with staggered animation */}
       <CardContent className={`${isMobile ? 'p-3 space-y-2' : 'p-5 space-y-4'} bg-gradient-to-b from-todoDarkGray/70 to-todoBlack/50`}>
-        <UserDetails user={user} />
+        <div className="animate-fade-in">
+          <UserDetails user={user} />
+        </div>
         
         {/* Hobbies Section */}
         {user?.hobbies && user.hobbies.length > 0 && (
-          <UserHobbies
-            userHobbies={user.hobbies}
-            currentUserHobbies={currentUserHobbies}
-          />
+          <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+            <UserHobbies
+              userHobbies={user.hobbies}
+              currentUserHobbies={currentUserHobbies}
+            />
+          </div>
         )}
       </CardContent>
     </Card>

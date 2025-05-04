@@ -36,23 +36,27 @@ export const DatingContainer: React.FC<DatingContainerProps> = ({
   }
   
   return (
-    <div className={`flex flex-col items-center justify-center ${isMobile ? 'py-2 px-0' : 'py-4 px-6'} mx-auto`}>
-      <h2 className={`${isMobile ? 'text-xl mb-2' : 'text-3xl mb-4'} font-bold bg-gradient-to-r from-todoYellow to-yellow-400 bg-clip-text text-transparent`}>
+    <div className={`flex flex-col items-center justify-center ${isMobile ? 'py-2 px-0' : 'py-4 px-6'} mx-auto animate-fade-in`}>
+      <h2 className={`${isMobile ? 'text-xl mb-2' : 'text-3xl mb-4'} font-bold bg-gradient-to-r from-todoYellow to-yellow-400 bg-clip-text text-transparent animate-fade-in`}>
         Поиск попутчиков
       </h2>
       
-      {users.length > 0 && currentUser ? (
-        <SwipeHandler 
-          currentUser={currentUser} 
-          currentUserHobbies={userProfile?.hobbies || []} 
-          compatibilityScore={compatibilityScore}
-          currentUserHasTakenTest={!!userTestResults}
-          userHasTakenTest={!!testResults[currentUser.id]}
-          onSwipe={handleSwipe}
-        />
-      ) : (
-        <ShareHandler onInviteFriends={() => {}} />
-      )}
+      <div className="w-full transition-all duration-500">
+        {users.length > 0 && currentUser ? (
+          <SwipeHandler 
+            currentUser={currentUser} 
+            currentUserHobbies={userProfile?.hobbies || []} 
+            compatibilityScore={compatibilityScore}
+            currentUserHasTakenTest={!!userTestResults}
+            userHasTakenTest={!!testResults[currentUser.id]}
+            onSwipe={handleSwipe}
+          />
+        ) : (
+          <div className="animate-fade-in">
+            <ShareHandler onInviteFriends={() => {}} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

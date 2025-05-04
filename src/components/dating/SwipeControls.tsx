@@ -19,19 +19,19 @@ export const SwipeControls: React.FC<SwipeControlsProps> = ({ onSwipe }) => {
       <Button 
         size="lg" 
         variant="outline" 
-        className={`${buttonSize} rounded-full border-2 border-red-500 text-red-500 hover:bg-red-500/10 shadow-lg transition-all duration-300 hover:scale-105 active:scale-95`}
+        className={`${buttonSize} rounded-full border-2 border-red-500 text-red-500 hover:bg-red-500/10 shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 animate-fade-in`}
         onClick={() => onSwipe('left')}
       >
-        <X size={iconSize} />
+        <X size={iconSize} className="transition-transform duration-300 group-hover:rotate-12" />
         <span className="sr-only">Пропустить</span>
       </Button>
       
       <Button 
         size="lg" 
-        className={`${buttonSize} rounded-full bg-todoYellow hover:bg-todoYellow/90 text-black shadow-lg transition-all duration-300 hover:scale-105 active:scale-95`}
+        className={`${buttonSize} rounded-full bg-todoYellow hover:bg-todoYellow/90 text-black shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 animate-fade-in animation-delay-200`}
         onClick={() => onSwipe('right')}
       >
-        <Check size={iconSize} />
+        <Check size={iconSize} className="transition-transform duration-300 group-hover:scale-110" />
         <span className="sr-only">Лайк</span>
       </Button>
     </div>

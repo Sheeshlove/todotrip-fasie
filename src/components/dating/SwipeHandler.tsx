@@ -29,6 +29,8 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
   const [dragEndX, setDragEndX] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
+  const [exitDirection, setExitDirection] = useState<'left' | 'right' | null>(null);
+  const [isAnimatingExit, setIsAnimatingExit] = useState(false);
   
   // Create carousel for swipes
   const [emblaRef] = useEmblaCarousel({ 
@@ -36,36 +38,47 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
     loop: false
   });
 
-  // Swipe handling function
+  // Enhanced swipe handling function with animation
   const handleSwipe = (direction: 'left' | 'right') => {
-    const username = currentUser?.username || 'пользователя';
+    if (isAnimatingExit) return; // Prevent multiple swipes during animation
     
-    if (direction === 'right') {
-      toast({
-        title: "Лайк!",
-        description: `Вы лайкнули профиль ${username}!`,
-        duration: isMobile ? 2000 : 3000, // Shorter duration on mobile
-      });
-    } else if (direction === 'left') {
-      toast({
-        title: "Пропуск",
-        description: `Вы пропустили профиль ${username}`,
-        duration: isMobile ? 2000 : 3000, // Shorter duration on mobile
-      });
-    }
+    setExitDirection(direction);
+    setIsAnimatingExit(true);
     
-    onSwipe(direction);
-    setDragOffset(0); // Reset after swipe
+    // Delay actual swipe handling until animation finishes
+    setTimeout(() => {
+      const username = currentUser?.username || 'пользователя';
+      
+      if (direction === 'right') {
+        toast({
+          title: "Лайк!",
+          description: `Вы лайкнули профиль ${username}!`,
+          duration: isMobile ? 2000 : 3000, // Shorter duration on mobile
+        });
+      } else if (direction === 'left') {
+        toast({
+          title: "Пропуск",
+          description: `Вы пропустили профиль ${username}`,
+          duration: isMobile ? 2000 : 3000, // Shorter duration on mobile
+        });
+      }
+      
+      onSwipe(direction);
+      setDragOffset(0);
+      setExitDirection(null);
+      setIsAnimatingExit(false);
+    }, 300); // Match duration with CSS transition
   };
 
   // Touch/Swipe handlers with improved sensitivity
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (isAnimatingExit) return; // Prevent new touches during exit animation
     setDragStartX(e.targetTouches[0].clientX);
     setIsDragging(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (isDragging && dragStartX !== null) {
+    if (isDragging && dragStartX !== null && !isAnimatingExit) {
       const currentX = e.targetTouches[0].clientX;
       setDragEndX(currentX);
       setDragOffset(currentX - dragStartX);
@@ -73,6 +86,8 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
   };
 
   const handleTouchEnd = () => {
+    if (isAnimatingExit) return;
+    
     if (dragStartX !== null && dragEndX !== null) {
       const dragDifference = dragEndX - dragStartX;
       
@@ -84,6 +99,9 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
       } 
       else if (dragDifference < -threshold) {
         handleSwipe('left');
+      } else {
+        // If not passing threshold, animate back to center
+        setDragOffset(0);
       }
     }
     
@@ -91,17 +109,35 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
     setDragStartX(null);
     setDragEndX(null);
     setIsDragging(false);
-    setDragOffset(0);
   };
 
   // Calculate card rotation based on drag offset
   const cardRotation = Math.min(Math.max(dragOffset * 0.1, -10), 10);
-  const cardStyle = isDragging ? {
-    transform: `translateX(${dragOffset}px) rotate(${cardRotation}deg)`,
-    transition: 'none'
-  } : {
-    transform: 'translateX(0) rotate(0deg)',
-    transition: 'transform 0.3s ease'
+  
+  // Dynamic card styling based on state
+  const getCardStyle = () => {
+    if (isAnimatingExit) {
+      // Exit animation
+      const translateX = exitDirection === 'left' ? '-120%' : '120%';
+      const rotate = exitDirection === 'left' ? '-20deg' : '20deg';
+      return {
+        transform: `translateX(${translateX}) rotate(${rotate})`,
+        transition: 'transform 0.3s ease-out',
+        opacity: 0
+      };
+    } else if (isDragging) {
+      // Dragging state
+      return {
+        transform: `translateX(${dragOffset}px) rotate(${cardRotation}deg)`,
+        transition: 'none'
+      };
+    } else {
+      // Neutral state or return-to-center animation
+      return {
+        transform: 'translateX(0) rotate(0deg)',
+        transition: 'transform 0.3s ease-out'
+      };
+    }
   };
 
   return (
@@ -115,8 +151,8 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
       >
         <div className="flex">
           <div 
-            className="w-full flex-shrink-0"
-            style={cardStyle}
+            className="w-full flex-shrink-0 animate-fade-in"
+            style={getCardStyle()}
           >
             <UserCard 
               user={currentUser} 
@@ -128,7 +164,9 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
           </div>
         </div>
       </div>
-      <SwipeControls onSwipe={handleSwipe} />
+      <div className={`animate-fade-in transition-opacity duration-300 ${isAnimatingExit ? 'opacity-50' : 'opacity-100'}`}>
+        <SwipeControls onSwipe={handleSwipe} />
+      </div>
     </div>
   );
 };
