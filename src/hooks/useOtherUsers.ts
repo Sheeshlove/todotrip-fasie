@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { calculateCompatibility, getCompatibilityAnalysis } from '@/services/compatibilityService';
 
 export interface OtherUsersData {
   users: any[];
@@ -26,8 +27,6 @@ export const useOtherUsers = (userProfile: any, userTestResults: any) => {
   // Функция расчета совместимости с текущим пользователем
   // Function to calculate compatibility with current user
   const calculateCurrentUserCompatibility = (nextUser: any) => {
-    const { calculateCompatibility, getCompatibilityAnalysis } = require('@/services/compatibilityService');
-    
     if (userTestResults && otherUsersTestResults[nextUser.id]) {
       const score = calculateCompatibility(userTestResults, otherUsersTestResults[nextUser.id]);
       setCompatibilityScore(score);

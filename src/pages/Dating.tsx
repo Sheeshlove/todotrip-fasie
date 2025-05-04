@@ -3,7 +3,6 @@ import PageLayout from '@/components/PageLayout';
 import { DatingContainer } from '@/components/dating/DatingContainer';
 import { useDatingProfile } from '@/hooks/useDatingProfile';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Skeleton } from '@/components/ui/skeleton';
 
 const Dating = () => {
   const { profile, testResults, loading } = useDatingProfile();

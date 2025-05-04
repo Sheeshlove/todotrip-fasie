@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { User } from 'lucide-react';
+import { User, Image as ImageIcon } from 'lucide-react';
 import { 
   Carousel,
   CarouselContent,
@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious
 } from '@/components/ui/carousel';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface UserImageGalleryProps {
   user: any;
@@ -20,6 +21,8 @@ export const UserImageGallery: React.FC<UserImageGalleryProps> = ({
   selectedImage,
   onImageSelect
 }) => {
+  const [loadingImages, setLoadingImages] = useState<Record<string, boolean>>({});
+  
   // Parse the images from json if they exist
   const userImages = user?.images ? 
     (typeof user.images === 'string' ? JSON.parse(user.images) : user.images) : 
@@ -33,6 +36,20 @@ export const UserImageGallery: React.FC<UserImageGalleryProps> = ({
   const hasNoImages = allImages.length === 0;
   const username = user?.username || 'Пользователь';
   
+  const handleImageLoad = (imageUrl: string) => {
+    setLoadingImages(prev => ({
+      ...prev,
+      [imageUrl]: false
+    }));
+  };
+  
+  const handleImageError = (imageUrl: string) => {
+    setLoadingImages(prev => ({
+      ...prev,
+      [imageUrl]: false
+    }));
+  };
+  
   return (
     <>
       {/* Main profile image - make it more impressive */}
@@ -40,10 +57,17 @@ export const UserImageGallery: React.FC<UserImageGalleryProps> = ({
         {selectedImage ? (
           <div className="relative w-full h-full">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-todoDarkGray/70 z-10"></div>
+            {loadingImages[selectedImage] !== false && (
+              <div className="absolute inset-0 flex items-center justify-center bg-todoDarkGray/70">
+                <Skeleton className="w-full h-full bg-todoDarkGray/50" />
+              </div>
+            )}
             <img 
               src={selectedImage} 
               alt={`${username}`} 
               className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+              onLoad={() => handleImageLoad(selectedImage)}
+              onError={() => handleImageError(selectedImage)}
             />
           </div>
         ) : (
@@ -71,10 +95,17 @@ export const UserImageGallery: React.FC<UserImageGalleryProps> = ({
                     }`}
                     onClick={() => onImageSelect(image)}
                   >
+                    {loadingImages[image] !== false && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-todoDarkGray/50">
+                        <ImageIcon size={24} className="text-todoYellow/50 animate-pulse" />
+                      </div>
+                    )}
                     <img 
                       src={image} 
                       alt={`${username} ${index + 1}`} 
                       className="w-full h-full object-cover"
+                      onLoad={() => handleImageLoad(image)}
+                      onError={() => handleImageError(image)}
                     />
                   </div>
                 </CarouselItem>
