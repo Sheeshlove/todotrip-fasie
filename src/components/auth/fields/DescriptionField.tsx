@@ -1,8 +1,9 @@
 
 import React from 'react';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 import { UseFormReturn } from "react-hook-form";
 import { RegisterFormValues } from "@/lib/validations/register";
-import { GenericDescriptionField } from '@/components/shared/fields/GenericDescriptionField';
 
 interface DescriptionFieldProps {
   form: UseFormReturn<RegisterFormValues>;
@@ -10,10 +11,22 @@ interface DescriptionFieldProps {
 
 export const DescriptionField: React.FC<DescriptionFieldProps> = ({ form }) => {
   return (
-    <GenericDescriptionField<RegisterFormValues>
-      form={form}
-      fieldName="description"
-      required={false}
+    <FormField
+      control={form.control}
+      name="description"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel className="text-white">Описание (необязательно)</FormLabel>
+          <FormControl>
+            <Textarea 
+              placeholder="Расскажите о себе"
+              className="resize-none"
+              {...field}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
     />
   );
 };
