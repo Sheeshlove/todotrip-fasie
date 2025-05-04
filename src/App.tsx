@@ -1,7 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { setupSessionTimeout } from './utils/secureSessionUtils';
-import { setupSecurityHeaders } from './utils/securitySetup';
+import { setupSessionTimeout, setupSecurityHeaders } from './utils/security';
 import { toast } from 'sonner';
 import ErrorBoundary from "./components/ErrorBoundary";
 import OnboardingWrapper from "./components/OnboardingWrapper";
