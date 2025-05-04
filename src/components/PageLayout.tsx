@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Meta } from './Meta';
+import Meta from './Meta';
 import SecurityHeaders from './SecurityHeaders';
 import { sanitize } from '@/utils/securityUtils';
 

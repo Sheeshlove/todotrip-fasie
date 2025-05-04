@@ -1,25 +1,15 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { Session, User } from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import type { AuthState, UserProfile } from '@/lib/types/auth';
-import { toast } from 'sonner';
+import type { UserProfile } from '@/lib/types/auth';
 import { useNavigate } from 'react-router-dom';
 import { useRateLimit } from '@/hooks/useRateLimit';
-
-interface AuthContextType extends AuthState {
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, metadata?: { [key: string]: any }) => Promise<void>;
-  signOut: () => Promise<void>;
-  refreshSession: () => Promise<void>;
-  isAuthenticated: boolean;
-}
+import { AuthState, AuthContextType } from './auth/types';
+import { handleProfileAndNavigation } from './auth/profileUtils';
+import { signIn as authSignIn, signUp as authSignUp, signOut as authSignOut, refreshSession as authRefreshSession } from './auth/authOperations';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Constants for security settings
-const PROFILE_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
-const AUTH_STORAGE_PREFIX = 'todotrip_secure_'; // Prefix for localStorage keys
 
 // Security-enhanced AuthProvider
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -39,98 +29,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     lockoutDuration: 15 * 60 * 1000, // 15 minutes
   });
 
-  // Secure profile handling with proper error handling
-  const handleProfileAndNavigation = useCallback(async (userId: string, event?: string) => {
-    try {
-      if (!userId) {
-        console.error('Invalid userId provided to handleProfileAndNavigation');
-        return;
-      }
-
-      // Use localStorage with secure prefix for caching
-      const cacheKey = `${AUTH_STORAGE_PREFIX}profile_${userId}`;
-      const cacheTimeKey = `${AUTH_STORAGE_PREFIX}profile_${userId}_time`;
-      
-      const cachedProfileData = localStorage.getItem(cacheKey);
-      const cachedProfileTime = localStorage.getItem(cacheTimeKey);
-      
-      // Use cached profile if recent and valid
-      if (cachedProfileData && cachedProfileTime) {
-        try {
-          const cacheAge = Date.now() - parseInt(cachedProfileTime);
-          if (cacheAge < PROFILE_CACHE_DURATION) {
-            const profile = JSON.parse(cachedProfileData);
-            setState(s => ({ ...s, profile: profile as UserProfile }));
-            
-            if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
-              navigate('/');
-            }
-            return;
-          }
-        } catch (parseError) {
-          // If parsing fails, fetch fresh data
-          console.error('Error parsing cached profile data:', parseError);
-        }
-      }
-      
-      // Fetch fresh profile data with proper error handling
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-      
-      if (error) {
-        console.error('Error fetching profile:', error);
-        if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
-          console.log('No profile found, redirecting to create-profile');
-          navigate('/create-profile');
-          return;
-        }
-      }
-
-      if (profile) {
-        // Cache the profile with secure prefix
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify(profile));
-          localStorage.setItem(cacheTimeKey, Date.now().toString());
-          
-          setState(s => ({ ...s, profile: profile as UserProfile }));
-        } catch (storageError) {
-          console.error('Error storing profile in localStorage:', storageError);
-          // Still update state even if caching fails
-          setState(s => ({ ...s, profile: profile as UserProfile }));
-        }
-      }
-      
-      if (event === 'SIGNED_IN' || event === 'SIGNED_UP') {
-        if (!profile) {
-          console.log('No profile found, redirecting to create-profile');
-          navigate('/create-profile');
-        } else {
-          console.log('Profile found, redirecting to home');
-          navigate('/');
-        }
-      }
-    } catch (error) {
-      console.error('Error in handleProfileAndNavigation:', error);
-      toast.error('Ошибка загрузки профиля. Пожалуйста, попробуйте позже.');
-    }
-  }, [navigate]);
-
   // Session refresh functionality for enhanced security
   const refreshSession = useCallback(async () => {
     try {
-      const { data, error } = await supabase.auth.refreshSession();
+      const { user, error } = await authRefreshSession();
       if (error) throw error;
-      if (data.session) {
-        setState(s => ({ ...s, user: data.session.user }));
+      if (user) {
+        setState(s => ({ ...s, user }));
         setIsAuthenticated(true);
       }
     } catch (error) {
       console.error('Session refresh error:', error);
       setIsAuthenticated(false);
     }
+  }, []);
+
+  // Callback to update profile in state
+  const updateProfile = useCallback((profile: UserProfile) => {
+    setState(s => ({ ...s, profile }));
   }, []);
 
   // Enhanced authentication state management
@@ -151,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Defer Supabase calls with setTimeout to prevent deadlocks
           setTimeout(() => {
             if (mounted) {
-              handleProfileAndNavigation(session.user.id, event);
+              handleProfileAndNavigation(session.user.id, event, updateProfile, navigate);
             }
           }, 0);
         } else {
@@ -174,7 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Defer Supabase calls with setTimeout
         setTimeout(() => {
           if (mounted) {
-            handleProfileAndNavigation(session.user.id);
+            handleProfileAndNavigation(session.user.id, undefined, updateProfile, navigate);
           }
         }, 0);
       }
@@ -192,133 +108,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe();
       clearInterval(refreshInterval);
     };
-  }, [navigate, handleProfileAndNavigation, isAuthenticated, refreshSession]);
+  }, [navigate, updateProfile, isAuthenticated, refreshSession]);
 
-  // Enhanced secure sign in with proper validation
-  const signIn = async (email: string, password: string) => {
+  // Adapters for auth operations
+  const handleSignIn = async (email: string, password: string) => {
     try {
-      // Input validation
-      if (!email || !password) {
-        toast.error('Пожалуйста, введите email и пароль');
-        return;
-      }
-
-      if (email.trim() === '' || password.trim() === '') {
-        toast.error('Email и пароль не могут быть пустыми');
-        return;
-      }
-
-      // Check rate limit before attempting sign in
-      checkRateLimit();
-
-      const { error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      });
-
-      if (error) {
-        // Handle specific error cases with user-friendly messages
-        if (error.message.includes('Invalid login credentials')) {
-          toast.error('Неверный email или пароль');
-        } else if (error.message.includes('Email not confirmed')) {
-          toast.error('Пожалуйста, подтвердите свой email перед входом');
-        } else {
-          toast.error('Ошибка входа. Пожалуйста, попробуйте позже.');
-        }
-        throw error;
-      }
-
-      toast.success('Успешный вход');
+      await authSignIn(email, password, checkRateLimit);
       setIsAuthenticated(true);
     } catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes('Too many attempts')) {
-          toast.error(error.message);
-        } else {
-          toast.error('Ошибка входа: ' + error.message);
-        }
-      }
       setIsAuthenticated(false);
       throw error;
     }
   };
 
-  // Enhanced secure sign up with proper validation
-  const signUp = async (email: string, password: string, metadata?: { [key: string]: any }) => {
-    try {
-      // Input validation
-      if (!email || !password) {
-        toast.error('Пожалуйста, заполните все обязательные поля');
-        return;
-      }
-
-      if (email.trim() === '' || password.trim() === '') {
-        toast.error('Email и пароль не могут быть пустыми');
-        return;
-      }
-
-      // Password strength validation
-      if (password.length < 8) {
-        toast.error('Пароль должен содержать минимум 8 символов');
-        return;
-      }
-
-      // Check rate limit before attempting sign up
-      checkRateLimit();
-
-      const { error, data } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          data: metadata
-        }
-      });
-      
-      if (error) {
-        if (error.message.includes('User already registered')) {
-          toast.error('Пользователь с таким email уже зарегистрирован');
-        } else {
-          toast.error('Ошибка регистрации: ' + error.message);
-        }
-        throw error;
-      }
-      
-      console.log('Signup successful:', data);
-      toast.success('Регистрация успешна!');
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes('Too many attempts')) {
-          toast.error(error.message);
-        } else {
-          toast.error('Ошибка регистрации: ' + error.message);
-        }
-      }
-      throw error;
-    }
+  const handleSignUp = async (email: string, password: string, metadata?: { [key: string]: any }) => {
+    return authSignUp(email, password, metadata, checkRateLimit);
   };
 
-  // Secure sign out with proper error handling
-  const signOut = async () => {
+  const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      // Clear secure cache
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(AUTH_STORAGE_PREFIX)) {
-          localStorage.removeItem(key);
-        }
-      });
-      
+      await authSignOut(navigate);
       setState({ user: null, profile: null, loading: false });
       setIsAuthenticated(false);
-      
-      navigate('/login');
-      
-      toast.success('Вы успешно вышли из системы');
     } catch (error) {
-      console.error('Sign out error:', error);
-      toast.error('Ошибка выхода: ' + (error as Error).message);
       throw error;
     }
   };
@@ -326,9 +138,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider value={{ 
       ...state, 
-      signIn, 
-      signUp, 
-      signOut,
+      signIn: handleSignIn, 
+      signUp: handleSignUp, 
+      signOut: handleSignOut,
       refreshSession,
       isAuthenticated
     }}>

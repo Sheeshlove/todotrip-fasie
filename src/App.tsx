@@ -36,7 +36,7 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       // Add security related settings
       staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 10 * 60 * 1000, // 10 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes - replaced cacheTime which is deprecated
       onError: (error: unknown) => {
         console.error('Query error:', error);
         toast.error('Произошла ошибка при загрузке данных. Пожалуйста, попробуйте позже.');

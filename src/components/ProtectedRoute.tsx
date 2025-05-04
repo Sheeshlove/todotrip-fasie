@@ -53,9 +53,11 @@ export function ProtectedRoute({
   }
 
   // If user is authenticated but route requires specific roles
-  if (requiredAuth && isAuthenticated && roles.length > 0) {
+  if (requiredAuth && isAuthenticated && roles.length > 0 && profile) {
+    // Get user roles or default to empty array if not available
+    const userRoles = profile.roles || [];
+    
     // Check if user has any of the required roles
-    const userRoles = profile?.roles || [];
     const hasRequiredRole = roles.some(role => userRoles.includes(role));
 
     if (!hasRequiredRole) {
