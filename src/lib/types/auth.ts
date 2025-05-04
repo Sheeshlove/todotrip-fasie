@@ -15,7 +15,6 @@ export interface UserProfile {
   smoking_attitude: string | null;
   drinking_attitude: string | null;
   images: string[] | null;
-  roles?: string[]; // Add roles property for role-based access control
 }
 
 export interface AuthState {

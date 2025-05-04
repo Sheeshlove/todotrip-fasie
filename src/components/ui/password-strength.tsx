@@ -1,7 +1,5 @@
-
 import { useEffect, useState } from 'react';
 import { Progress } from './progress';
-import { Check, X } from 'lucide-react';
 
 interface PasswordStrengthProps {
   password: string;
@@ -10,137 +8,44 @@ interface PasswordStrengthProps {
 export function PasswordStrength({ password }: PasswordStrengthProps) {
   const [strength, setStrength] = useState(0);
   const [message, setMessage] = useState('');
-  const [requirements, setRequirements] = useState({
-    length: false,
-    uppercase: false,
-    lowercase: false,
-    number: false,
-    special: false
-  });
 
   useEffect(() => {
-    // Reset for empty passwords
-    if (!password) {
-      setStrength(0);
-      setMessage('Введите пароль');
-      setRequirements({
-        length: false,
-        uppercase: false,
-        lowercase: false,
-        number: false,
-        special: false
-      });
-      return;
-    }
-
-    // Check individual requirements
-    const hasLength = password.length >= 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSpecial = /[^A-Za-z0-9]/.test(password);
-    
-    setRequirements({
-      length: hasLength,
-      uppercase: hasUpperCase,
-      lowercase: hasLowerCase,
-      number: hasNumber,
-      special: hasSpecial
-    });
-
-    // Calculate strength score (0-100)
     let score = 0;
-    if (hasLength) score += 20;
-    if (hasUpperCase) score += 20;
-    if (hasLowerCase) score += 20;
-    if (hasNumber) score += 20;
-    if (hasSpecial) score += 20;
+    let feedback = '';
 
-    // Additional factor: password entropy based on length
-    const entropyBonus = Math.min(20, password.length - 8);
-    if (entropyBonus > 0) {
-      score += entropyBonus;
-    }
+    if (password.length >= 8) score += 1;
+    if (password.length >= 12) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[a-z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
 
-    // Cap at 100
-    score = Math.min(100, score);
-    setStrength(score);
+    const strengthPercentage = (score / 6) * 100;
 
-    // Set appropriate message
-    if (score === 0) {
-      setMessage('Введите пароль');
-    } else if (score <= 20) {
-      setMessage('Очень слабый пароль');
-    } else if (score <= 40) {
-      setMessage('Слабый пароль');
-    } else if (score <= 60) {
-      setMessage('Средний пароль');
-    } else if (score <= 80) {
-      setMessage('Хороший пароль');
+    if (strengthPercentage === 0) {
+      feedback = 'Введите пароль';
+    } else if (strengthPercentage <= 33) {
+      feedback = 'Слабый пароль';
+    } else if (strengthPercentage <= 66) {
+      feedback = 'Средний пароль';
     } else {
-      setMessage('Отличный пароль');
+      feedback = 'Сильный пароль';
     }
+
+    setStrength(strengthPercentage);
+    setMessage(feedback);
   }, [password]);
 
   const getColor = () => {
-    if (strength <= 20) return 'bg-red-500';
-    if (strength <= 40) return 'bg-orange-500';
-    if (strength <= 60) return 'bg-yellow-500';
-    if (strength <= 80) return 'bg-green-400';
+    if (strength <= 33) return 'bg-red-500';
+    if (strength <= 66) return 'bg-yellow-500';
     return 'bg-green-500';
   };
 
   return (
     <div className="space-y-2">
-      <Progress value={strength} className={`h-1.5 ${getColor()}`} />
-      
-      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-        <RequirementCheck 
-          fulfilled={requirements.length} 
-          label="Минимум 8 символов" 
-        />
-        <RequirementCheck 
-          fulfilled={requirements.uppercase} 
-          label="Заглавная буква" 
-        />
-        <RequirementCheck 
-          fulfilled={requirements.lowercase} 
-          label="Строчная буква" 
-        />
-        <RequirementCheck 
-          fulfilled={requirements.number} 
-          label="Цифра" 
-        />
-        <RequirementCheck 
-          fulfilled={requirements.special} 
-          label="Специальный символ" 
-        />
-      </div>
-      
-      <p className={`text-sm font-medium ${getTextColor(strength)}`}>{message}</p>
+      <Progress value={strength} className={getColor()} />
+      <p className="text-sm text-muted-foreground">{message}</p>
     </div>
   );
-}
-
-function RequirementCheck({ fulfilled, label }: { fulfilled: boolean; label: string }) {
-  return (
-    <div className="flex items-center gap-1 text-xs">
-      {fulfilled ? (
-        <Check className="h-3 w-3 text-green-500" />
-      ) : (
-        <X className="h-3 w-3 text-red-500" />
-      )}
-      <span className={fulfilled ? "text-green-500/80" : "text-red-500/80"}>
-        {label}
-      </span>
-    </div>
-  );
-}
-
-function getTextColor(strength: number): string {
-  if (strength <= 20) return 'text-red-500';
-  if (strength <= 40) return 'text-orange-500';
-  if (strength <= 60) return 'text-yellow-500';
-  if (strength <= 80) return 'text-green-400';
-  return 'text-green-500';
-}
+} 

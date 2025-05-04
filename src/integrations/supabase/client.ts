@@ -3,30 +3,11 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Use environment variables for Supabase configuration
+// Use fallback values from config if environment variables are not available
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://hqrqmfejinsqisnjcrls.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhxcnFtZmVqaW5zcWlzbmpjcmxzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU3ODM4MzIsImV4cCI6MjA2MTM1OTgzMn0.oqlFyG8l2bStYyjM1tu2qirZEn5moyZnBZMXs3UgnoY';
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-// Configure the Supabase client with enhanced security options
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    persistSession: true,  // Enable persistent sessions
-    autoRefreshToken: true, // Auto refresh tokens
-    storageKey: 'todotrip-auth-storage', // Custom storage key
-    detectSessionInUrl: true, // Detect session in URL for OAuth flow
-    flowType: 'pkce' // Use PKCE flow for enhanced security
-  },
-  global: {
-    headers: {
-      'X-Client-Info': 'todotrip-app' // For better tracking and security
-    }
-  }
-});
-
-// Log authentication state changes for security monitoring (but not credentials)
-supabase.auth.onAuthStateChange((event, _session) => {
-  console.log(`Auth event: ${event}`);
-});
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);

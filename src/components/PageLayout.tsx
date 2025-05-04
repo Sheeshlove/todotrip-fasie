@@ -1,30 +1,29 @@
 
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import { ASCIIBackground } from './ASCIIBackground';
+import { ReactNode } from 'react';
 import BottomMenu from './BottomMenu';
+import Meta from './Meta';
+import ASCIIBackground from './ASCIIBackground';
 
 interface PageLayoutProps {
-  title: string;
-  description: string;
-  children: React.ReactNode;
+  children: ReactNode;
+  title?: string;
+  description?: string;
+  hideBottomMenu?: boolean;
 }
 
-const PageLayout: React.FC<PageLayoutProps> = ({ title, description, children }) => {
+const PageLayout = ({ 
+  children, 
+  title = 'ToDoTrip - AI Travel App', 
+  description = 'AI-powered travel app for planning trips around Russia', 
+  hideBottomMenu = false 
+}: PageLayoutProps) => {
   return (
-    <>
-      <Helmet>
-        <title>{title}</title>
-        <meta name="description" content={description} />
-      </Helmet>
-      <div className="min-h-screen bg-todoBlack text-white overflow-x-hidden">
-        <ASCIIBackground />
-        <div className="pb-20"> {/* Added padding to the bottom for the menu */}
-          {children}
-        </div>
-        <BottomMenu />
-      </div>
-    </>
+    <div className="min-h-screen bg-todoBlack font-unbounded text-white pb-16 relative">
+      <ASCIIBackground />
+      <Meta title={title} description={description} />
+      <main className="px-4 py-4 max-w-4xl mx-auto relative z-10">{children}</main>
+      {!hideBottomMenu && <BottomMenu />}
+    </div>
   );
 };
 
