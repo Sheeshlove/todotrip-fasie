@@ -12,7 +12,7 @@ const Dating = () => {
   if (loading) {
     return (
       <PageLayout title="ToDoTrip - Общение" description="Ищите попутчиков для ваших путешествий">
-        <div className="flex flex-col items-center justify-center min-h-[80vh] text-center">
+        <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
           <div className="w-12 h-12 border-3 border-todoYellow border-t-transparent rounded-full animate-spin"></div>
           <p className="text-white/80 text-lg mt-3">Загрузка профилей...</p>
         </div>

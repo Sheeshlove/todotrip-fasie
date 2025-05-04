@@ -21,10 +21,10 @@ const PageLayout = ({
   const isMobile = useIsMobile();
   
   return (
-    <div className="min-h-screen bg-todoBlack font-unbounded text-white pb-16 relative">
+    <div className="min-h-screen bg-todoBlack font-unbounded text-white relative">
       <ASCIIBackground />
       <Meta title={title} description={description} />
-      <main className={`${isMobile ? 'px-3 py-3' : 'px-4 py-4'} max-w-4xl mx-auto relative z-10`}>
+      <main className={`relative z-10 mx-auto max-w-4xl ${isMobile ? 'px-3 py-3 pb-20' : 'px-4 py-4 pb-16'}`}>
         {children}
       </main>
       {!hideBottomMenu && <BottomMenu />}

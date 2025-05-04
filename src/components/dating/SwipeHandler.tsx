@@ -58,7 +58,7 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
     setDragOffset(0); // Reset after swipe
   };
 
-  // Touch/Swipe handlers
+  // Touch/Swipe handlers with improved sensitivity
   const handleTouchStart = (e: React.TouchEvent) => {
     setDragStartX(e.targetTouches[0].clientX);
     setIsDragging(true);
@@ -77,7 +77,7 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
       const dragDifference = dragEndX - dragStartX;
       
       // Adjust threshold based on device
-      const threshold = isMobile ? 80 : 100;
+      const threshold = isMobile ? 60 : 100;
       
       if (dragDifference > threshold) {
         handleSwipe('right');

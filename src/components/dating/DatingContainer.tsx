@@ -30,7 +30,7 @@ export const DatingContainer: React.FC<DatingContainerProps> = ({
   };
   
   return (
-    <div className={`flex flex-col items-center justify-center ${isMobile ? 'py-2 px-1' : 'py-4 px-6'} mx-auto`}>
+    <div className={`flex flex-col items-center justify-center ${isMobile ? 'py-2 px-0' : 'py-4 px-6'} mx-auto`}>
       <h2 className={`${isMobile ? 'text-xl mb-2' : 'text-3xl mb-4'} font-bold bg-gradient-to-r from-todoYellow to-yellow-400 bg-clip-text text-transparent`}>
         Поиск попутчиков
       </h2>
