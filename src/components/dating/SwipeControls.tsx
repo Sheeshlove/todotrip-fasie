@@ -15,11 +15,11 @@ export const SwipeControls: React.FC<SwipeControlsProps> = ({ onSwipe }) => {
   const iconSize = isMobile ? "h-6 w-6" : "h-8 w-8";
   
   return (
-    <div className="flex items-center justify-center gap-6 sm:gap-8 mt-6">
+    <div className={`flex items-center justify-center ${isMobile ? 'gap-5 mt-4' : 'gap-8 mt-6'}`}>
       <Button 
         size="lg" 
         variant="outline" 
-        className={`${buttonSize} rounded-full border-2 border-red-500 text-red-500 hover:bg-red-500/10 shadow-lg transition-all duration-300 hover:scale-105`}
+        className={`${buttonSize} rounded-full border-2 border-red-500 text-red-500 hover:bg-red-500/10 shadow-lg transition-all duration-300 hover:scale-105 active:scale-95`}
         onClick={() => onSwipe('left')}
       >
         <X className={iconSize} />
@@ -28,7 +28,7 @@ export const SwipeControls: React.FC<SwipeControlsProps> = ({ onSwipe }) => {
       
       <Button 
         size="lg" 
-        className={`${buttonSize} rounded-full bg-todoYellow hover:bg-todoYellow/90 text-black shadow-lg transition-all duration-300 hover:scale-105`}
+        className={`${buttonSize} rounded-full bg-todoYellow hover:bg-todoYellow/90 text-black shadow-lg transition-all duration-300 hover:scale-105 active:scale-95`}
         onClick={() => onSwipe('right')}
       >
         <Check className={iconSize} />

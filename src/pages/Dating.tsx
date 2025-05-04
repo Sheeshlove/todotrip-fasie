@@ -2,7 +2,6 @@
 import PageLayout from '@/components/PageLayout';
 import { DatingContainer } from '@/components/dating/DatingContainer';
 import { useDatingProfile } from '@/hooks/useDatingProfile';
-import { Loader2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const Dating = () => {
@@ -14,8 +13,8 @@ const Dating = () => {
     return (
       <PageLayout title="ToDoTrip - Общение" description="Ищите попутчиков для ваших путешествий">
         <div className="flex flex-col items-center justify-center min-h-[80vh] text-center">
-          <div className="w-16 h-16 border-4 border-todoYellow border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-white/80 text-lg mt-4">Загрузка профилей...</p>
+          <div className="w-12 h-12 border-3 border-todoYellow border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-white/80 text-lg mt-3">Загрузка профилей...</p>
         </div>
       </PageLayout>
     );
@@ -23,7 +22,7 @@ const Dating = () => {
   
   return (
     <PageLayout title="ToDoTrip - Общение" description="Ищите попутчиков для ваших путешествий">
-      <div className={`mx-auto ${isMobile ? 'w-full px-2' : 'max-w-md'}`}>
+      <div className={`mx-auto ${isMobile ? 'w-full px-1' : 'max-w-md px-2'}`}>
         <DatingContainer 
           userProfile={profile}
           userTestResults={testResults}

@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import BottomMenu from './BottomMenu';
 import Meta from './Meta';
 import ASCIIBackground from './ASCIIBackground';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -17,11 +18,15 @@ const PageLayout = ({
   description = 'AI-powered travel app for planning trips around Russia', 
   hideBottomMenu = false 
 }: PageLayoutProps) => {
+  const isMobile = useIsMobile();
+  
   return (
     <div className="min-h-screen bg-todoBlack font-unbounded text-white pb-16 relative">
       <ASCIIBackground />
       <Meta title={title} description={description} />
-      <main className="px-4 py-4 max-w-4xl mx-auto relative z-10">{children}</main>
+      <main className={`${isMobile ? 'px-3 py-3' : 'px-4 py-4'} max-w-4xl mx-auto relative z-10`}>
+        {children}
+      </main>
       {!hideBottomMenu && <BottomMenu />}
     </div>
   );

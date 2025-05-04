@@ -2,9 +2,11 @@
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Home, Handshake, MessageCircle, User } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const BottomMenu = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
   
   const menuItems = [
     { path: '/', name: 'Главная', icon: Home },
@@ -21,12 +23,12 @@ const BottomMenu = () => {
           <Link
             key={item.path}
             to={item.path}
-            className={`flex flex-col items-center justify-center px-3 py-2 rounded-lg transition-all hover:scale-105 ${
+            className={`flex flex-col items-center justify-center ${isMobile ? 'px-2 py-1.5' : 'px-3 py-2'} rounded-lg transition-all hover:scale-105 ${
               isActive ? 'text-todoYellow bg-todoBlack/30' : 'text-todoLightGray hover:text-white'
             }`}
           >
-            <item.icon size={24} className={`mb-1 ${isActive ? 'animate-pulse' : ''}`} />
-            <span className="text-xs font-unbounded">{item.name}</span>
+            <item.icon size={isMobile ? 20 : 24} className={`${isMobile ? '' : 'mb-1'} ${isActive ? 'animate-pulse' : ''}`} />
+            <span className={`${isMobile ? 'text-[10px]' : 'text-xs'} font-unbounded`}>{item.name}</span>
           </Link>
         );
       })}
