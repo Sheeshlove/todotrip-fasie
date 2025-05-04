@@ -50,7 +50,7 @@ export const TestResultsView: React.FC<TestResultsViewProps> = ({
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="trait" />
             <YAxis />
-            <Bar dataKey="score" fill={d => d.fill} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="score" fill="#2196F3" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ChartContainer>
       </div>
