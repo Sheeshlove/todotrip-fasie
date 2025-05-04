@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { traitDescriptions } from '@/data/personalityTestQuestions';
-import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell } from 'recharts';
 import { ChartContainer } from '@/components/ui/chart';
 
 interface TestResultsViewProps {
@@ -50,7 +50,11 @@ export const TestResultsView: React.FC<TestResultsViewProps> = ({
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="trait" />
             <YAxis />
-            <Bar dataKey="score" fill="#2196F3" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="score" radius={[4, 4, 0, 0]}>
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.fill} />
+              ))}
+            </Bar>
           </BarChart>
         </ChartContainer>
       </div>
@@ -69,6 +73,17 @@ export const TestResultsView: React.FC<TestResultsViewProps> = ({
                   {trait.charAt(0).toUpperCase() + trait.slice(1)}: <span className="text-todoYellow">{intensity} ({score}%)</span>
                 </h4>
                 <p className="text-sm text-gray-400">{traitDescriptions[trait]}</p>
+                
+                {/* Added vector visualization */}
+                <div className="mt-2 bg-gray-800 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="h-full rounded-full" 
+                    style={{ 
+                      width: `${score}%`, 
+                      backgroundColor: getColorForScore(score)
+                    }}
+                  />
+                </div>
               </CardContent>
             </Card>
           );
