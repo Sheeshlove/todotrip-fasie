@@ -9,8 +9,10 @@ interface DescriptionFieldProps {
 }
 
 export const DescriptionField: React.FC<DescriptionFieldProps> = ({ form }) => {
-  return <GenericDescriptionField<ProfileFormValues> 
-    form={form} 
-    fieldName="description"
-  />;
+  return (
+    <GenericDescriptionField<ProfileFormValues>
+      form={form}
+      fieldName="description"
+    />
+  );
 };

@@ -9,5 +9,10 @@ interface AgeFieldProps {
 }
 
 export const AgeField: React.FC<AgeFieldProps> = ({ form }) => {
-  return <GenericAgeField<RegisterFormValues> form={form} fieldName="age" />;
+  return (
+    <GenericAgeField<RegisterFormValues>
+      form={form}
+      fieldName="age"
+    />
+  );
 };

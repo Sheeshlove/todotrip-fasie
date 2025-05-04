@@ -9,5 +9,10 @@ interface NameFieldProps {
 }
 
 export const NameField: React.FC<NameFieldProps> = ({ form }) => {
-  return <GenericNameField<RegisterFormValues> form={form} fieldName="name" />;
+  return (
+    <GenericNameField<RegisterFormValues>
+      form={form}
+      fieldName="name"
+    />
+  );
 };
