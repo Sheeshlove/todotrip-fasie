@@ -3,9 +3,11 @@ import PageLayout from '@/components/PageLayout';
 import { DatingContainer } from '@/components/dating/DatingContainer';
 import { useDatingProfile } from '@/hooks/useDatingProfile';
 import { Loader2 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Dating = () => {
   const { profile, testResults, loading } = useDatingProfile();
+  const isMobile = useIsMobile();
   
   // Single unified loading screen for the entire dating feature
   if (loading) {
@@ -21,7 +23,7 @@ const Dating = () => {
   
   return (
     <PageLayout title="ToDoTrip - Общение" description="Ищите попутчиков для ваших путешествий">
-      <div className="max-w-md mx-auto">
+      <div className={`mx-auto ${isMobile ? 'w-full px-2' : 'max-w-md'}`}>
         <DatingContainer 
           userProfile={profile}
           userTestResults={testResults}

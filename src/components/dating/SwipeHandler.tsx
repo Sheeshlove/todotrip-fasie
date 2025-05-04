@@ -4,6 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 import { SwipeControls } from './SwipeControls';
 import { UserCard } from './UserCard';
 import useEmblaCarousel from 'embla-carousel-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SwipeHandlerProps {
   currentUser: any;
@@ -23,6 +24,7 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
   onSwipe
 }) => {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [dragStartX, setDragStartX] = useState<number | null>(null);
   const [dragEndX, setDragEndX] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -68,20 +70,22 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
     if (dragStartX !== null && dragEndX !== null) {
       const dragDifference = dragEndX - dragStartX;
       
-      // Если разница больше 100px, считаем это свайпом вправо (Like)
-      // If difference is more than 100px, consider it a swipe right (Like)
-      if (dragDifference > 100) {
+      // If difference is more than 80px on mobile or 100px on desktop, consider it a swipe right (Like)
+      // Если разница больше 80px на мобильном или 100px на десктопе, считаем это свайпом вправо (Like)
+      const threshold = isMobile ? 80 : 100;
+      
+      if (dragDifference > threshold) {
         handleSwipe('right');
       } 
-      // Если разница меньше -100px, считаем это свайпом влево (Skip)
-      // If difference is less than -100px, consider it a swipe left (Skip)
-      else if (dragDifference < -100) {
+      // If difference is less than -80px on mobile or -100px on desktop, consider it a swipe left (Skip)
+      // Если разница меньше -80px на мобильном или -100px на десктопе, считаем это свайпом влево (Skip)
+      else if (dragDifference < -threshold) {
         handleSwipe('left');
       }
     }
     
-    // Сбрасываем состояние свайпа
     // Reset swipe state
+    // Сбрасываем состояние свайпа
     setDragStartX(null);
     setDragEndX(null);
     setIsDragging(false);
@@ -91,7 +95,7 @@ export const SwipeHandler: React.FC<SwipeHandlerProps> = ({
     <div className="w-full">
       <div 
         ref={emblaRef} 
-        className="overflow-hidden rounded-2xl shadow-lg"
+        className="overflow-hidden rounded-xl shadow-lg"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}

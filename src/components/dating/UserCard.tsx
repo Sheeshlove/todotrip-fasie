@@ -5,6 +5,7 @@ import { UserImageGallery } from './UserImageGallery';
 import { CompatibilityCircle } from './CompatibilityCircle';
 import { UserDetails } from './UserDetails';
 import { UserHobbies } from './UserHobbies';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface UserCardProps {
   user: any;
@@ -21,6 +22,8 @@ export const UserCard: React.FC<UserCardProps> = ({
   currentUserHasTakenTest = false,
   userHasTakenTest = false 
 }) => {
+  const isMobile = useIsMobile();
+  
   // Use profile image if available, otherwise set to null
   const [selectedImage, setSelectedImage] = useState<string | null>(
     user?.avatar_url || (user?.images && user.images.length > 0 ? 
@@ -49,7 +52,7 @@ export const UserCard: React.FC<UserCardProps> = ({
       />
       
       {/* User info */}
-      <CardContent className="p-6 space-y-5 bg-gradient-to-b from-todoDarkGray/70 to-todoBlack/50">
+      <CardContent className={`${isMobile ? 'p-4' : 'p-6'} space-y-4 bg-gradient-to-b from-todoDarkGray/70 to-todoBlack/50`}>
         <UserDetails user={user} />
         
         {/* Hobbies Section */}

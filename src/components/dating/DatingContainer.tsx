@@ -3,6 +3,7 @@ import React from 'react';
 import { useOtherUsers } from '@/hooks/useOtherUsers';
 import { SwipeHandler } from './SwipeHandler';
 import { ShareHandler } from './ShareHandler';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export interface DatingContainerProps {
   userProfile: any;
@@ -13,6 +14,7 @@ export const DatingContainer: React.FC<DatingContainerProps> = ({
   userProfile, 
   userTestResults 
 }) => {
+  const isMobile = useIsMobile();
   const {
     users,
     currentUser,
@@ -27,10 +29,9 @@ export const DatingContainer: React.FC<DatingContainerProps> = ({
     moveToNextUser(currentIndex);
   };
   
-  // We've removed the inner loading state since it's now handled at the page level
   return (
-    <div className="flex flex-col items-center justify-center py-8 px-6 max-w-md mx-auto">
-      <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-todoYellow to-yellow-400 bg-clip-text text-transparent">
+    <div className={`flex flex-col items-center justify-center py-4 ${isMobile ? 'px-2' : 'px-6'} mx-auto`}>
+      <h2 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold mb-4 bg-gradient-to-r from-todoYellow to-yellow-400 bg-clip-text text-transparent`}>
         Поиск попутчиков
       </h2>
       
