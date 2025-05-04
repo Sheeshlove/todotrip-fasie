@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -36,18 +37,18 @@ const queryClient = new QueryClient({
       // Add security related settings
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes - replaced cacheTime which is deprecated
-      // Fix: Using onSettled instead of onError in the latest React Query version
-      onSettled: (data, error) => {
-        if (error) {
+      // Fix: Using meta.onError instead of onSettled for v5 React Query
+      meta: {
+        onError: (error: unknown) => {
           console.error('Query error:', error);
           toast.error('Произошла ошибка при загрузке данных. Пожалуйста, попробуйте позже.');
         }
       }
     },
     mutations: {
-      // Fix: Using onSettled instead of onError in the latest React Query version
-      onSettled: (data, error) => {
-        if (error) {
+      // Fix: Using meta.onError instead of onSettled for v5 React Query
+      meta: {
+        onError: (error: unknown) => {
           console.error('Mutation error:', error);
           toast.error('Ошибка сохранения данных. Пожалуйста, попробуйте снова.');
         }
