@@ -1,5 +1,6 @@
 
 import React, { Suspense } from 'react';
+import RouteTransition from './RouteTransition';
 import LoadingIndicator from './LoadingIndicator';
 
 interface LazyComponentProps {
@@ -8,6 +9,7 @@ interface LazyComponentProps {
   message?: string;
   submessage?: string;
   className?: string;
+  useMinimalLoader?: boolean;
 }
 
 const LazyComponent: React.FC<LazyComponentProps> = ({
@@ -16,9 +18,12 @@ const LazyComponent: React.FC<LazyComponentProps> = ({
   message = 'Загрузка...',
   submessage,
   className = '',
+  useMinimalLoader = false,
 }) => {
   return (
     <Suspense fallback={
+      useMinimalLoader ? 
+      <RouteTransition /> : 
       <div className={`flex items-center justify-center py-8 ${className}`}>
         <LoadingIndicator 
           size={size} 

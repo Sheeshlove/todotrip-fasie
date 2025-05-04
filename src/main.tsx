@@ -4,9 +4,6 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Preload images for improved perceived performance
-import { preloadImages } from './data/placeholderImages';
-
 // Function to initialize the app
 const initApp = () => {
   const rootElement = document.getElementById("root");
@@ -18,11 +15,6 @@ const initApp = () => {
       <App />
     </React.StrictMode>
   );
-
-  // Preload images after initial render
-  setTimeout(() => {
-    preloadImages();
-  }, 1000);
 };
 
 // Use requestIdleCallback for better performance if available
