@@ -3,8 +3,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { traitDescriptions } from '@/data/personalityTestQuestions';
-import { Bar } from 'recharts';
-import { Chart } from '@/components/ui/chart';
+import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { ChartContainer } from '@/components/ui/chart';
 
 interface TestResultsViewProps {
   results: Record<string, number>;
@@ -45,18 +45,14 @@ export const TestResultsView: React.FC<TestResultsViewProps> = ({
             : 'Узнайте больше о своей личности и о том, как она влияет на ваш стиль путешествий.'}
         </p>
 
-        <Chart className="w-full aspect-[4/3] mt-6" type="bar">
-          {chartData.map((entry, index) => (
-            <Bar
-              key={`bar-${index}`}
-              dataKey="score"
-              fill={entry.fill}
-              name={entry.trait}
-              data={[entry]}
-              radius={[4, 4, 0, 0]}
-            />
-          ))}
-        </Chart>
+        <ChartContainer className="w-full aspect-[4/3] mt-6" config={{}}>
+          <BarChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="trait" />
+            <YAxis />
+            <Bar dataKey="score" fill={d => d.fill} radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ChartContainer>
       </div>
 
       <div className="space-y-4 mb-6">
