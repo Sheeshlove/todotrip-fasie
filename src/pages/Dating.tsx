@@ -2,10 +2,12 @@
 import PageLayout from '@/components/PageLayout';
 import { DatingContainer } from '@/components/dating/DatingContainer';
 import { useDatingProfile } from '@/hooks/useDatingProfile';
+import { Loader2 } from 'lucide-react';
 
 const Dating = () => {
   const { profile, testResults, loading } = useDatingProfile();
   
+  // Single unified loading screen for the entire dating feature
   if (loading) {
     return (
       <PageLayout title="ToDoTrip - Общение" description="Ищите попутчиков для ваших путешествий">
