@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
+import { ForgotPasswordLink } from '@/components/auth/ForgotPasswordLink';
 
 const loginSchema = z.object({
   identifier: z.string().min(1, { message: "Введите email или телефон" }),
@@ -99,7 +100,10 @@ const Login = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Пароль</FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="text-white">Пароль</FormLabel>
+                      <ForgotPasswordLink />
+                    </div>
                     <FormControl>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-todoLightGray">

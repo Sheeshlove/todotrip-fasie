@@ -8,6 +8,7 @@ import PageLayout from "@/components/PageLayout";
 import { UserPlus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import type { RegisterFormValues } from "@/lib/validations/register";
+import { ForgotPasswordLink } from "@/components/auth/ForgotPasswordLink";
 
 const Register = () => {
   const { signUp } = useAuth();
@@ -59,12 +60,15 @@ const Register = () => {
             
             <RegisterForm onSubmit={onSubmit} isLoading={isLoading} />
 
-            <p className="text-sm text-center text-todoLightGray mt-6">
-              Уже есть аккаунт?{" "}
-              <Link to="/login" className="text-todoYellow hover:underline">
-                Войти
-              </Link>
-            </p>
+            <div className="flex flex-col items-center mt-6 space-y-2">
+              <p className="text-sm text-center text-todoLightGray">
+                Уже есть аккаунт?{" "}
+                <Link to="/login" className="text-todoYellow hover:underline">
+                  Войти
+                </Link>
+              </p>
+              <ForgotPasswordLink />
+            </div>
           </Card>
         </div>
       </div>

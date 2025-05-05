@@ -10,6 +10,8 @@ interface AuthContextType extends AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, metadata?: { [key: string]: any }) => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -210,8 +212,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      checkRateLimit();
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/login',
+      });
+      
+      if (error) throw error;
+      
+      toast.success('Инструкции по восстановлению пароля отправлены на ваш email');
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error('Ошибка восстановления пароля: ' + error.message);
+      }
+      throw error;
+    }
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+      
+      toast.success('Пароль успешно изменен');
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error('Ошибка изменения пароля: ' + error.message);
+      }
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ 
+      ...state, 
+      signIn, 
+      signUp, 
+      signOut, 
+      resetPassword,
+      updatePassword 
+    }}>
       {children}
     </AuthContext.Provider>
   );
