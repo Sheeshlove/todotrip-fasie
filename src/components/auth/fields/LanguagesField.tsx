@@ -1,13 +1,17 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { UseFormReturn } from "react-hook-form";
 import { RegisterFormValues } from "@/lib/validations/register";
 import { languages } from "@/data/languages";
 import { Globe, X } from "lucide-react";
+import { 
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from '@/components/ui/collapsible';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface LanguagesFieldProps {
   form: UseFormReturn<RegisterFormValues>;
@@ -20,15 +24,19 @@ export const LanguagesField: React.FC<LanguagesFieldProps> = ({
   selectedLanguages, 
   onLanguagesChange 
 }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('');
+  const [isOpen, setIsOpen] = React.useState(false);
 
-  const handleAddLanguage = () => {
-    if (selectedLanguage && !selectedLanguages.includes(selectedLanguage)) {
-      const updatedLanguages = [...selectedLanguages, selectedLanguage];
-      onLanguagesChange(updatedLanguages);
-      form.setValue('languages', updatedLanguages);
-      setSelectedLanguage('');
+  const handleLanguageToggle = (language: string) => {
+    let updatedLanguages = [...selectedLanguages];
+    
+    if (selectedLanguages.includes(language)) {
+      updatedLanguages = updatedLanguages.filter(lang => lang !== language);
+    } else {
+      updatedLanguages.push(language);
     }
+    
+    onLanguagesChange(updatedLanguages);
+    form.setValue('languages', updatedLanguages);
   };
 
   const handleRemoveLanguage = (languageToRemove: string) => {
@@ -67,36 +75,36 @@ export const LanguagesField: React.FC<LanguagesFieldProps> = ({
                 )}
               </div>
               
-              <div className="flex flex-wrap gap-2">
-                <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                  <SelectTrigger className="w-full bg-todoDarkGray border-white/10">
-                    <Globe className="mr-2 h-4 w-4 text-todoYellow" />
-                    <SelectValue placeholder="Выберите язык" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-80 bg-todoDarkGray border-white/10">
+              <Collapsible 
+                open={isOpen} 
+                onOpenChange={setIsOpen} 
+                className="w-full border border-white/10 rounded-lg overflow-hidden"
+              >
+                <CollapsibleTrigger className="flex items-center w-full p-3 bg-todoDarkGray text-left">
+                  <Globe className="mr-2 h-4 w-4 text-todoYellow" />
+                  <span>{isOpen ? "Закрыть" : "Выбрать языки"}</span>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="bg-todoDarkGray p-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-[300px] overflow-y-auto">
                     {languages.map((language) => (
-                      <SelectItem
-                        key={language}
-                        value={language}
-                        disabled={selectedLanguages.includes(language)}
-                        className="focus:bg-todoYellow/20 focus:text-white"
-                      >
-                        {language}
-                      </SelectItem>
+                      <div key={language} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`auth-lang-${language}`}
+                          checked={selectedLanguages.includes(language)}
+                          onCheckedChange={() => handleLanguageToggle(language)}
+                          className="data-[state=checked]:bg-todoYellow data-[state=checked]:border-todoYellow"
+                        />
+                        <label
+                          htmlFor={`auth-lang-${language}`}
+                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                          {language}
+                        </label>
+                      </div>
                     ))}
-                  </SelectContent>
-                </Select>
-                
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={handleAddLanguage}
-                  disabled={!selectedLanguage || selectedLanguages.includes(selectedLanguage)}
-                  className="bg-transparent border-todoYellow text-todoYellow hover:bg-todoYellow/10"
-                >
-                  Добавить
-                </Button>
-              </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           </FormControl>
           <FormMessage />
