@@ -43,9 +43,7 @@ const Home = () => {
           
           <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all">
             <div className="flex items-center mb-6">
-              <div className="bg-todoYellow/20 p-3 rounded-full mr-4">
-                <HomeIcon className="w-6 h-6 text-todoYellow" />
-              </div>
+              
               <div>
                 <h2 className="text-xl font-bold text-white">Популярные направления</h2>
                 <p className="text-sm text-todoLightGray">Изучите лучшие места для посещения</p>
