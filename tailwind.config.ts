@@ -153,6 +153,10 @@ export default {
 				'slide-out-left': {
 					'0%': { transform: 'translateX(0)' },
 					'100%': { transform: 'translateX(-100%)' }
+				},
+				'spin-slow': {
+					'0%': { transform: 'rotate(-90deg)' },
+					'100%': { transform: 'rotate(270deg)' }
 				}
 			},
 			animation: {
@@ -168,7 +172,8 @@ export default {
 				'slide-in-right': 'slide-in-right 0.3s ease-out',
 				'slide-out-right': 'slide-out-right 0.3s ease-out',
 				'slide-in-left': 'slide-in-left 0.3s ease-out',
-				'slide-out-left': 'slide-out-left 0.3s ease-out'
+				'slide-out-left': 'slide-out-left 0.3s ease-out',
+				'spin-slow': 'spin-slow 1.5s linear infinite'
 			},
 			fontFamily: {
 				unbounded: ['Unbounded', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', 'sans-serif']
@@ -180,3 +185,4 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+

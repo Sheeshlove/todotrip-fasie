@@ -17,12 +17,20 @@ export const CompatibilityCircle: React.FC<CompatibilityCircleProps> = ({
 }) => {
   // Анимация заполнения круга (Circle fill animation)
   const [progress, setProgress] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Get compatibility color classes based on score
   const compatibilityBgClass = getCompatibilityBgColor(compatibilityScore);
+  const strokeColor = isGrayCircle ? "#4B5563" : 
+                     compatibilityScore >= 80 ? "#22c55e" :
+                     compatibilityScore >= 50 ? "#FFDE03" :
+                     compatibilityScore >= 25 ? "#f97316" : "#ef4444";
 
   // Get the text for the compatibility circle
   const getCompatibilityText = () => {
+    if (isLoading) {
+      return '...';
+    }
     if (!currentUserHasTakenTest) {
       return 'Пройдите тест';
     }
@@ -37,12 +45,30 @@ export const CompatibilityCircle: React.FC<CompatibilityCircleProps> = ({
   
   // Анимация круга совместимости (Compatibility circle animation)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setProgress(compatibilityScore);
-    }, 300);
+    // Initial loading animation
+    setIsLoading(true);
     
-    return () => clearTimeout(timer);
+    // First show loading animation for 1.5 seconds
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false);
+      
+      // Then animate to the actual progress value
+      const progressTimer = setTimeout(() => {
+        setProgress(compatibilityScore);
+      }, 300);
+      
+      return () => clearTimeout(progressTimer);
+    }, 1500);
+    
+    return () => clearTimeout(loadingTimer);
   }, [compatibilityScore]);
+  
+  // Calculate the circumference of the circle
+  const circleRadius = 46;
+  const circumference = 2 * Math.PI * circleRadius;
+  
+  // Calculate the stroke dashoffset based on progress
+  const strokeDashoffset = circumference - (circumference * progress / 100);
   
   return (
     <div className="flex justify-center -mt-10 relative z-10">
@@ -50,17 +76,30 @@ export const CompatibilityCircle: React.FC<CompatibilityCircleProps> = ({
         {/* Внешнее кольцо с анимацией (Animated outer ring) */}
         <div className="w-full h-full absolute top-0 left-0">
           <svg className="w-full h-full" viewBox="0 0 100 100">
+            {/* Background circle */}
             <circle 
               cx="50" 
               cy="50" 
               r="46" 
               fill="transparent" 
-              stroke={isGrayCircle ? "#4B5563" : "#FFDE03"} 
+              stroke="#333333" 
               strokeWidth="1.5"
-              strokeDasharray="289"
-              strokeDashoffset={`${289 - (289 * progress / 100)}`}
-              className="transition-all duration-1500 ease-out"
+              className="opacity-20"
+            />
+            
+            {/* Progress circle with animation */}
+            <circle 
+              cx="50" 
+              cy="50" 
+              r="46" 
+              fill="transparent" 
+              stroke={strokeColor}
+              strokeWidth="2.5"
+              strokeDasharray={circumference}
+              strokeDashoffset={isLoading ? 0 : strokeDashoffset}
               strokeLinecap="round"
+              className={isLoading ? "animate-spin-slow origin-center" : "transition-all duration-1500 ease-out"}
+              style={{ transformOrigin: 'center', transform: isLoading ? 'rotate(-90deg)' : 'rotate(-90deg)' }}
             />
           </svg>
         </div>
@@ -69,9 +108,9 @@ export const CompatibilityCircle: React.FC<CompatibilityCircleProps> = ({
         <div className="w-[90px] h-[90px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 backdrop-blur-sm"></div>
         
         {/* Внутренний круг (Inner circle) */}
-        <div className={`w-[86px] h-[86px] rounded-full ${isGrayCircle ? 'bg-gray-500/80' : compatibilityBgClass} flex items-center justify-center transition-all duration-1000 backdrop-blur-sm`}>
+        <div className={`w-[86px] h-[86px] rounded-full ${isLoading ? 'bg-gray-700/80' : (isGrayCircle ? 'bg-gray-500/80' : compatibilityBgClass)} flex items-center justify-center transition-all duration-1000 backdrop-blur-sm`}>
           <div className="w-10 h-10 rounded-full bg-todoDarkGray/90 absolute"></div>
-          <span className={`${isGrayCircle ? 'text-white/90' : 'text-black'} font-bold text-sm text-center px-2 absolute`}>
+          <span className={`${isGrayCircle || isLoading ? 'text-white/90' : 'text-black'} font-bold text-sm text-center px-2 absolute ${isLoading ? 'animate-pulse' : ''}`}>
             {getCompatibilityText()}
           </span>
         </div>
@@ -79,3 +118,4 @@ export const CompatibilityCircle: React.FC<CompatibilityCircleProps> = ({
     </div>
   );
 };
+
