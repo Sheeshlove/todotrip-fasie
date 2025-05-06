@@ -76,25 +76,25 @@ export const CompatibilityCircle: React.FC<CompatibilityCircleProps> = ({
         {/* Внешнее кольцо с анимацией (Animated outer ring) */}
         <div className="w-full h-full absolute top-0 left-0">
           <svg className="w-full h-full" viewBox="0 0 100 100">
-            {/* Background circle */}
+            {/* Background circle - thinner */}
             <circle 
               cx="50" 
               cy="50" 
               r="46" 
               fill="transparent" 
               stroke="#333333" 
-              strokeWidth="1.5"
+              strokeWidth="0.8"
               className="opacity-20"
             />
             
-            {/* Progress circle with animation */}
+            {/* Progress circle with animation - thinner */}
             <circle 
               cx="50" 
               cy="50" 
               r="46" 
               fill="transparent" 
               stroke={strokeColor}
-              strokeWidth="2.5"
+              strokeWidth="1"
               strokeDasharray={circumference}
               strokeDashoffset={isLoading ? 0 : strokeDashoffset}
               strokeLinecap="round"
@@ -104,13 +104,15 @@ export const CompatibilityCircle: React.FC<CompatibilityCircleProps> = ({
           </svg>
         </div>
         
-        {/* Среднее кольцо (Middle ring) - decorative */}
-        <div className="w-[90px] h-[90px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 backdrop-blur-sm"></div>
+        {/* Removed middle ring completely */}
         
-        {/* Внутренний круг (Inner circle) */}
-        <div className={`w-[86px] h-[86px] rounded-full ${isLoading ? 'bg-gray-700/80' : (isGrayCircle ? 'bg-gray-500/80' : compatibilityBgClass)} flex items-center justify-center transition-all duration-1000 backdrop-blur-sm`}>
-          <div className="w-10 h-10 rounded-full bg-todoDarkGray/90 absolute"></div>
-          <span className={`${isGrayCircle || isLoading ? 'text-white/90' : 'text-black'} font-bold text-sm text-center px-2 absolute ${isLoading ? 'animate-pulse' : ''}`}>
+        {/* Replaced large inner circle with a small dot */}
+        <div className="flex items-center justify-center">
+          {/* Small center dot */}
+          <div className={`w-2 h-2 rounded-full ${isGrayCircle ? 'bg-gray-500' : strokeColor} transition-all duration-1000`}></div>
+          
+          {/* Text positioned outside the circle */}
+          <span className={`absolute ${isGrayCircle || isLoading ? 'text-white/90' : 'text-white'} font-bold text-sm ${isLoading ? 'animate-pulse' : ''}`}>
             {getCompatibilityText()}
           </span>
         </div>
