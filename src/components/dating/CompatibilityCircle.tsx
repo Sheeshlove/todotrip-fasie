@@ -19,6 +19,9 @@ export const CompatibilityCircle: React.FC<CompatibilityCircleProps> = ({
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   
+  // Determine if the circle should be gray
+  const isGrayCircle = !currentUserHasTakenTest || !userHasTakenTest;
+  
   // Get compatibility color classes based on score
   const compatibilityBgClass = getCompatibilityBgColor(compatibilityScore);
   const strokeColor = isGrayCircle ? "#4B5563" : 
@@ -39,9 +42,6 @@ export const CompatibilityCircle: React.FC<CompatibilityCircleProps> = ({
     }
     return `${compatibilityScore}%`;
   };
-
-  // Determine if the circle should be gray
-  const isGrayCircle = !currentUserHasTakenTest || !userHasTakenTest;
   
   // Анимация круга совместимости (Compatibility circle animation)
   useEffect(() => {
@@ -118,4 +118,3 @@ export const CompatibilityCircle: React.FC<CompatibilityCircleProps> = ({
     </div>
   );
 };
-
