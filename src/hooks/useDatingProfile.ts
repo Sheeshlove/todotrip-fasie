@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export interface UserProfileData {
   profile: any;
@@ -21,7 +22,7 @@ const userDataCache: Record<string, {
 const CACHE_EXPIRATION = 5 * 60 * 1000;
 
 export const useDatingProfile = (): UserProfileData => {
-  const { user } = useAuth();
+  const { user, signIn } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [testResults, setTestResults] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -32,6 +33,12 @@ export const useDatingProfile = (): UserProfileData => {
       if (!user) {
         setLoading(false);
         return;
+      }
+      
+      // Verify we have a valid session before proceeding
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        console.warn('No active session found in useDatingProfile, images may not load correctly');
       }
       
       // Check if we have valid cached data
