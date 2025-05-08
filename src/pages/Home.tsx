@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { preloadImages } from '@/data/placeholderImages';
@@ -6,11 +7,11 @@ import { Card } from '@/components/ui/card';
 import { ChevronRight, Home as HomeIcon, Info, Camera, Users, Sparkles, Handshake, MessageCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+
 const Home = () => {
-  const {
-    profile
-  } = useAuth();
+  const { profile } = useAuth();
   const userCity = profile?.city || '';
+
   useEffect(() => {
     preloadImages();
   }, []);
@@ -32,11 +33,12 @@ const Home = () => {
     buttons.push(<DestinationButton key="sochi" city="Сочи" disabled={true} />);
     return buttons;
   };
-  return <PageLayout title="ToDoTrip - Главная" description="AI-powered travel route planner">
+
+  return (
+    <PageLayout title="ToDoTrip - Главная" description="AI-powered travel route planner">
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] px-4 py-8">
         <div className="max-w-md w-full space-y-8 animate-fade-in">
           <div className="text-center mb-10">
-            
             <h1 className="text-3xl font-bold text-todoYellow mb-3">Добро пожаловать в ToDoTrip</h1>
             <p className="text-todoLightGray">Ваш персональный помощник для путешествий по России</p>
           </div>
@@ -90,24 +92,38 @@ const Home = () => {
           </Card>
         </div>
       </div>
-    </PageLayout>;
+    </PageLayout>
+  );
 };
-const DestinationButton = ({
-  city,
-  disabled = false
-}) => {
+
+const DestinationButton = ({ city, disabled = false }) => {
   const navigate = useNavigate();
+  
   const handleClick = () => {
     if (!disabled) {
       navigate(`/ai-trip?city=${encodeURIComponent(city)}`);
     }
   };
-  return <Button className={`w-full justify-between text-left transition-all ${disabled ? 'bg-todoBlack/30 text-todoMediumGray cursor-not-allowed' : 'bg-todoBlack/60 text-white hover:bg-todoBlack hover:scale-102 hover:shadow-md'}`} disabled={disabled} onClick={handleClick}>
+  
+  return (
+    <Button 
+      className={`w-full justify-between text-left transition-all ${
+        disabled ? 'bg-todoBlack/30 text-todoMediumGray cursor-not-allowed' : 'bg-todoBlack/60 text-white hover:bg-todoBlack hover:scale-102 hover:shadow-md'
+      }`} 
+      disabled={disabled} 
+      onClick={handleClick}
+    >
       <div className="flex items-center">
         <Camera className="w-4 h-4 mr-2" />
         <span>{city}</span>
       </div>
-      {disabled ? <span className="text-xs bg-gray-800 px-2 py-1 rounded-full">Скоро</span> : <ChevronRight className="w-4 h-4" />}
-    </Button>;
+      {disabled ? (
+        <span className="text-xs bg-gray-800 px-2 py-1 rounded-full">Скоро</span>
+      ) : (
+        <ChevronRight className="w-4 h-4" />
+      )}
+    </Button>
+  );
 };
+
 export default Home;
