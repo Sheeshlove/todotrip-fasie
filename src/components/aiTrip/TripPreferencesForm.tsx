@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -101,7 +100,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
               <span className={getTextColor(childFriendly[0], true)}>место не для детей</span>
-              <span className="text-white font-medium min-w-[20px] text-center">{childFriendly[0]}</span>
+              <div className="relative w-8">
+                <span className="absolute left-1/2 transform -translate-x-1/2 text-white font-medium">{childFriendly[0]}</span>
+              </div>
               <span className={getTextColor(childFriendly[0], false)}>место только для детей</span>
             </div>
             <Slider 
@@ -115,7 +116,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
               <span className={getTextColor(culturalProgram[0], true)}>отключаем мозг</span>
-              <span className="text-white font-medium min-w-[20px] text-center">{culturalProgram[0]}</span>
+              <div className="relative w-8">
+                <span className="absolute left-1/2 transform -translate-x-1/2 text-white font-medium">{culturalProgram[0]}</span>
+              </div>
               <span className={getTextColor(culturalProgram[0], false)}>думаем о высоком</span>
             </div>
             <Slider 
@@ -129,7 +132,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
               <span className={getTextColor(sociability[0], true)}>хиккуем</span>
-              <span className="text-white font-medium min-w-[20px] text-center">{sociability[0]}</span>
+              <div className="relative w-8">
+                <span className="absolute left-1/2 transform -translate-x-1/2 text-white font-medium">{sociability[0]}</span>
+              </div>
               <span className={getTextColor(sociability[0], false)}>экстравертимся</span>
             </div>
             <Slider 
@@ -143,7 +148,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
               <span className={getTextColor(relaxation[0], true)}>активный отдых</span>
-              <span className="text-white font-medium min-w-[20px] text-center">{relaxation[0]}</span>
+              <div className="relative w-8">
+                <span className="absolute left-1/2 transform -translate-x-1/2 text-white font-medium">{relaxation[0]}</span>
+              </div>
               <span className={getTextColor(relaxation[0], false)}>релакс</span>
             </div>
             <Slider 
@@ -157,7 +164,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
               <span className={getTextColor(popularity[0], true)}>я тут один</span>
-              <span className="text-white font-medium min-w-[20px] text-center">{popularity[0]}</span>
+              <div className="relative w-8">
+                <span className="absolute left-1/2 transform -translate-x-1/2 text-white font-medium">{popularity[0]}</span>
+              </div>
               <span className={getTextColor(popularity[0], false)}>популярное место</span>
             </div>
             <Slider 
@@ -171,7 +180,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
               <span className={getTextColor(instagrammability[0], true)}>я только посмотреть</span>
-              <span className="text-white font-medium min-w-[20px] text-center">{instagrammability[0]}</span>
+              <div className="relative w-8">
+                <span className="absolute left-1/2 transform -translate-x-1/2 text-white font-medium">{instagrammability[0]}</span>
+              </div>
               <span className={getTextColor(instagrammability[0], false)}>фоткай меня</span>
             </div>
             <Slider 
