@@ -39,7 +39,6 @@ export const useFormAutoSave = <T extends Record<string, any>>({
     try {
       onSave?.(values);
     } catch (error) {
-      console.error('Error saving data:', error);
       toast.error('Ошибка сохранения');
       setNeedsSaving(true);
     } finally {

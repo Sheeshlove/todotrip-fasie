@@ -65,7 +65,6 @@ const CreateProfile = () => {
       navigate('/profile');
     } catch (error) {
       toast.error('Ошибка при обновлении профиля');
-      console.error(error);
     } finally {
       setIsSubmitting(false);
     }

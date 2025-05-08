@@ -27,7 +27,6 @@ export const useProfileImages = (userId: string) => {
       return publicUrl;
     } catch (error) {
       toast.error('Ошибка загрузки изображения');
-      console.error('Error uploading image:', error);
       return null;
     } finally {
       setUploading(false);
@@ -44,14 +43,12 @@ export const useProfileImages = (userId: string) => {
         .remove([formattedPath]);
 
       if (error) {
-        console.error('Supabase delete error:', error);
         throw error;
       }
       
       return true;
     } catch (error) {
       toast.error('Ошибка удаления изображения');
-      console.error('Error deleting image:', error);
       return false;
     }
   };
