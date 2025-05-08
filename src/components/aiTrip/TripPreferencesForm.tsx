@@ -91,9 +91,10 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           </div>
           
           <div className="space-y-2">
-            <div className="flex justify-between text-sm mb-2">
-              <Label className="text-todoLightGray">Можно с детьми</Label>
-              <span className="text-white">{childFriendly[0]}</span>
+            <div className="flex justify-between items-center text-sm mb-1">
+              <span className="text-todoLightGray">место не для детей</span>
+              <span className="text-white font-medium">{childFriendly[0]}</span>
+              <span className="text-todoLightGray">место только для детей</span>
             </div>
             <Slider 
               value={childFriendly} 
@@ -104,9 +105,10 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           </div>
           
           <div className="space-y-2">
-            <div className="flex justify-between text-sm mb-2">
-              <Label className="text-todoLightGray">Культурная программа</Label>
-              <span className="text-white">{culturalProgram[0]}</span>
+            <div className="flex justify-between items-center text-sm mb-1">
+              <span className="text-todoLightGray">отключаем мозг</span>
+              <span className="text-white font-medium">{culturalProgram[0]}</span>
+              <span className="text-todoLightGray">думаем о высоком</span>
             </div>
             <Slider 
               value={culturalProgram} 
@@ -117,9 +119,10 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           </div>
           
           <div className="space-y-2">
-            <div className="flex justify-between text-sm mb-2">
-              <Label className="text-todoLightGray">Социальность</Label>
-              <span className="text-white">{sociability[0]}</span>
+            <div className="flex justify-between items-center text-sm mb-1">
+              <span className="text-todoLightGray">хиккуем</span>
+              <span className="text-white font-medium">{sociability[0]}</span>
+              <span className="text-todoLightGray">экстравертимся</span>
             </div>
             <Slider 
               value={sociability} 
@@ -130,9 +133,10 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           </div>
           
           <div className="space-y-2">
-            <div className="flex justify-between text-sm mb-2">
-              <Label className="text-todoLightGray">Отдыхательность</Label>
-              <span className="text-white">{relaxation[0]}</span>
+            <div className="flex justify-between items-center text-sm mb-1">
+              <span className="text-todoLightGray">активный отдых</span>
+              <span className="text-white font-medium">{relaxation[0]}</span>
+              <span className="text-todoLightGray">релакс</span>
             </div>
             <Slider 
               value={relaxation} 
@@ -143,9 +147,10 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           </div>
           
           <div className="space-y-2">
-            <div className="flex justify-between text-sm mb-2">
-              <Label className="text-todoLightGray">Попсовость</Label>
-              <span className="text-white">{popularity[0]}</span>
+            <div className="flex justify-between items-center text-sm mb-1">
+              <span className="text-todoLightGray">я тут один</span>
+              <span className="text-white font-medium">{popularity[0]}</span>
+              <span className="text-todoLightGray">популярное место</span>
             </div>
             <Slider 
               value={popularity} 
@@ -156,9 +161,10 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           </div>
           
           <div className="space-y-2">
-            <div className="flex justify-between text-sm mb-2">
-              <Label className="text-todoLightGray">Инстаграмность</Label>
-              <span className="text-white">{instagrammability[0]}</span>
+            <div className="flex justify-between items-center text-sm mb-1">
+              <span className="text-todoLightGray">я только посмотреть</span>
+              <span className="text-white font-medium">{instagrammability[0]}</span>
+              <span className="text-todoLightGray">фоткай меня</span>
             </div>
             <Slider 
               value={instagrammability} 
