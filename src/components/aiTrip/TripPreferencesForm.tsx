@@ -44,6 +44,14 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
     }
   };
 
+  // Helper function to determine text color based on slider value
+  const getTextColor = (value: number, isLeft: boolean) => {
+    if (value === 5) return "text-todoYellow"; // Both yellow when value is 5
+    if (value < 5 && !isLeft) return "text-todoYellow"; // Right text yellow when value < 5
+    if (value > 5 && isLeft) return "text-todoYellow"; // Left text yellow when value > 5
+    return "text-todoLightGray"; // Default color
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 p-4 rounded-xl shadow-lg">
@@ -92,9 +100,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
-              <span className="text-todoLightGray">место не для детей</span>
-              <span className="text-white font-medium">{childFriendly[0]}</span>
-              <span className="text-todoLightGray">место только для детей</span>
+              <span className={getTextColor(childFriendly[0], true)}>место не для детей</span>
+              <span className="text-white font-medium min-w-[20px] text-center">{childFriendly[0]}</span>
+              <span className={getTextColor(childFriendly[0], false)}>место только для детей</span>
             </div>
             <Slider 
               value={childFriendly} 
@@ -106,9 +114,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
-              <span className="text-todoLightGray">отключаем мозг</span>
-              <span className="text-white font-medium">{culturalProgram[0]}</span>
-              <span className="text-todoLightGray">думаем о высоком</span>
+              <span className={getTextColor(culturalProgram[0], true)}>отключаем мозг</span>
+              <span className="text-white font-medium min-w-[20px] text-center">{culturalProgram[0]}</span>
+              <span className={getTextColor(culturalProgram[0], false)}>думаем о высоком</span>
             </div>
             <Slider 
               value={culturalProgram} 
@@ -120,9 +128,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
-              <span className="text-todoLightGray">хиккуем</span>
-              <span className="text-white font-medium">{sociability[0]}</span>
-              <span className="text-todoLightGray">экстравертимся</span>
+              <span className={getTextColor(sociability[0], true)}>хиккуем</span>
+              <span className="text-white font-medium min-w-[20px] text-center">{sociability[0]}</span>
+              <span className={getTextColor(sociability[0], false)}>экстравертимся</span>
             </div>
             <Slider 
               value={sociability} 
@@ -134,9 +142,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
-              <span className="text-todoLightGray">активный отдых</span>
-              <span className="text-white font-medium">{relaxation[0]}</span>
-              <span className="text-todoLightGray">релакс</span>
+              <span className={getTextColor(relaxation[0], true)}>активный отдых</span>
+              <span className="text-white font-medium min-w-[20px] text-center">{relaxation[0]}</span>
+              <span className={getTextColor(relaxation[0], false)}>релакс</span>
             </div>
             <Slider 
               value={relaxation} 
@@ -148,9 +156,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
-              <span className="text-todoLightGray">я тут один</span>
-              <span className="text-white font-medium">{popularity[0]}</span>
-              <span className="text-todoLightGray">популярное место</span>
+              <span className={getTextColor(popularity[0], true)}>я тут один</span>
+              <span className="text-white font-medium min-w-[20px] text-center">{popularity[0]}</span>
+              <span className={getTextColor(popularity[0], false)}>популярное место</span>
             </div>
             <Slider 
               value={popularity} 
@@ -162,9 +170,9 @@ const TripPreferencesForm: React.FC<TripPreferencesFormProps> = ({ onSubmit }) =
           
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm mb-1">
-              <span className="text-todoLightGray">я только посмотреть</span>
-              <span className="text-white font-medium">{instagrammability[0]}</span>
-              <span className="text-todoLightGray">фоткай меня</span>
+              <span className={getTextColor(instagrammability[0], true)}>я только посмотреть</span>
+              <span className="text-white font-medium min-w-[20px] text-center">{instagrammability[0]}</span>
+              <span className={getTextColor(instagrammability[0], false)}>фоткай меня</span>
             </div>
             <Slider 
               value={instagrammability} 
