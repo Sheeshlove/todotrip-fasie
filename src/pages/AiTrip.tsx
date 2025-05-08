@@ -1,36 +1,22 @@
 
-import { useEffect } from 'react';
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
-import { spbSights, preloadSightImages } from '@/data/spbSights';
-import { useAiTripState } from '@/hooks/useAiTripState';
 import TripHeader from '@/components/aiTrip/TripHeader';
-import SightCarousel from '@/components/aiTrip/SightCarousel';
-import RouteSettings from '@/components/aiTrip/RouteSettings';
-import SightDetails from '@/components/aiTrip/SightDetails';
+import TripPreferencesForm from '@/components/aiTrip/TripPreferencesForm';
+import UnderDevelopmentMessage from '@/components/aiTrip/UnderDevelopmentMessage';
 
 const AiTrip = () => {
-  const {
-    city,
-    sights,
-    currentSight,
-    selectedSights,
-    budget,
-    hours,
-    isGeneratingRoute,
-    canGenerateRoute,
-    toggleSightSelection,
-    clearSelectedSights,
-    goToNextSight,
-    goToPreviousSight,
-    goToSight,
-    setBudget,
-    setHours,
-    generateRoute
-  } = useAiTripState(spbSights);
+  const location = useLocation();
+  const [showResults, setShowResults] = useState(false);
   
-  useEffect(() => {
-    preloadSightImages();
-  }, []);
+  // Extract city from URL query parameter
+  const params = new URLSearchParams(location.search);
+  const city = params.get('city') || 'Санкт-Петербург';
+  
+  const handleSubmitPreferences = () => {
+    setShowResults(true);
+  };
   
   return (
     <PageLayout title={`ToDoTrip - ${city}`} description={`AI-маршрут по городу ${city}`}>
@@ -38,30 +24,10 @@ const AiTrip = () => {
         <TripHeader city={city} />
         
         <div className="flex flex-col space-y-6">
-          <SightCarousel 
-            sights={sights}
-            selectedSights={selectedSights}
-            toggleSightSelection={toggleSightSelection}
-            onViewDetails={goToSight}
-            onClearSelection={clearSelectedSights}
-          />
-          
-          <RouteSettings 
-            budget={budget}
-            hours={hours}
-            isGeneratingRoute={isGeneratingRoute}
-            canGenerateRoute={canGenerateRoute}
-            onBudgetChange={setBudget}
-            onHoursChange={setHours}
-            onGenerateRoute={generateRoute}
-          />
-          
-          {sights.length > 0 && (
-            <SightDetails 
-              sight={currentSight}
-              onPrevious={goToPreviousSight}
-              onNext={goToNextSight}
-            />
+          {showResults ? (
+            <UnderDevelopmentMessage />
+          ) : (
+            <TripPreferencesForm onSubmit={handleSubmitPreferences} />
           )}
         </div>
       </div>

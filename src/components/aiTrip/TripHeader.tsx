@@ -2,12 +2,15 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MapPin, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface TripHeaderProps {
   city: string;
 }
 
 const TripHeader: React.FC<TripHeaderProps> = ({ city }) => {
+  const navigate = useNavigate();
+  
   return (
     <div className="flex justify-between items-center mb-6">
       <div>
@@ -15,13 +18,13 @@ const TripHeader: React.FC<TripHeaderProps> = ({ city }) => {
           <MapPin className="mr-2" size={24} /> {city}
         </h1>
         <p className="text-todoLightGray text-sm mt-1">
-          AI-планировщик маршрутов
+          ИИ-планировщик маршрутов
         </p>
       </div>
       <Button 
         variant="secondary" 
         className="bg-todoBlack/60 border border-white/10 text-white"
-        onClick={() => window.history.back()}
+        onClick={() => navigate('/')}
       >
         <ArrowLeft size={16} className="mr-1" /> Назад
       </Button>
