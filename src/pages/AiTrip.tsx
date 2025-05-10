@@ -16,14 +16,16 @@ const AiTrip = () => {
   
   const handleSubmitPreferences = () => {
     setShowResults(true);
+    // Scroll to top when showing results
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
   return (
     <PageLayout title={`ToDoTrip - ${city}`} description={`AI-маршрут по городу ${city}`}>
-      <div className="flex flex-col min-h-[calc(100vh-160px)] px-4 pt-6 pb-20">
+      <div className="flex flex-col min-h-[calc(100vh-160px)] px-4 pt-8 pb-24 max-w-md mx-auto w-full">
         <TripHeader city={city} />
         
-        <div className="flex flex-col space-y-6">
+        <div className="flex flex-col space-y-6 w-full">
           {showResults ? (
             <UnderDevelopmentMessage />
           ) : (

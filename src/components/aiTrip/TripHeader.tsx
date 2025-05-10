@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { MapPin, ArrowLeft } from 'lucide-react';
+import { MapPin, ArrowLeft, Navigation } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface TripHeaderProps {
@@ -12,21 +12,26 @@ const TripHeader: React.FC<TripHeaderProps> = ({ city }) => {
   const navigate = useNavigate();
   
   return (
-    <div className="flex justify-between items-center mb-6">
+    <div className="flex justify-between items-center mb-8 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-todoYellow flex items-center">
-          <MapPin className="mr-2" size={24} /> {city}
-        </h1>
-        <p className="text-todoLightGray text-sm mt-1">
+        <div className="flex items-center mb-1">
+          <div className="bg-todoYellow/20 p-1.5 rounded-lg mr-3">
+            <Navigation className="text-todoYellow" size={18} />
+          </div>
+          <h1 className="text-2xl font-bold text-white">
+            {city}
+          </h1>
+        </div>
+        <p className="text-todoLightGray text-sm ml-1">
           ИИ-планировщик маршрутов
         </p>
       </div>
       <Button 
-        variant="secondary" 
-        className="bg-todoBlack/60 border border-white/10 text-white"
+        variant="outline" 
+        className="bg-todoBlack/40 border-white/10 text-white hover:bg-todoBlack/60 hover:text-todoYellow transition-colors"
         onClick={() => navigate('/')}
       >
-        <ArrowLeft size={16} className="mr-1" /> Назад
+        <ArrowLeft size={16} className="mr-1.5" /> Назад
       </Button>
     </div>
   );
