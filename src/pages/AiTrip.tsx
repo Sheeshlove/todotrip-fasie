@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
 import TripHeader from '@/components/aiTrip/TripHeader';
@@ -14,6 +14,19 @@ const AiTrip = () => {
   const params = new URLSearchParams(location.search);
   const city = params.get('city') || 'Санкт-Петербург';
 
+  // Effect to handle resize when map is shown
+  useEffect(() => {
+    if (showResults) {
+      // Add a small delay to ensure DOM is ready before map initializes
+      const timer = setTimeout(() => {
+        console.log('Triggering resize to help map render properly');
+        window.dispatchEvent(new Event('resize'));
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showResults]);
+
   const handleSubmitPreferences = () => {
     setShowResults(true);
     // Scroll to top when showing results
@@ -22,12 +35,7 @@ const AiTrip = () => {
       behavior: 'smooth'
     });
     
-    // Add a small delay to ensure DOM is ready before map initializes
-    setTimeout(() => {
-      console.log('Ready to initialize map after form submission');
-      // This is just to trigger a re-render/re-layout and ensure the map container is fully rendered
-      window.dispatchEvent(new Event('resize'));
-    }, 300);
+    console.log('Form submitted, showing results with map');
   };
 
   return (
