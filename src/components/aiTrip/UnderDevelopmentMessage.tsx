@@ -17,7 +17,7 @@ const UnderDevelopmentMessage: React.FC = () => {
       </Card>
       
       <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 p-6 rounded-xl shadow-lg">
-        <h3 className="text-lg font-medium text-white mb-4 px-[142px]">Ваш маршрут готов!</h3>
+        <h3 className="text-lg font-medium text-white mb-4 px-[142px]">карта:</h3>
         <YandexMap />
       </Card>
     </div>;
