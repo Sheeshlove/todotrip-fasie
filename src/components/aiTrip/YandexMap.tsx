@@ -7,7 +7,7 @@ interface YandexMapProps {
 
 declare global {
   interface Window {
-    ymaps: any;
+    ymaps3: any;
   }
 }
 
@@ -15,73 +15,70 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const apiKey = 'fea68787-dfe1-486c-8af0-0d931902537d';
-  const scriptId = 'yandex-maps-script';
+  const scriptId = 'yandex-maps-script-v3';
 
   useEffect(() => {
     // Check if script already exists
     let script = document.getElementById(scriptId) as HTMLScriptElement;
     
-    const initMap = () => {
-      console.log('Initializing Yandex Map');
+    const initMap = async () => {
+      console.log('Initializing Yandex Map v3');
       if (!mapRef.current) {
         console.error('Map container not found');
         return;
       }
 
-      if (!window.ymaps) {
-        console.error('Yandex Maps API not loaded');
+      if (!window.ymaps3) {
+        console.error('Yandex Maps API v3 not loaded');
         setMapError('Ошибка загрузки API карт / Map API loading error');
         return;
       }
 
       try {
-        window.ymaps.ready(() => {
-          console.log('Yandex Maps API ready, creating map');
-          try {
-            const map = new window.ymaps.Map(mapRef.current, {
-              center: [59.95, 30.3], // Saint Petersburg coordinates
-              zoom: 12,
-              controls: ['zoomControl', 'fullscreenControl']
-            });
-            
-            // Add a placemark at the city center
-            const placemark = new window.ymaps.Placemark([59.95, 30.3], {
-              hintContent: 'Санкт-Петербург',
-              balloonContent: 'Центр маршрута'
-            }, {
-              iconColor: '#FFCC00' // Yellow icon to match the app theme
-            });
-            
-            map.geoObjects.add(placemark);
-            console.log('Map created successfully');
-          } catch (error) {
-            console.error('Error creating map:', error);
-            setMapError('Ошибка инициализации карты / Map initialization error');
+        // Using the v3 API initialization pattern
+        await window.ymaps3.ready;
+        
+        const { YMap, YMapDefaultSchemeLayer } = window.ymaps3;
+        
+        console.log('Yandex Maps API v3 ready, creating map');
+        
+        const map = new YMap(
+          mapRef.current,
+          {
+            location: {
+              center: [30.3, 59.95], // Saint Petersburg coordinates
+              zoom: 12
+            }
           }
-        });
+        );
+        
+        map.addChild(new YMapDefaultSchemeLayer());
+        
+        console.log('Map created successfully');
       } catch (error) {
-        console.error('Error in Yandex Maps ready callback:', error);
+        console.error('Error creating map:', error);
         setMapError('Ошибка инициализации карты / Map initialization error');
       }
     };
 
     const loadScript = () => {
       if (!script) {
-        console.log('Creating Yandex Maps script tag');
+        console.log('Creating Yandex Maps v3 script tag');
         script = document.createElement('script');
         script.id = scriptId;
-        script.src = `https://api-maps.yandex.ru/2.1/?apikey=${apiKey}&lang=ru_RU`;
+        // Using v3 API URL format
+        script.src = `https://api-maps.yandex.ru/v3/?apikey=${apiKey}&lang=ru_RU`;
         script.async = true;
         script.onerror = () => {
-          console.error('Failed to load Yandex Maps script');
+          console.error('Failed to load Yandex Maps v3 script');
           setMapError('Ошибка загрузки API карт / Map API loading error');
         };
         script.onload = initMap;
         document.head.appendChild(script);
       } else {
         // Script already exists, just initialize map
-        console.log('Yandex Maps script already exists');
-        if (window.ymaps) {
+        console.log('Yandex Maps v3 script already exists');
+        if (window.ymaps3) {
           initMap();
         } else {
           script.onload = initMap;

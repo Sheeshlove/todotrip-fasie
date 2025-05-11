@@ -25,9 +25,9 @@ const AiTrip = () => {
     // Add a small delay to ensure DOM is ready before map initializes
     setTimeout(() => {
       console.log('Ready to initialize map after form submission');
-      // This is just to trigger a re-render/re-layout
-      setShowResults(true);
-    }, 100);
+      // This is just to trigger a re-render/re-layout and ensure the map container is fully rendered
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
   };
 
   return (
