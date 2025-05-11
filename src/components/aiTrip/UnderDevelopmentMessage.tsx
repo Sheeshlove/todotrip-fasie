@@ -1,9 +1,12 @@
+
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Construction } from 'lucide-react';
 import YandexMap from './YandexMap';
+
 const UnderDevelopmentMessage: React.FC = () => {
-  return <div className="space-y-6">
+  return (
+    <div className="space-y-6">
       <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 p-6 rounded-xl shadow-lg text-center">
         <div className="flex flex-col items-center justify-center py-10 space-y-4">
           <Construction size={64} className="text-todoYellow animate-pulse" />
@@ -17,9 +20,13 @@ const UnderDevelopmentMessage: React.FC = () => {
       </Card>
       
       <Card className="bg-todoDarkGray/50 backdrop-blur-sm border-white/5 p-6 rounded-xl shadow-lg">
-        <h3 className="text-lg font-medium text-white mb-4 px-[142px]">карта:</h3>
-        <YandexMap />
+        <h3 className="text-lg font-medium text-white mb-4 text-center sm:text-left sm:px-4">карта:</h3>
+        <div className="w-full">
+          <YandexMap />
+        </div>
       </Card>
-    </div>;
+    </div>
+  );
 };
+
 export default UnderDevelopmentMessage;
