@@ -42,15 +42,16 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
   const scriptId = 'yandex-maps-script-v3';
 
   useEffect(() => {
-    // Don't proceed if API key is missing
-    // Не продолжаем, если отсутствует API ключ
-    if (!apiKey) return;
-
+    console.log('Map component mounted / Компонент карты смонтирован');
+    console.log('API Key available:', !!apiKey, 'Length:', apiKey?.length);
+    
     let script = document.getElementById(scriptId) as HTMLScriptElement;
     let retryCount = 0;
     const maxRetries = 3;
     
     const initMap = async () => {
+      console.log('Initializing map / Инициализация карты');
+      
       if (!mapRef.current) {
         console.error('Map container not found / Контейнер карты не найден');
         setMapError('Ошибка инициализации: контейнер карты не найден / Initialization error: map container not found');
@@ -58,23 +59,35 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
         return;
       }
 
-      if (!window.ymaps3 || !window.ymaps3.ready) {
-        console.error('Yandex Maps API v3 not fully loaded / API Яндекс Карт v3 не полностью загружен');
+      if (!window.ymaps3) {
+        console.error('window.ymaps3 is not available / window.ymaps3 недоступен');
+        setMapError('Ошибка загрузки API карт / Map API loading error');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!window.ymaps3.ready) {
+        console.error('window.ymaps3.ready is not available / window.ymaps3.ready недоступен');
         setMapError('Ошибка загрузки API карт / Map API loading error');
         setIsLoading(false);
         return;
       }
 
       try {
+        console.log('Waiting for ymaps3.ready / Ожидание ymaps3.ready');
         await window.ymaps3.ready;
+        console.log('ymaps3.ready resolved / ymaps3.ready выполнен');
         
         const { YMap, YMapDefaultSchemeLayer } = window.ymaps3;
+        console.log('YMap and YMapDefaultSchemeLayer loaded / YMap и YMapDefaultSchemeLayer загружены');
         
         if (mapInstanceRef.current) {
+          console.log('Destroying existing map instance / Уничтожение существующего экземпляра карты');
           mapInstanceRef.current.destroy();
           mapInstanceRef.current = null;
         }
         
+        console.log('Creating new map instance / Создание нового экземпляра карты');
         const map = new YMap(
           mapRef.current,
           {
@@ -85,8 +98,10 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
           }
         );
         
+        console.log('Adding default scheme layer / Добавление слоя схемы по умолчанию');
         map.addChild(new YMapDefaultSchemeLayer());
         mapInstanceRef.current = map;
+        console.log('Map initialization complete / Инициализация карты завершена');
         setIsLoading(false);
       } catch (error) {
         console.error('Error creating map / Ошибка создания карты:', error);
@@ -96,7 +111,10 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
     };
 
     const loadScript = () => {
+      console.log('Loading Yandex Maps script / Загрузка скрипта Яндекс Карт');
+      
       if (!script) {
+        console.log('Creating new script element / Создание нового элемента скрипта');
         script = document.createElement('script');
         script.id = scriptId;
         script.src = `https://api-maps.yandex.ru/v3/?apikey=${apiKey}&lang=ru_RU`;
@@ -115,14 +133,19 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
         };
         
         script.onload = () => {
+          console.log('Script loaded successfully, initializing map / Скрипт успешно загружен, инициализация карты');
           initMap();
         };
         
+        console.log('Appending script to document head / Добавление скрипта в head документа');
         document.head.appendChild(script);
       } else {
+        console.log('Script element already exists / Элемент скрипта уже существует');
         if (window.ymaps3) {
+          console.log('ymaps3 available, initializing map / ymaps3 доступен, инициализация карты');
           initMap();
         } else {
+          console.log('ymaps3 not available, waiting for script load / ymaps3 недоступен, ожидание загрузки скрипта');
           script.onload = initMap;
         }
       }
@@ -131,6 +154,7 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
     loadScript();
 
     return () => {
+      console.log('Cleaning up map component / Очистка компонента карты');
       if (mapInstanceRef.current && typeof mapInstanceRef.current.destroy === 'function') {
         mapInstanceRef.current.destroy();
         mapInstanceRef.current = null;
