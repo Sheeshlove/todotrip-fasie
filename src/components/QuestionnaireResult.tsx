@@ -36,7 +36,7 @@ const travelerTypes = [
   }
 ];
 
-const QuestionnaireResult: React.FC<QuestionnaireResultProps> = ({ results, onContinue }) => {
+const QuestionnaireResult = ({ results, onContinue }: QuestionnaireResultProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [travelerType, setTravelerType] = useState<typeof travelerTypes[0] | null>(null);
   

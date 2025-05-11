@@ -46,7 +46,7 @@ export const ProfileImageUpload = ({ userId, currentImage, onImageUpdate }: Prof
       >
         <Avatar className="w-full h-full rounded-lg border-none">
           {currentImage && !imageError ? (
-            <>
+            <React.Fragment>
               {!imageLoaded && (
                 <AvatarFallback className="w-full h-full bg-todoBlack text-todoYellow">
                   <User className="w-1/3 h-1/3" />
@@ -59,7 +59,7 @@ export const ProfileImageUpload = ({ userId, currentImage, onImageUpdate }: Prof
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
               />
-            </>
+            </React.Fragment>
           ) : (
             <AvatarFallback className="w-full h-full bg-todoBlack text-todoYellow">
               <User className="w-1/3 h-1/3" />
