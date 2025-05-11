@@ -16,10 +16,20 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
   const mapInstanceRef = useRef<any | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isContainerMounted, setIsContainerMounted] = useState(false);
   
   // TEMPORARY: Hardcoded API key for development
   // ВРЕМЕННО: Жестко закодированный API ключ для разработки
   const apiKey = process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY || 'fea68787-dfe1-486c-8af0-0d931902537d';
+
+  // Handle container mount
+  // Обработка монтирования контейнера
+  useEffect(() => {
+    if (mapRef.current) {
+      console.log('Map container mounted / Контейнер карты смонтирован');
+      setIsContainerMounted(true);
+    }
+  }, []);
 
   // Initialize Yandex Maps loader
   // Инициализация загрузчика Яндекс Карт
@@ -72,12 +82,22 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
   // Load and initialize the map
   // Загрузка и инициализация карты
   useEffect(() => {
+    // Only proceed if container is mounted
+    // Продолжаем только если контейнер смонтирован
+    if (!isContainerMounted) {
+      console.log('Waiting for container to mount / Ожидание монтирования контейнера');
+      return;
+    }
+
     const initMap = async () => {
       try {
         console.log('Starting map initialization / Начало инициализации карты');
         
+        // Double check container
+        // Двойная проверка контейнера
         if (!mapRef.current) {
-          throw new Error('Map container not found / Контейнер карты не найден');
+          console.error('Map container not found after mount / Контейнер карты не найден после монтирования');
+          throw new Error('Map container not found after mount / Контейнер карты не найден после монтирования');
         }
 
         // Load Yandex Maps
@@ -133,7 +153,7 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [isContainerMounted]); // Only re-run when container mount state changes
 
   return (
     <div className={`relative w-full h-[400px] ${className || ''}`}>
@@ -157,6 +177,7 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
             ref={mapRef} 
             className="h-full w-full rounded-xl overflow-hidden"
             style={{ minHeight: '400px' }}
+            data-testid="map-container"
           />
           <div className="absolute bottom-3 left-3 bg-black/70 text-white py-1 px-3 text-xs rounded-full">
             Карта построения маршрута / Route planning map
