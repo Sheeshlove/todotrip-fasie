@@ -16,9 +16,11 @@ const YandexMap: React.FC<YandexMapProps> = ({ className }) => {
   const [mapError, setMapError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Get API key from environment variables
-  // Получаем API ключ из переменных окружения
-  const apiKey = process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY;
+  // TEMPORARY: Hardcoded API key for development
+  // ВРЕМЕННО: Жестко закодированный API ключ для разработки
+  // TODO: Move to environment variables as soon as possible
+  // TODO: Переместить в переменные окружения как можно скорее
+  const apiKey = process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY || 'fea68787-dfe1-486c-8af0-0d931902537d';
   
   // Validate API key
   // Проверяем наличие API ключа
