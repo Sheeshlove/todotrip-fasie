@@ -17,22 +17,22 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #222;
+  background: #363739;
   border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #FFDE03;
+  background: #F3DBB8;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #e6c800;
+  background: #D88679;
 }
 
 /* Firefox scrollbar styling */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #FFDE03 #222;
+  scrollbar-color: #F3DBB8 #363739;
 }

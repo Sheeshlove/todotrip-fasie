@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -20,11 +19,21 @@ export default {
 		},
 		extend: {
 			colors: {
-				todoYellow: '#FFDE03',
-				todoBlack: '#000000',
-				todoDarkGray: '#222222',
-				todoMediumGray: '#999999',
-				todoLightGray: '#cccccc',
+				todoCream: '#F3DBB8',      // Warm cream - replaces todoYellow
+				todoDarkBlue: '#35546C',   // Dark blue-gray - replaces todoBlack
+				todoRose: '#D88679',       // Muted rose - accent color
+				todoCharcoal: '#363739',   // Dark charcoal - replaces todoDarkGray
+				todoSteelBlue: '#7F93AC',  // Steel blue - replaces todoMediumGray
+				todoOlive: '#546116',      // Olive green - additional accent
+				todoWhite: '#FFFFFF',      // Pure white - replaces todoLightGray
+				
+				// Legacy color mappings for backwards compatibility
+				todoYellow: '#F3DBB8',     // Map to cream
+				todoBlack: '#35546C',      // Map to dark blue
+				todoDarkGray: '#363739',   // Map to charcoal
+				todoMediumGray: '#7F93AC', // Map to steel blue
+				todoLightGray: '#FFFFFF',  // Map to white
+				
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -179,10 +188,9 @@ export default {
 				unbounded: ['Unbounded', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', 'sans-serif']
 			},
 			boxShadow: {
-				'glow': '0 0 10px rgba(255, 222, 3, 0.3)'
+				'glow': '0 0 10px rgba(243, 219, 184, 0.3)'
 			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-

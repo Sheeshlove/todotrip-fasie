@@ -11,44 +11,44 @@
 
 @layer base {
   :root {
-    --background: 0 0% 0%; /* Black */
+    --background: 210 26% 32%; /* Dark Blue #35546C */
     --foreground: 0 0% 100%; /* White */
 
-    --card: 0 0% 13%; /* Dark Gray #222 */
+    --card: 0 0% 22%; /* Charcoal #363739 */
     --card-foreground: 0 0% 100%; /* White */
 
-    --popover: 0 0% 13%; /* Dark Gray #222 */
+    --popover: 0 0% 22%; /* Charcoal #363739 */
     --popover-foreground: 0 0% 100%; /* White */
 
-    --primary: 52 100% 50%; /* Yellow #FFDE03 */
-    --primary-foreground: 0 0% 0%; /* Black */
+    --primary: 39 49% 85%; /* Cream #F3DBB8 */
+    --primary-foreground: 210 26% 32%; /* Dark Blue */
 
-    --secondary: 0 0% 60%; /* Medium Gray #999 */
+    --secondary: 210 20% 58%; /* Steel Blue #7F93AC */
     --secondary-foreground: 0 0% 100%; /* White */
 
-    --muted: 0 0% 13%; /* Dark Gray #222 */
+    --muted: 0 0% 22%; /* Charcoal #363739 */
     --muted-foreground: 0 0% 80%; /* Light Gray-ish */
 
-    --accent: 52 100% 50%; /* Yellow #FFDE03 */
-    --accent-foreground: 0 0% 0%; /* Black */
+    --accent: 39 49% 85%; /* Cream #F3DBB8 */
+    --accent-foreground: 210 26% 32%; /* Dark Blue */
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 8 54% 67%; /* Rose #D88679 */
     --destructive-foreground: 0 0% 100%; /* White */
 
-    --border: 0 0% 20%; /* Darker Gray */
-    --input: 0 0% 13%; /* Dark Gray #222 */
-    --ring: 52 100% 50%; /* Yellow #FFDE03 */
+    --border: 0 0% 30%; /* Darker Gray */
+    --input: 0 0% 22%; /* Charcoal #363739 */
+    --ring: 39 49% 85%; /* Cream #F3DBB8 */
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 0%; /* Black */
+    --sidebar-background: 210 26% 32%; /* Dark Blue */
     --sidebar-foreground: 0 0% 100%; /* White */
-    --sidebar-primary: 52 100% 50%; /* Yellow #FFDE03 */
-    --sidebar-primary-foreground: 0 0% 0%; /* Black */
-    --sidebar-accent: 0 0% 13%; /* Dark Gray #222 */
+    --sidebar-primary: 39 49% 85%; /* Cream */
+    --sidebar-primary-foreground: 210 26% 32%; /* Dark Blue */
+    --sidebar-accent: 0 0% 22%; /* Charcoal */
     --sidebar-accent-foreground: 0 0% 100%; /* White */
-    --sidebar-border: 0 0% 20%; /* Darker Gray */
-    --sidebar-ring: 52 100% 50%; /* Yellow #FFDE03 */
+    --sidebar-border: 0 0% 30%; /* Darker Gray */
+    --sidebar-ring: 39 49% 85%; /* Cream */
   }
 
   .dark {
@@ -100,11 +100,11 @@
 
   /* Ensure the font-family is applied to the body with fallbacks */
   body {
-    @apply bg-todoBlack text-white;
+    @apply bg-todoDarkBlue text-white;
     font-family: 'Unbounded', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     height: 100%;
     overflow-x: hidden;
-    background: radial-gradient(circle at 10% 10%, #111 0%, #000 80%);
+    background: radial-gradient(circle at 10% 10%, #363739 0%, #35546C 80%);
     background-attachment: fixed;
   }
 
@@ -125,7 +125,7 @@
 
   /* Improved focus styles */
   input:focus, textarea:focus, select:focus, button:focus {
-    @apply outline-none ring-1 ring-todoYellow/30;
+    @apply outline-none ring-1 ring-todoCream/30;
   }
 }
 
@@ -136,7 +136,7 @@
 
   .screen::before {
     content: "";
-    @apply absolute top-0 left-0 w-full h-full bg-black/60 z-[1];
+    @apply absolute top-0 left-0 w-full h-full bg-todoDarkBlue/60 z-[1];
   }
 
   .screen-content {
@@ -144,15 +144,15 @@
   }
 
   .logo {
-    @apply text-[3.5rem] font-black mb-8 text-todoYellow;
+    @apply text-[3.5rem] font-black mb-8 text-todoCream;
   }
 
   .swiper-button {
     @apply absolute bottom-20 left-1/2 transform -translate-x-1/2 z-[10]
-    py-[15px] px-[40px] bg-white text-black border-none rounded-[50px]
+    py-[15px] px-[40px] bg-white text-todoDarkBlue border-none rounded-[50px]
     text-[1.5rem] font-bold uppercase tracking-[1px] cursor-pointer
     transition-all duration-300 ease-in-out font-unbounded shadow-md
-    hover:bg-todoYellow hover:shadow-lg hover:-translate-y-1;
+    hover:bg-todoCream hover:shadow-lg hover:-translate-y-1;
   }
 
   .pagination-dot {
@@ -160,11 +160,11 @@
   }
 
   .pagination-dot.active {
-    @apply bg-todoYellow;
+    @apply bg-todoCream;
   }
 
   .suggestion-pill {
-    @apply bg-todoDarkGray text-white py-2 px-4 rounded-[20px] text-sm cursor-pointer transition-all duration-200 whitespace-nowrap font-unbounded hover:bg-gray-800;
+    @apply bg-todoCharcoal text-white py-2 px-4 rounded-[20px] text-sm cursor-pointer transition-all duration-200 whitespace-nowrap font-unbounded hover:bg-todoSteelBlue;
   }
 
   .horizontal-scroll {
@@ -178,21 +178,21 @@
 
   /* Modern card styling */
   .card-modern {
-    @apply bg-todoDarkGray/50 backdrop-blur-md border border-white/10 rounded-xl shadow-lg overflow-hidden;
+    @apply bg-todoCharcoal/50 backdrop-blur-md border border-white/10 rounded-xl shadow-lg overflow-hidden;
   }
   
   /* Profile section styling */
   .profile-section {
-    @apply p-5 rounded-xl bg-todoDarkGray/50 backdrop-blur-md border border-white/5 shadow-lg mb-6;
+    @apply p-5 rounded-xl bg-todoCharcoal/50 backdrop-blur-md border border-white/5 shadow-lg mb-6;
   }
   
   /* Button styles */
   .btn-primary {
-    @apply bg-todoYellow text-black hover:bg-yellow-400 rounded-lg transition-all hover:shadow-md;
+    @apply bg-todoCream text-todoDarkBlue hover:bg-todoCream/90 rounded-lg transition-all hover:shadow-md;
   }
   
   .btn-secondary {
-    @apply bg-todoDarkGray hover:bg-gray-700 text-white rounded-lg transition-all;
+    @apply bg-todoCharcoal hover:bg-todoSteelBlue text-white rounded-lg transition-all;
   }
 
   /* Improved animations */
@@ -206,6 +206,6 @@
 
   /* Glass card */
   .glass-card {
-    @apply bg-todoDarkGray/50 backdrop-blur-sm border border-white/5 rounded-xl shadow-lg;
+    @apply bg-todoCharcoal/50 backdrop-blur-sm border border-white/5 rounded-xl shadow-lg;
   }
 }

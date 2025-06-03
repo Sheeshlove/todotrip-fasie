@@ -1,8 +1,9 @@
+
 /* Custom cursor styles */
 .custom-cursor {
   width: 20px;
   height: 20px;
-  background: #FFDE03;
+  background: #F3DBB8;
   border-radius: 50%;
   position: fixed;
   pointer-events: none;
